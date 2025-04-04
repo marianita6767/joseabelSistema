@@ -214,7 +214,7 @@ if (filaSeleccionada >= 0) {
         datosFila[i] = (String) tablaM.getValueAt(filaSeleccionada, i);
     }
     
-    movimientoEditar dialogoEditar = new movimientoEditar(null, true);
+    movimientoEditar12 dialogoEditar = new movimientoEditar12(null, true);
     dialogoEditar.cargarDatos(datosFila);
     dialogoEditar.setLocationRelativeTo(null);
     dialogoEditar.setVisible(true);

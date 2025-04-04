@@ -1,3 +1,4 @@
+
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
@@ -10,58 +11,41 @@ package modelo;
  */
 public class Cliente {
     private int id_cliente;
-    private String identificacion;
-    private int numero;
     private String nombre;
     private String apellido;
+    private String identificacion;
+    private String numero;
     private String telefono;
     private String direccion;
 
    
-    
-      public Cliente() {
+        public Cliente() {
         this.id_cliente = 0;
-        this.identificacion = "";
-        this.numero = 0;
         this.nombre = "";
         this.apellido = "";
+        this.identificacion = "";
+        this.numero = "";
         this.telefono = "";
         this.direccion = "";
-        
-      }
 
-    public Cliente(int id_cliente, String identificacion, int numero, String nombre, String apellido, String telefono, String direccion) {
+    }
+
+    public Cliente(int id_cliente, String nombre, String apellido, String identificacion, String numero, String telefono, String direccion) {
         this.id_cliente = id_cliente;
-        this.identificacion = identificacion;
-        this.numero = numero;
         this.nombre = nombre;
         this.apellido = apellido;
+        this.identificacion = identificacion;
+        this.numero = numero;
         this.telefono = telefono;
         this.direccion = direccion;
     }
 
-    public int getid_cliente() {
+    public int getId_cliente() {
         return id_cliente;
     }
 
-    public void setid_cliente(int id_cliente) {
+    public void setId_cliente(int id_cliente) {
         this.id_cliente = id_cliente;
-    }
-
-    public String getIdentificacion() {
-        return identificacion;
-    }
-
-    public void setIdentificacion(String identificacion) {
-        this.identificacion = identificacion;
-    }
-
-    public int getNumero() {
-        return numero;
-    }
-
-    public void setNumero(int numero) {
-        this.numero = numero;
     }
 
     public String getNombre() {
@@ -80,6 +64,22 @@ public class Cliente {
         this.apellido = apellido;
     }
 
+    public String getIdentificacion() {
+        return identificacion;
+    }
+
+    public void setIdentificacion(String identificacion) {
+        this.identificacion = identificacion;
+    }
+
+    public String getNumero() {
+        return numero;
+    }
+
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
     public String getTelefono() {
         return telefono;
     }
@@ -96,8 +96,8 @@ public class Cliente {
         this.direccion = direccion;
     }
 
- 
-   
+  
+
     
    
     

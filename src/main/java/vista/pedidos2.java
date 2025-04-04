@@ -34,35 +34,16 @@ private void showAddDataDialog() {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
         rSButtonMaterialTwo1 = new RSMaterialComponent.RSButtonMaterialTwo();
         rSTextFieldMaterialIcon1 = new RSMaterialComponent.RSTextFieldMaterialIcon();
         rSButtonMaterialTwo2 = new RSMaterialComponent.RSButtonMaterialTwo();
         rSButtonMaterialTwo3 = new RSMaterialComponent.RSButtonMaterialTwo();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaclientes = new RSMaterialComponent.RSTableMetroCustom();
 
         jPanel1.setBackground(new java.awt.Color(29, 30, 51));
         jPanel1.setPreferredSize(new java.awt.Dimension(1290, 690));
-
-        Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"1", "43532", "silla", "4", "hoy", "pendiente "},
-                {"2", "67864", "mesa", "2", "mañana", "en produccion"},
-                {"3", "45683", "mueble ", "3", "pasado mañana", "pediente "},
-                {"4", "73867", "armario", "1", "ayer", "entregado"},
-                {"5", "67594", "cama", "1", "ya que ", "perdido"}
-            },
-            new String [] {
-                "#", "ID", "Producto", "Cantidad", "Fecha entrega ", "Estado"
-            }
-        ));
-        Tabla1.setBackgoundHead(new java.awt.Color(29, 30, 51));
-        Tabla1.setBackgoundHover(new java.awt.Color(29, 30, 51));
-        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
-        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
-        Tabla1.setSelectionBackground(new java.awt.Color(29, 30, 91));
-        jScrollPane2.setViewportView(Tabla1);
+        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         rSButtonMaterialTwo1.setBackground(new java.awt.Color(29, 30, 51));
         rSButtonMaterialTwo1.setText("Nuevo +");
@@ -72,6 +53,7 @@ private void showAddDataDialog() {
                 rSButtonMaterialTwo1ActionPerformed(evt);
             }
         });
+        jPanel1.add(rSButtonMaterialTwo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(479, 18, 86, 37));
 
         rSTextFieldMaterialIcon1.setForeground(new java.awt.Color(29, 30, 91));
         rSTextFieldMaterialIcon1.setColorIcon(new java.awt.Color(29, 30, 111));
@@ -83,6 +65,7 @@ private void showAddDataDialog() {
                 rSTextFieldMaterialIcon1ActionPerformed(evt);
             }
         });
+        jPanel1.add(rSTextFieldMaterialIcon1, new org.netbeans.lib.awtextra.AbsoluteConstraints(33, 27, -1, 28));
 
         rSButtonMaterialTwo2.setBackground(new java.awt.Color(29, 30, 51));
         rSButtonMaterialTwo2.setText("Editar *");
@@ -92,6 +75,7 @@ private void showAddDataDialog() {
                 rSButtonMaterialTwo2ActionPerformed(evt);
             }
         });
+        jPanel1.add(rSButtonMaterialTwo2, new org.netbeans.lib.awtextra.AbsoluteConstraints(289, 18, 86, 37));
 
         rSButtonMaterialTwo3.setBackground(new java.awt.Color(29, 30, 51));
         rSButtonMaterialTwo3.setText("Eliminar -");
@@ -101,40 +85,49 @@ private void showAddDataDialog() {
                 rSButtonMaterialTwo3ActionPerformed(evt);
             }
         });
+        jPanel1.add(rSButtonMaterialTwo3, new org.netbeans.lib.awtextra.AbsoluteConstraints(387, 18, 86, 37));
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addGap(33, 33, 33)
-                .addComponent(rSTextFieldMaterialIcon1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(rSButtonMaterialTwo2, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(rSButtonMaterialTwo3, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(rSButtonMaterialTwo1, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1673, 1673, 1673))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 1249, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1688, 1688, 1688))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(18, Short.MAX_VALUE)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(rSButtonMaterialTwo1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(rSButtonMaterialTwo2, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(rSButtonMaterialTwo3, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(rSTextFieldMaterialIcon1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(453, 453, 453))
-        );
+        tablaclientes.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo", "Nombre", "Apellido", "Tipo de documento", "Numero de docuemnto", "Telefono", "Direccion"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tablaclientes.setBackgoundHead(new java.awt.Color(46, 49, 82));
+        tablaclientes.setBackgoundHover(new java.awt.Color(67, 150, 209));
+        tablaclientes.setBorderHead(null);
+        tablaclientes.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        tablaclientes.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        tablaclientes.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        tablaclientes.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        tablaclientes.setColorSecondary(new java.awt.Color(255, 255, 255));
+        tablaclientes.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        tablaclientes.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        tablaclientes.setFontHead(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        tablaclientes.setFontRowHover(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
+        tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        tablaclientes.setSelectionBackground(new java.awt.Color(67, 150, 209));
+        jScrollPane2.setViewportView(tablaclientes);
+        tablaclientes.getColumnModel().getColumn(0).setPreferredWidth(10);
+
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 90, 1110, 420));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -165,12 +158,12 @@ private void showAddDataDialog() {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
     private RSMaterialComponent.RSButtonMaterialTwo rSButtonMaterialTwo1;
     private RSMaterialComponent.RSButtonMaterialTwo rSButtonMaterialTwo2;
     private RSMaterialComponent.RSButtonMaterialTwo rSButtonMaterialTwo3;
     private RSMaterialComponent.RSTextFieldMaterialIcon rSTextFieldMaterialIcon1;
+    private RSMaterialComponent.RSTableMetroCustom tablaclientes;
     // End of variables declaration//GEN-END:variables
 }

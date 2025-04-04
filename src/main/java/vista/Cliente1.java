@@ -14,18 +14,20 @@ import java.sql.Statement;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Conexion;
+import vista.crear_cliente;
+import vista.editar_cliente;
 
 /**
  *
  * @author ZenBook
  */
-public class Cliente extends javax.swing.JPanel {
+public class Cliente1 extends javax.swing.JPanel {
 
     private int id_cliente;
     /**
      * Creates new form movimientos
      */
-    public Cliente() {
+    public Cliente1() {
        initComponents();  
 this.cargartablacliente();
  
@@ -46,10 +48,10 @@ this.cargartablacliente();
         jPanel1 = new javax.swing.JPanel();
         txtBuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
         btnEliminar = new rojeru_san.RSButtonRiple();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        tablaclientes = new RSMaterialComponent.RSTableMetroCustom();
         btnNuevo = new rojeru_san.RSButtonRiple();
         btnEditar = new rojeru_san.RSButtonRiple();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tablaclientes = new RSMaterialComponent.RSTableMetroCustom();
 
         setPreferredSize(new java.awt.Dimension(1290, 770));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -81,19 +83,40 @@ this.cargartablacliente();
         });
         jPanel1.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 140, 110, 30));
 
+        btnNuevo.setBackground(new java.awt.Color(46, 49, 82));
+        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus (2).png"))); // NOI18N
+        btnNuevo.setText(" Nuevo");
+        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnNuevoActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 140, 100, 30));
+
+        btnEditar.setBackground(new java.awt.Color(46, 49, 82));
+        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pencil (1).png"))); // NOI18N
+        btnEditar.setText(" Editar");
+        btnEditar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEditarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 140, 100, 30));
+
         tablaclientes.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
             },
             new String [] {
-                "Codigo", "Tipo de documento", "Numero", "Nombre", "Apellido", "Telefono", "Direccion", "estado"
+                "Codigo", "Nombre", "Apellido", "Tipo de documento", "Numero", "Telefono", "Direccion"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Boolean.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false, true
+                false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -116,34 +139,12 @@ this.cargartablacliente();
         tablaclientes.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         tablaclientes.setFontHead(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         tablaclientes.setFontRowHover(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        tablaclientes.setPreferredScrollableViewportSize(new java.awt.Dimension(1000, 1000));
-        tablaclientes.setPreferredSize(new java.awt.Dimension(700, 50));
+        tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         tablaclientes.setSelectionBackground(new java.awt.Color(67, 150, 209));
         jScrollPane2.setViewportView(tablaclientes);
         tablaclientes.getColumnModel().getColumn(0).setPreferredWidth(10);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 200, 1050, 380));
-
-        btnNuevo.setBackground(new java.awt.Color(46, 49, 82));
-        btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus (2).png"))); // NOI18N
-        btnNuevo.setText(" Nuevo");
-        btnNuevo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnNuevoActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(730, 140, 100, 30));
-
-        btnEditar.setBackground(new java.awt.Color(46, 49, 82));
-        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pencil (1).png"))); // NOI18N
-        btnEditar.setText(" Editar");
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(850, 140, 100, 30));
+        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 1050, 420));
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1290, 730));
     }// </editor-fold>//GEN-END:initComponents
@@ -168,14 +169,14 @@ this.cargartablacliente();
 
           
           
-}           
+}          
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
- Crearcliente1 dialog = new Crearcliente1(new javax.swing.JFrame(), true);
+   crear_cliente dialog = new crear_cliente(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
-        
+   
         
    
    
@@ -185,23 +186,28 @@ this.cargartablacliente();
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int filaSeleccionada = tablaclientes.getSelectedRow(); if (filaSeleccionada == -1) { JOptionPane.showMessageDialog(null, "Seleccione un cliente para editar"); } else { int id_cliente = (int) tablaclientes.getValueAt(filaSeleccionada, 0);
+       int filaSeleccionada = tablaclientes.getSelectedRow();
+    
+    if (filaSeleccionada == -1) {
+        JOptionPane.showMessageDialog(null, "Seleccione un cliente para editar.");
+    } else {
+       
+        int idCliente = Integer.parseInt(tablaclientes.getValueAt(filaSeleccionada, 0).toString());
 
-if (filaSeleccionada == -1) {
-    JOptionPane.showMessageDialog(null, "Seleccione un cliente para editar.");
-} else {
-    int idCliente = Integer.parseInt(tablaclientes.getValueAt(filaSeleccionada, 0).toString()); 
-    EditarCliente editar = new EditarCliente(null, true, idCliente);
-    editar.setVisible(true);
+       
+        editar_cliente dialog = new editar_cliente(null, true, idCliente);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }
 
         
        
   
-}
 
 
 
- }
+
+ 
 
         
     }//GEN-LAST:event_btnEditarActionPerformed
@@ -216,21 +222,20 @@ if (filaSeleccionada == -1) {
     private RSMaterialComponent.RSTableMetroCustom tablaclientes;
     private RSMaterialComponent.RSTextFieldMaterialIcon txtBuscar;
     // End of variables declaration//GEN-END:variables
-public void cargartablacliente() {
+   public void cargartablacliente() {
     Connection con = Conexion.getConnection();
 
-    
     DefaultTableModel model = new DefaultTableModel() {
         @Override
         public boolean isCellEditable(int row, int column) {
-            return false; 
+            return false; // Hace que ninguna celda sea editable
         }
     };
 
     this.tablaclientes.setModel(model);
     this.jScrollPane2.setViewportView(this.tablaclientes);
     
-   
+    // Definir columnas
     model.addColumn("Codigo");
     model.addColumn("Tipo de documento");
     model.addColumn("Numero");
@@ -259,7 +264,6 @@ public void cargartablacliente() {
         JOptionPane.showMessageDialog(null, "Error al cargar la tabla: " + e.getMessage());
     }
 
-    
     tablaclientes.addMouseListener(new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {
@@ -271,9 +275,10 @@ public void cargartablacliente() {
             }
         }
     });
-   }
-
-
-
-
 }
+}
+
+
+
+
+
