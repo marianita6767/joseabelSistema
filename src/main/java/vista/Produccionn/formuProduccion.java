@@ -327,14 +327,14 @@ public class formuProduccion extends javax.swing.JDialog {
 
         try {
             con = Conexion.getConnection();
-            String sql = "SELECT cantidad, dimensiones FROM detalle_pedido WHERE iddetalle_pedido = ?";
+            String sql = "SELECT cantidad, dimension FROM detalle_pedido WHERE iddetalle_pedido = ?";
             ps = con.prepareStatement(sql);
             ps.setInt(1, idDetallePedido);
             rs = ps.executeQuery();
 
             if (rs.next()) {
                 txtcantidad.setText(String.valueOf(rs.getInt("cantidad")));
-                txtdimen.setText(rs.getString("dimensiones"));
+                txtdimen.setText(rs.getString("dimension"));
             }
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar detalles: " + e.getMessage(),
