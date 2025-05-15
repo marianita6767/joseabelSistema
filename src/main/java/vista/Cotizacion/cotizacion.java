@@ -201,7 +201,7 @@ public class cotizacion extends javax.swing.JPanel {
                 btnAñadirActionPerformed(evt);
             }
         });
-        add(btnAñadir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 510, 170, 70));
+        add(btnAñadir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 520, 170, 70));
 
         jButton_anadir_producto.setBackground(new java.awt.Color(46, 49, 82));
         jButton_anadir_producto.setBorder(javax.swing.BorderFactory.createCompoundBorder());

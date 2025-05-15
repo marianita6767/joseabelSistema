@@ -4,6 +4,7 @@
  */
 package vista.Caja;
 
+import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -167,15 +168,18 @@ public class EditIngresos extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de guardar los cambios?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-// Validación de campos
+       
+       Alertaa confirmDialog = new Alertaa(
+            (Frame) this.getParent(),
+            true,
+            "Confirmar",
+            "¿Desea guardar los datos?"
+    );
+    confirmDialog.setVisible(true);
+    
+     if (!confirmDialog.opcionConfirmada) {
+        return;
+    }
         if (txtPago.getDateFormatString()== null || txtDetalleEdit.getText()== null
                 || txtCantidadEdit.getText()== null|| comboCategoria.getSelectedItem()== null || comboCategoria.getSelectedIndex() == 0) {
 
