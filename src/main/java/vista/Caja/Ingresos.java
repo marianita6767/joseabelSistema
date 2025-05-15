@@ -28,11 +28,21 @@ public final class Ingresos extends javax.swing.JPanel {
     public Ingresos() {
         initComponents();
         
-        Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
-                new Object[][]{},
-                new String[]{"Id Registro","Fecha Pago", "Detalle","Categoria",  "Cantidad ingresada" }
-        ));
+        // Configuración inicial de la tabla
+    Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+    
+    // Creación del modelo de tabla
+    DefaultTableModel model = new javax.swing.table.DefaultTableModel(
+            new Object[][]{},
+            new String[]{"Id Registro", "Fecha Pago", "Detalle", "Categoria", "Cantidad ingresada"}
+    ) {
+        @Override 
+        public boolean isCellEditable(int row, int column) {
+            return false;
+        }
+    };
+    
+        Tabla1.setModel(model);
 
         Tabla1.setCellSelectionEnabled(false);
         Tabla1.setRowSelectionAllowed(true);
@@ -224,6 +234,7 @@ public final class Ingresos extends javax.swing.JPanel {
         TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(modelo);
         Tabla1.setRowSorter(tr);
             List<RowFilter<Object, Object>> filters = new ArrayList<>();
+            
 
         if (textoBusqueda.isEmpty()) {
             tr.setRowFilter(null);
@@ -236,6 +247,7 @@ public final class Ingresos extends javax.swing.JPanel {
             filters.add(RowFilter.regexFilter(textoBusqueda, 1));
             filters.add(RowFilter.regexFilter(textoBusqueda, 4));
 
+            
         }  // Si contiene letras (aunque sea parcial)
         else {
         // Buscar en Detalle (columna 2) y Categoría (columna 3)

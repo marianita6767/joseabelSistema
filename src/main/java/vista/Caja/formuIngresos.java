@@ -159,7 +159,9 @@ public class formuIngresos extends javax.swing.JDialog {
             "Confirmar",
             "¿Desea guardar los datos?"
     );
+    this.dispose();
     confirmDialog.setVisible(true);
+    
 
     if (confirmDialog.opcionConfirmada()) {
         try {
@@ -334,7 +336,12 @@ public class formuIngresos extends javax.swing.JDialog {
     }
 
     private void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
+       Alertaa confirmDialog = new Alertaa(
+            (Frame) this.getParent(),
+            true,
+            "Confirmar",
+            "¿Desea guardar los datos?"
+    );
+    confirmDialog.setVisible(true);
     }
 }
