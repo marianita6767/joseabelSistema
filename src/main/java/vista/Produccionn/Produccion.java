@@ -493,7 +493,7 @@ public final class Produccion extends javax.swing.JPanel {
 
         try (Connection con = new Conexion().getConnection()) {
             String sql = "SELECT p.id_produccion, dp.descripcion, p.fecha_inicio, "
-                    + "p.fecha_fin, p.estado, dp.cantidad, dp.dimensiones "
+                    + "p.fecha_fin, p.estado, dp.cantidad, dp.dimension "
                     + "FROM produccion p "
                     + "JOIN detalle_pedido dp ON p.detalle_pedido_iddetalle_pedido = dp.iddetalle_pedido "
                     + "ORDER BY p.id_produccion ASC";
@@ -511,7 +511,7 @@ public final class Produccion extends javax.swing.JPanel {
                         rs.getString("estado"),
                         "Ver",
                         rs.getInt("cantidad"),
-                        rs.getString("dimensiones")
+                        rs.getString("dimension")
                     });
                 }
             }

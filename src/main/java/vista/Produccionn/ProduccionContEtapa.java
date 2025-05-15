@@ -31,12 +31,15 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
 
     private final int idProduccion;
 
+    
+    
     /**
      * Creates new form ProduccionContDetalle
      *
      * @param idProduccion
      */
     public ProduccionContEtapa(int idProduccion) {
+        System.out.println("ID recibido en constructor: " + idProduccion); 
         this.idProduccion = idProduccion;
         initComponents();
         cargarEtapasProduccion();
@@ -44,22 +47,20 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Nombre", "Cantidad","Fecha inicio", "Fecha final", "Estado", "Materiales", "Asignado"}
+                new String[]{"Nombre","Fecha inicio", "Fecha final", "Estado", "Materiales", "Asignado"}
         ));
 
         Tabla1.setCellSelectionEnabled(false);
         Tabla1.setRowSelectionAllowed(true);
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        Tabla1.setCellSelectionEnabled(false);
-        Tabla1.setRowSelectionAllowed(true);
-        Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        
 
         Color colorSeleccion = new Color(109, 160, 221);
         Color colorTexto = Color.white;
 
         Tabla1.setSelectionBackground(colorSeleccion);
         Tabla1.setSelectionForeground(colorTexto);
-
+        
         Tabla1.getColumnModel().getColumn(3).setCellRenderer(new EstadoTableCellRenderer());
 
         cargarTablaEtapa();    // Carga Tabla1
@@ -92,10 +93,10 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                     case "pendiente":
                         c.setBackground(new Color(255, 204, 204));
                         break;
-                    case "proceso":
+                    case "en proceso":
                         c.setBackground(new Color(255, 255, 153));
                         break;
-                    case "finalizado":
+                    case "completado":
                         c.setBackground(new Color(204, 255, 204));
                         break;
                     default:
@@ -114,7 +115,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
             String sql = "SELECT ep.idetapa_produccion, ep.nombre_etapa, dp.cantidad, ep.fecha_inicio, "
                     + "ep.fecha_fin,  ep.estado, dp.produccion_codigo "
                     + "FROM etapa_produccion ep "
-                    + "JOIN detalle_pedido dp ON ep.produccion_codigo = dp.iddetalle_pedido "
+                    + "JOIN detalle_pedido dp ON ep.produccion_id_produccion = dp.iddetalle_pedido "
                     + "ORDER BY p.idestado_produccion ASC";
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -274,7 +275,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
+        formuEtapaProduccion dialog = new formuEtapaProduccion(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaEtapa();
@@ -368,44 +369,40 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     // End of variables declaration//GEN-END:variables
 
     public void cargarTablaEtapa() {
-        try (Connection con = Conexion.getConnection()) {
-            String sql = "SELECT ep.idetapa_produccion, ep.nombre_etapa, "
-                    + "ep.fecha_inicio, ep.fecha_fin, ep.estado, "
-                    + "COALESCE((SELECT GROUP_CONCAT(u.nombre SEPARATOR ', ') "
-                    + "FROM asignada a "
-                    + "JOIN usuario u ON a.usuario_id_usuario = u.id_usuario "
-                    + "WHERE a.etapa_produccion_idetapa_produccion = ep.idetapa_produccion), 'Sin asignar') AS responsable "
-                    + "FROM etapa_produccion ep "
-                    + "WHERE ep.produccion_codigo = ? "
-                    + "ORDER BY ep.fecha_inicio";
+    try (Connection con = Conexion.getConnection()) {
+        String sql = "SELECT ep.idetapa_produccion, ep.nombre_etapa, " +
+                     "ep.fecha_inicio, ep.fecha_fin, ep.estado " +
+                     "FROM etapa_produccion ep " +
+                     "WHERE ep.produccion_id_produccion = ? " +
+                     "ORDER BY ep.idetapa_produccion ASC";
 
-            try (PreparedStatement ps = con.prepareStatement(sql)) {
-                ps.setInt(1, this.idProduccion);
-                try (ResultSet rs = ps.executeQuery()) {
-                    DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-                    model.setRowCount(0);
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, this.idProduccion);
+            try (ResultSet rs = ps.executeQuery()) {
+                DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+                model.setRowCount(0); // Limpiar tabla antes de cargar nuevos datos
 
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                    while (rs.next()) {
-                        model.addRow(new Object[]{
-                            rs.getString("nombre_etapa"),
-                            sdf.format(rs.getDate("fecha_inicio")),
-                            sdf.format(rs.getDate("fecha_fin")),
-                            rs.getString("estado"),
-                            "", // Columna de materiales
-                            rs.getString("responsable") // Nombre(s) del responsable
-                        });
-                    }
+                while (rs.next()) {
+                    model.addRow(new Object[]{
+                        rs.getString("nombre_etapa"),
+                        sdf.format(rs.getDate("fecha_inicio")),
+                        sdf.format(rs.getDate("fecha_fin")),
+                        rs.getString("estado"),
+                        "Materiales", // Placeholder - ajustar según necesidad
+                        "Asignado"    // Placeholder - ajustar según necesidad
+                    });
                 }
             }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al cargar etapas de producción: " + e.getMessage(),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
         }
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al cargar etapas de producción: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+}
 
     private void filtrarTabla() {
         String textoBusqueda = txtbuscar.getText().trim();

@@ -18,11 +18,11 @@ import modelo.Conexion;
  */
 public class DetallePedido extends javax.swing.JPanel {
 
-    private final int idProduccion;
+    private int idProduccion;
 public DetallePedido(int idProduccion) {
     this.idProduccion = idProduccion;
     initComponents();
-    cargarDatosPedido(); // Método que carga los datos desde la BD
+    cargarDatosPedido();
 }
     /**
      * Creates new form DetallePedido
@@ -43,11 +43,11 @@ public DetallePedido(int idProduccion) {
 }
 
     private void cargarDatosPedido() {
-        limpiarCampos(); // Limpia antes de cargar nuevos datos
+        
 
         try (Connection con = new Conexion().getConnection()) {
             String sql = "SELECT p.fecha_inicio, p.fecha_fin, p.estado, "
-                    + "dp.cantidad, dp.dimensiones, dp.descripcion "
+                    + "dp.cantidad, dp.dimension, dp.descripcion "
                     + "FROM produccion p "
                     + "JOIN detalle_pedido dp ON p.detalle_pedido_iddetalle_pedido = dp.iddetalle_pedido "
                     + "JOIN pedido pe ON dp.pedido_id_pedido = pe.id_pedido "
@@ -66,7 +66,7 @@ public DetallePedido(int idProduccion) {
                         estado.setText(rs.getString("estado") != null ? rs.getString("estado") : "Sin estado");
                         cantidad.setText(rs.getString("cantidad") != null ? rs.getString("cantidad") : "0");
                         cantidad1.setText(cantidad.getText()); // Usamos el mismo valor
-                        dimensiones.setText(rs.getString("dimensiones") != null ? rs.getString("dimensiones") : "No especificadas");
+                        dimensiones.setText(rs.getString("dimension") != null ? rs.getString("dimension") : "No especificadas");
                     } else {
                         // Si no hay datos, muestra un mensaje en un campo
                         nombre.setText("No se encontraron datos para el pedido ID: " + idProduccion);

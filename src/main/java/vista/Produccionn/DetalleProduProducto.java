@@ -5,7 +5,6 @@
 package vista.Produccionn;
 
 import java.awt.event.ActionListener;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 /**
@@ -14,7 +13,7 @@ import javax.swing.JPanel;
  */
 public class DetalleProduProducto extends javax.swing.JPanel {
 
-    private int idProduccion;
+    private final int idProduccion;
     
 
     /**
@@ -154,8 +153,10 @@ public class DetalleProduProducto extends javax.swing.JPanel {
     }//GEN-LAST:event_btnvolverActionPerformed
 
     private void btnEtapaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEtapaActionPerformed
-        ProduccionContEtapa es = new ProduccionContEtapa(this.idProduccion);
-        mostrarPanelSecundario(es);
+        ProduccionContEtapa etapa = new ProduccionContEtapa(
+                this.idProduccion
+        );
+        mostrarPanelSecundario(etapa);
     }//GEN-LAST:event_btnEtapaActionPerformed
 
     private void btndetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndetalleActionPerformed
@@ -184,10 +185,8 @@ public class DetalleProduProducto extends javax.swing.JPanel {
         jPanel1.repaint();
     }
 
-    private ActionListener volverListener;
 
     public void setVolverListener(ActionListener listener) {
-        this.volverListener = listener;
     }
 
 
