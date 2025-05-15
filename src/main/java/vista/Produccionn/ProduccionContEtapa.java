@@ -275,7 +275,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        formuEtapaProduccion dialog = new formuEtapaProduccion(new javax.swing.JFrame(), true);
+        formuProduccion dialog = new formuProduccion(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaEtapa();
