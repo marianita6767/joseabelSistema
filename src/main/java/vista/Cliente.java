@@ -32,7 +32,27 @@ public class Cliente extends javax.swing.JPanel {
     public Cliente() {
         controlador = new Ctrl_Cliente();
         initComponents();
+        
+
+        DefaultTableModel modelo = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Codigo", "Identificacion", "Numero", "Nombre", "Apellido", "Telefono", "Direccion"} // Usa tus nombres de columnas reales
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Hace que todas las celdas sean no editables
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return String.class; // Ajusta el tipo si usas tipos distintos (Double, Date, etc.)
+            }
+        };
+        tablaclientes.setModel(modelo);
+
+        
         cargartablacliente();
+
     }
 
     /**
@@ -152,10 +172,11 @@ public class Cliente extends javax.swing.JPanel {
         tablaclientes.setColorPrimaryText(new java.awt.Color(0, 0, 0));
         tablaclientes.setColorSecondary(new java.awt.Color(255, 255, 255));
         tablaclientes.setColorSecundaryText(new java.awt.Color(0, 0, 0));
-        tablaclientes.setFont(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        tablaclientes.setFontHead(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        tablaclientes.setFontRowHover(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
-        tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
+        tablaclientes.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tablaclientes.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tablaclientes.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        tablaclientes.setRowHeight(23);
         tablaclientes.setSelectionBackground(new java.awt.Color(67, 150, 209));
         tablaclientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -210,9 +231,9 @@ public class Cliente extends javax.swing.JPanel {
         Ctrl_Cliente controlCliente = new Ctrl_Cliente();
 
         int confirmacion = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de que desea eliminar el cliente con código " + idCliente + "?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION);
+                "¿Está seguro de que desea eliminar el cliente con código " + idCliente + "?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
 
         if (confirmacion == JOptionPane.YES_OPTION) {
             if (controlCliente.eliminar(idCliente)) {
@@ -280,6 +301,5 @@ public class Cliente extends javax.swing.JPanel {
             }
         });
     }
-    
 
 }

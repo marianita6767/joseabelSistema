@@ -6,6 +6,7 @@ package vista.Ventas;
 
 import controlador.Ctrl_Cliente;
 import controlador.Ctrl_Pedido;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -15,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import modelo.Cliente;
 import modelo.Pedido;
+import modelo.PedidoDetalle;
 
 /**
  *
@@ -23,6 +25,7 @@ import modelo.Pedido;
 public class pedidoNuevo extends javax.swing.JDialog {
 
     private List<Cliente> clientes;
+    private List<PedidoDetalle> detalles = new ArrayList<>(); // Lista para almacenar los detalles
     public boolean clienteGuardado = false;
     public Cliente cliente;
     private pedido parent; // Referencia a la clase pedido
@@ -149,9 +152,10 @@ public class pedidoNuevo extends javax.swing.JDialog {
         tablaDetalles = new RSMaterialComponent.RSTableMetroCustom();
         jSeparator1 = new javax.swing.JSeparator();
         jLabel11 = new javax.swing.JLabel();
-        btnAñadir = new RSMaterialComponent.RSButtonShape();
+        btnClienteN = new RSMaterialComponent.RSButtonShape();
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
+        btnAñadir = new RSMaterialComponent.RSButtonShape();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -190,7 +194,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
                 cmbClienteActionPerformed(evt);
             }
         });
-        panelP.add(cmbCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 80, -1, 30));
+        panelP.add(cmbCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 80, 170, 30));
 
         cmbEstado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione el estado:", "Pendiente", "Proceso", "Finalizado" }));
         cmbEstado.setColorMaterial(new java.awt.Color(0, 0, 0));
@@ -234,7 +238,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
 
         dateFfin.setBackground(new java.awt.Color(255, 255, 255));
         dateFfin.setToolTipText("");
-        panelP.add(dateFfin, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 160, 190, 30));
+        panelP.add(dateFfin, new org.netbeans.lib.awtextra.AbsoluteConstraints(300, 160, 200, 30));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel9.setText("Cliente:");
@@ -255,7 +259,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
 
         tablaDetalles.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, ""}
+                {null,  new Integer(0), null, "0.0", "0.0", "Eliminar"}
             },
             new String [] {
                 "Descripcion", "Cantidad", "Dimesiones", "Precio unitario", "Subtotal", "Accion"
@@ -305,6 +309,28 @@ public class pedidoNuevo extends javax.swing.JDialog {
         jLabel11.setText("Fecha inicio:");
         panelP.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, -1));
 
+        btnClienteN.setBackground(new java.awt.Color(46, 49, 82));
+        btnClienteN.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        btnClienteN.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus (2).png"))); // NOI18N
+        btnClienteN.setBackgroundHover(new java.awt.Color(67, 150, 209));
+        btnClienteN.setFont(new java.awt.Font("Roboto Bold", 1, 15)); // NOI18N
+        btnClienteN.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnClienteN.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnClienteN.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClienteNActionPerformed(evt);
+            }
+        });
+        panelP.add(btnClienteN, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 80, 25, 25));
+
+        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
+        jLabel12.setText("Detalle del pedido: ");
+        panelP.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel13.setText("Total del pedido:");
+        panelP.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 560, -1, -1));
+
         btnAñadir.setBackground(new java.awt.Color(46, 49, 82));
         btnAñadir.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         btnAñadir.setText(" Añadir");
@@ -318,14 +344,6 @@ public class pedidoNuevo extends javax.swing.JDialog {
             }
         });
         panelP.add(btnAñadir, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 250, 110, 30));
-
-        jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 17)); // NOI18N
-        jLabel12.setText("Detalle del pedido: ");
-        panelP.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 230, -1, -1));
-
-        jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel13.setText("Total del pedido:");
-        panelP.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 560, -1, -1));
 
         getContentPane().add(panelP, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 850, 670));
 
@@ -341,16 +359,17 @@ public class pedidoNuevo extends javax.swing.JDialog {
     }//GEN-LAST:event_cmbEstadoActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-
+        dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
         String nombre = txtNombre.getText().trim();
         String estado = (String) cmbEstado.getSelectedItem();
-        String clienteNombreCompleto = (String) cmbCliente.getSelectedItem(); // Ahora es "Nombre Apellido"
+        String clienteNombreCompleto = (String) cmbCliente.getSelectedItem();
         Date fechaInicio = dateFinicio.getDate();
         Date fechaFin = dateFfin.getDate();
 
+        // Validaciones
         if (nombre.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre del pedido.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -376,37 +395,107 @@ public class pedidoNuevo extends javax.swing.JDialog {
             return;
         }
 
-        int idCliente = -1;
+        // Validar que haya al menos un detalle válido
+        DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
+        detalles.clear(); // Limpiar la lista antes de llenarla
+
+        for (int i = 0; i < model.getRowCount(); i++) {
+            String descripcion = (model.getValueAt(i, 0) != null) ? model.getValueAt(i, 0).toString().trim() : "";
+            String cantidadStr = (model.getValueAt(i, 1) != null) ? model.getValueAt(i, 1).toString().trim() : "0";
+            String dimensiones = (model.getValueAt(i, 2) != null) ? model.getValueAt(i, 2).toString().trim() : "";
+            String precioUnitarioStr = (model.getValueAt(i, 3) != null) ? model.getValueAt(i, 3).toString().trim() : "0.0";
+            String subtotalStr = (model.getValueAt(i, 4) != null) ? model.getValueAt(i, 4).toString().trim() : "0.0";
+
+            if (descripcion.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "La descripción en la fila " + (i + 1) + " no puede estar vacía.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validar cantidad
+            int cantidad;
+            try {
+                cantidad = Integer.parseInt(cantidadStr);
+                if (cantidad <= 0) {
+                    JOptionPane.showMessageDialog(this, "La cantidad en la fila " + (i + 1) + " debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Cantidad inválida en la fila " + (i + 1) + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validar precio unitario
+            double precioUnitario;
+            try {
+                precioUnitario = Double.parseDouble(precioUnitarioStr);
+                if (precioUnitario <= 0) {
+                    JOptionPane.showMessageDialog(this, "El precio unitario en la fila " + (i + 1) + " debe ser mayor a 0.", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Precio unitario inválido en la fila " + (i + 1) + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Validar subtotal
+            double subtotal;
+            try {
+                subtotal = Double.parseDouble(subtotalStr);
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Subtotal inválido en la fila " + (i + 1) + ".", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Crear DetallePedido
+            PedidoDetalle detalle = new PedidoDetalle();
+            detalle.setDescripcion(descripcion);
+            detalle.setCantidad(cantidad); // Convertir a String porque el modelo lo define como VARCHAR
+            detalle.setDimensiones(dimensiones); // Usamos "dimensiones" como "medida"
+            detalle.setPrecioUnitario(precioUnitario);
+            detalle.setSubtotal(subtotal);
+            detalle.setTotal(subtotal); // Total igual al subtotal por ahora
+            detalle.setPedidoIdPedido(0); // Se asignará después de insertar el pedido
+
+            detalles.add(detalle);
+        }
+
+        if (detalles.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Debe agregar al menos un detalle al pedido.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Obtener cliente_codigo
+        int clienteCodigo = -1;
         for (Cliente cli : clientes) {
             String nombreCompleto = cli.getNombre() + " " + cli.getApellido();
             if (nombreCompleto.equals(clienteNombreCompleto)) {
-                idCliente = cli.getid_cliente();
+                clienteCodigo = cli.getid_cliente(); // Asegúrate de que Cliente tenga getCodigo()
                 break;
             }
         }
 
-        if (idCliente == -1) {
+        if (clienteCodigo == -1) {
             JOptionPane.showMessageDialog(this, "Error: No se encontró el cliente seleccionado.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        // Obtener usuario_id_usuario (ajusta según tu lógica de autenticación)
+        int usuarioIdUsuario = 1; // Ejemplo, reemplaza con el ID del usuario logueado
+
         // Crear el objeto Pedido
-        // Nota: Asumimos valores por defecto para preciototal, factura_id_factura y usuario_id_usuario
-        // Puedes agregar campos en el formulario para estos valores si son necesarios
         Pedido nuevoPedido = new Pedido(
-                0, // id_pedido (se genera automáticamente en la BD)
-                nombre,
-                estado,
-                fechaInicio,
-                fechaFin,
-                idCliente
+            0, // id_pedido (se genera automáticamente)
+            nombre,
+            estado,
+            fechaInicio,
+            fechaFin,
+            clienteCodigo
         );
 
-        int nuevoIdPedido = controlador.insertar(nuevoPedido);
+        // Insertar pedido y detalles
+        int nuevoIdPedido = controlador.insertar(nuevoPedido, detalles);
         if (nuevoIdPedido > 0) {
-            // Recargar la tabla desde la base de datos
             parent.cargarDatosIniciales();
-
             JOptionPane.showMessageDialog(this, "Pedido guardado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
             dispose();
         } else {
@@ -425,9 +514,9 @@ public class pedidoNuevo extends javax.swing.JDialog {
         if (row < tablaDetalles.getRowCount() && row >= 0 && column == 5) { // Si se hace clic en la columna "Eliminar"
             DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
             int confirm = JOptionPane.showConfirmDialog(this,
-                    "¿Está seguro de que desea eliminar esta fila?",
-                    "Confirmar eliminación",
-                    JOptionPane.YES_NO_OPTION);
+                "¿Está seguro de que desea eliminar esta fila?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
 
             if (confirm == JOptionPane.YES_OPTION) {
                 model.removeRow(row);
@@ -435,6 +524,10 @@ public class pedidoNuevo extends javax.swing.JDialog {
             }
         }
     }//GEN-LAST:event_tablaDetallesMouseClicked
+
+    private void btnClienteNActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteNActionPerformed
+
+    }//GEN-LAST:event_btnClienteNActionPerformed
 
     private void btnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadirActionPerformed
         DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
@@ -493,6 +586,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSButtonShape btnAñadir;
     private rojeru_san.RSButtonRiple btnCancelar;
+    private RSMaterialComponent.RSButtonShape btnClienteN;
     private rojeru_san.RSButtonRiple btnGuardar;
     private RSMaterialComponent.RSComboBoxMaterial cmbCliente;
     private RSMaterialComponent.RSComboBoxMaterial cmbEstado;

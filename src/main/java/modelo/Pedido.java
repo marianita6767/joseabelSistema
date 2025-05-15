@@ -18,13 +18,9 @@ public class Pedido {
     private Date fecha_fin;
     private int idCliente;
 
-    public Pedido(String nombre, String estado, Date fecha_inicio, Date fecha_fin, int idCliente) {
-        this.nombre = nombre;
-        this.estado = estado;
-        this.fecha_inicio = fecha_inicio;
-        this.fecha_fin = fecha_fin;
-        this.idCliente = idCliente;
+    public Pedido() {
     }
+
 
     public Pedido(int id_pedido, String nombre, String estado, Date fecha_inicio, Date fecha_fin, int idCliente) {
         this.id_pedido = id_pedido;
@@ -82,7 +78,6 @@ public class Pedido {
     public void setIdCliente(int idCliente) {
         this.idCliente = idCliente;
     }
-
-
     
 }
+

@@ -12,7 +12,7 @@ public class PedidoDetalle {
     private int idDetallePedido;
     private String descripcion;
     private int cantidad; 
-    private String medida;
+    private String dimensiones;
     private double precioUnitario;
     private double subtotal;
     private double total;
@@ -22,11 +22,11 @@ public class PedidoDetalle {
     public PedidoDetalle() {
     }
 
-    public PedidoDetalle(int idDetallePedido, String descripcion, int cantidad, String medida, double precioUnitario, double subtotal, double total, int pedidoIdPedido) {
+    public PedidoDetalle(int idDetallePedido, String descripcion, int cantidad, String dimensiones, double precioUnitario, double subtotal, double total, int pedidoIdPedido) {
         this.idDetallePedido = idDetallePedido;
         this.descripcion = descripcion;
         this.cantidad = cantidad;
-        this.medida = medida;
+        this.dimensiones = dimensiones;
         this.precioUnitario = precioUnitario;
         this.subtotal = subtotal;
         this.total = total;
@@ -57,12 +57,12 @@ public class PedidoDetalle {
         this.cantidad = cantidad;
     }
 
-    public String getMedida() {
-        return medida;
+    public String getDimensiones() {
+        return dimensiones;
     }
 
-    public void setMedida(String medida) {
-        this.medida = medida;
+    public void setDimensiones(String dimensiones) {
+        this.dimensiones = dimensiones;
     }
 
     public double getPrecioUnitario() {
@@ -96,7 +96,16 @@ public class PedidoDetalle {
     public void setPedidoIdPedido(int pedidoIdPedido) {
         this.pedidoIdPedido = pedidoIdPedido;
     }
-    
+
+
+    public void setCantidad(String cantidadStr) {
+        try {
+            this.cantidad = Integer.parseInt(cantidadStr.trim());
+        } catch (NumberFormatException e) {
+            this.cantidad = 0; // Valor por defecto en caso de error
+            System.err.println("Error al convertir cantidad: " + e.getMessage());
+        }
+    }
     
 }
 
