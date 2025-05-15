@@ -324,7 +324,7 @@ public class EditProduccion extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException | IllegalAccessException | InstantiationException | UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formuProduccion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(FormuEtapaProduccion.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
         /* Create and display the dialog */
@@ -332,7 +332,7 @@ public class EditProduccion extends javax.swing.JDialog {
             private Produccion produccionPanel;
             @Override
             public void run() {
-                formuProduccion dialog = new formuProduccion(new javax.swing.JFrame(), true);
+                FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
