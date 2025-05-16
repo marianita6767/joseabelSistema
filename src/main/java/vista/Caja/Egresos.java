@@ -26,22 +26,12 @@ public final class Egresos extends javax.swing.JPanel {
     public Egresos() {
         initComponents();
         
-        
-        Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{"Id Registro", "Fecha Pago", "Detalle", "Categoria",  "Cantidad ingresada"}
         ));
 
-        Tabla1.setCellSelectionEnabled(false);
-        Tabla1.setRowSelectionAllowed(true);
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
-        Color colorSeleccion = new Color(109, 160, 221);
-        Color colorTexto = Color.white;
-
-        Tabla1.setSelectionBackground(colorSeleccion);
-        Tabla1.setSelectionForeground(colorTexto);
 
         cargarTablaEgresos();
     }
@@ -76,9 +66,9 @@ public final class Egresos extends javax.swing.JPanel {
         btnNuevoProduc = new rojeru_san.RSButtonRiple();
         btnGuardar = new rojeru_san.RSButtonRiple();
         btnEliminar = new rojeru_san.RSButtonRiple();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Tabla1 = new RSMaterialComponent.RSTableMetro();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -128,24 +118,58 @@ public final class Egresos extends javax.swing.JPanel {
         });
         jPanel3.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 120, 40));
 
-        jScrollPane2.setBackground(new java.awt.Color(255, 255, 255));
-
-        Tabla1.setForeground(new java.awt.Color(255, 255, 255));
-        Tabla1.setAlignmentX(0.1F);
-        Tabla1.setAlignmentY(0.1F);
-        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        Tabla1.setBackgoundHover(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorBorderRows(new java.awt.Color(153, 153, 153));
-        Tabla1.setColorPrimaryText(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
-        Tabla1.setColorSecundaryText(new java.awt.Color(46, 49, 82));
-        jScrollPane2.setViewportView(Tabla1);
-
-        jPanel3.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 90, 1160, 490));
-
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 25)); // NOI18N
         jLabel1.setText("Egresos");
         jPanel3.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 20, -1, -1));
+
+        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Id Registro", "Fecha Pago", "Detalle", "Categoria", "Cantidad ingresada"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        Tabla1.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setRowHeight(23);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
+        Tabla1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Tabla1MouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(Tabla1);
+        Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
+
+        jPanel3.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 100, 1130, 500));
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -157,7 +181,7 @@ public final class Egresos extends javax.swing.JPanel {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 673, Short.MAX_VALUE)
+            .addGap(0, 680, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 673, Short.MAX_VALUE))
         );
@@ -241,6 +265,10 @@ filtrarTabla();
             JOptionPane.INFORMATION_MESSAGE
         );
     }//GEN-LAST:event_btnEliminarActionPerformed
+
+    private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
+
+    }//GEN-LAST:event_Tabla1MouseClicked
  private void filtrarTabla() {
         String textoBusqueda = txtbuscar.getText().trim();
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
@@ -273,14 +301,14 @@ filtrarTabla();
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSTableMetro Tabla1;
+    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private rojeru_san.RSButtonRiple btnEliminar;
     private rojeru_san.RSButtonRiple btnGuardar;
     private rojeru_san.RSButtonRiple btnNuevoProduc;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 

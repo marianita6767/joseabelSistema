@@ -305,7 +305,7 @@
               <Color blue="52" green="31" red="2e" type="rgb"/>
             </Property>
             <Property name="backgoundHover" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="d1" green="96" red="43" type="rgb"/>
+              <Color blue="dd" green="a0" red="6d" type="rgb"/>
             </Property>
             <Property name="borderHead" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
               <Border info="null"/>
@@ -345,7 +345,7 @@
               <Font name="Tahoma" size="13" style="1"/>
             </Property>
             <Property name="selectionBackground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-              <Color blue="d1" green="96" red="43" type="rgb"/>
+              <Color blue="dd" green="a0" red="6d" type="rgb"/>
             </Property>
             <Property name="tableHeader" type="javax.swing.table.JTableHeader" editor="org.netbeans.modules.form.editors2.JTableHeaderEditor">
               <TableHeader reorderingAllowed="true" resizingAllowed="true"/>
