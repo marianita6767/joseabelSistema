@@ -1,86 +1,109 @@
 package vista.catalogo;
 
 import javax.swing.JFrame;
-
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import modelo.Catalogocategoria;
+import modelo.producto;
 import javax.swing.JScrollPane;
 import java.awt.FlowLayout;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.ActionListener;
 
 public class catalogo extends javax.swing.JPanel {
 
     private List<Catalogocategoria> categorias = new ArrayList<>();
+    private List<producto> productos = new ArrayList<>();
+    private JScrollPane scrollPane;
+    private javax.swing.JPanel panelPrincipal;
 
     public catalogo(JFrame jFrame, boolean par) {
         initComponents();
+       // initCustomComponents();
+    }
+/*
+    private void initCustomComponents() {
         panelPrincipal = new javax.swing.JPanel();
         panelPrincipal.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 20, 20));
         panelPrincipal.setBackground(new java.awt.Color(242, 242, 242));
 
-        // Crea el JScrollPane que contendrá al panelPrincipal
         scrollPane = new JScrollPane(panelPrincipal);
         scrollPane.setViewportView(panelPrincipal);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
-        // Reemplaza la línea donde añades panelPrincipal a jPanel2
         jPanel2.add(scrollPane, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 110, 1030, 590));
-
     }
 
-    public void agregarCategoria(Catalogocategoria categoria) { // Cambiado el parámetro
+    public void agregarCategoria(Catalogocategoria categoria) {
         categorias.add(categoria);
         actualizarPanelCategorias();
-
     }
 
-void actualizarPanelCategorias() {
-    // Limpiar el panel principal solo una vez al inicio
-    panelPrincipal.removeAll();
-    
-    // Configurar layout principal (vertical para las filas)
-    panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
-    panelPrincipal.setBackground(new Color(242, 242, 242));
+    public void agregarProducto(producto producto) {
+        if (producto != null) {
+            productos.add(producto);
+        }
+    }
 
-    Color colorTarjeta = new Color(242, 242, 242);
-    int tarjetasPorFila = 4;
-    JPanel filaActual = null;
+    void actualizarPanelCategorias() {
+        panelPrincipal.removeAll();
+        panelPrincipal.setLayout(new BoxLayout(panelPrincipal, BoxLayout.Y_AXIS));
+        panelPrincipal.setBackground(new Color(242, 242, 242));
 
-    for (int i = 0; i < categorias.size(); i++) {
-        Catalogocategoria cat = categorias.get(i);
-        
-        // Crear nueva fila cada 4 tarjetas o al inicio
-        if (i % tarjetasPorFila == 0) {
-            filaActual = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
-            filaActual.setBackground(new Color(242, 242, 242));
-            filaActual.setAlignmentX(Component.LEFT_ALIGNMENT);
-            panelPrincipal.add(filaActual);
+        Color colorTarjeta = new Color(242, 242, 242);
+        int tarjetasPorFila = 4;
+        JPanel filaActual = null;
+
+        for (int i = 0; i < categorias.size(); i++) {
+            Catalogocategoria cat = categorias.get(i);
+            
+            if (i % tarjetasPorFila == 0) {
+                filaActual = new JPanel(new FlowLayout(FlowLayout.LEFT, 20, 20));
+                filaActual.setBackground(new Color(242, 242, 242));
+                filaActual.setAlignmentX(Component.LEFT_ALIGNMENT);
+                panelPrincipal.add(filaActual);
+            }
+
+            JPanel panelCategoria = crearPanelCategoria(cat);
+            if (filaActual != null) {
+                filaActual.add(panelCategoria);
+            }
         }
 
-        // Crear la tarjeta individual
+        if (filaActual != null && filaActual.getComponentCount() > 0 && 
+            filaActual.getComponentCount() < tarjetasPorFila) {
+            int faltantes = tarjetasPorFila - filaActual.getComponentCount();
+            for (int i = 0; i < faltantes; i++) {
+                JPanel panelVacio = new JPanel();
+                panelVacio.setPreferredSize(new Dimension(200, 240));
+                panelVacio.setOpaque(false);
+                filaActual.add(panelVacio);
+            }
+        }
+
+        panelPrincipal.revalidate();
+        panelPrincipal.repaint();
+        scrollPane.getVerticalScrollBar().setValue(0);
+    }
+/*
+    private JPanel crearPanelCategoria(Catalogocategoria cat) {
         JPanel panelCategoria = new JPanel();
         panelCategoria.setLayout(new BorderLayout());
         panelCategoria.setPreferredSize(new Dimension(200, 240));
-        panelCategoria.setBackground(colorTarjeta);
+        panelCategoria.setBackground(new Color(242, 242, 242));
         panelCategoria.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createLineBorder(new Color(234, 234, 234)),
             BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
 
-        // Panel superior (checkbox y botón editar)
+        // Panel superior con botón editar
         JPanel panelSuperior = new JPanel(new BorderLayout());
         panelSuperior.setOpaque(false);
-
-        JCheckBox checkBox = new JCheckBox();
-        checkBox.setOpaque(false);
-        checkBox.setName(String.valueOf(i));
-        panelSuperior.add(checkBox, BorderLayout.WEST);
 
         JButton btnEditar = new JButton();
         btnEditar.setIcon(new ImageIcon(getClass().getResource("/catalogo/pencil1.png")));
@@ -101,9 +124,10 @@ void actualizarPanelCategorias() {
 
         panelCategoria.add(panelSuperior, BorderLayout.NORTH);
 
-        // Panel de imagen
+        // Panel de imagen con evento de clic
         JPanel imagenContainer = new JPanel(new BorderLayout());
         imagenContainer.setOpaque(false);
+        imagenContainer.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         JLabel imagenLabel = new JLabel();
         imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -111,6 +135,14 @@ void actualizarPanelCategorias() {
             ImageIcon icon = new ImageIcon(cat.getImagen().getScaledInstance(180, 140, Image.SCALE_SMOOTH));
             imagenLabel.setIcon(icon);
         }
+        
+        imagenContainer.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                mostrarProductosDeCategoria(cat);
+            }
+        });
+        
         imagenContainer.add(imagenLabel, BorderLayout.CENTER);
         panelCategoria.add(imagenContainer, BorderLayout.CENTER);
 
@@ -127,42 +159,37 @@ void actualizarPanelCategorias() {
         });
         panelCategoria.add(nombreLabel, BorderLayout.SOUTH);
 
-        // Evento para el botón editar
         btnEditar.addActionListener(e -> abrirEditarCategoria(cat));
 
-        // Añadir tarjeta a la fila actual
-        if (filaActual != null) {
-            filaActual.add(panelCategoria);
+        return panelCategoria;
+    }
+/*
+    private void mostrarProductosDeCategoria(Catalogocategoria categoria) {
+    // Cambiar a la vista de productos
+    removeAll();
+    Producto productoPanel = new Producto((JFrame)SwingUtilities.getWindowAncestor(this), false, categoria);
+    
+    // Filtrar productos por categoría
+    List<producto> productosCategoria = new ArrayList<>();
+    for (producto p : productos) {
+        if (p.getIdCategoria() == categoria.getId()) {
+            productosCategoria.add(p);
         }
     }
-
-    // Asegurar que la última fila tenga 4 elementos (para alineación)
-    if (filaActual != null && filaActual.getComponentCount() > 0 && 
-        filaActual.getComponentCount() < tarjetasPorFila) {
-        int faltantes = tarjetasPorFila - filaActual.getComponentCount();
-        for (int i = 0; i < faltantes; i++) {
-            JPanel panelVacio = new JPanel();
-            panelVacio.setPreferredSize(new Dimension(200, 240));
-            panelVacio.setOpaque(false);
-            filaActual.add(panelVacio);
-        }
-    }
-
-    // Actualizar la visualización
-    panelPrincipal.revalidate();
-    panelPrincipal.repaint();
-    scrollPane.getVerticalScrollBar().setValue(0);
+    productoPanel.setProductos(productosCategoria);
+    
+    add(productoPanel);
+    revalidate();
+    repaint();
 }
 
     private void abrirEditarCategoria(Catalogocategoria categoria) {
         categoriaeditar dialog = new categoriaeditar(
                 (java.awt.Frame) SwingUtilities.getWindowAncestor(this),
                 true,
-                this, // Referencia al catálogo
+                this,
                 categoria
-        // Categoría a editar
         );
-
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
     }
@@ -173,55 +200,18 @@ void actualizarPanelCategorias() {
             categorias.set(index, categoriaActualizada);
             actualizarPanelCategorias();
         }
-
     }
 
-    private void mostrarProductosDeCategoria(Catalogocategoria categoria) {
-        // Obtener el JFrame padre
-        JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
+  */
 
-        // Buscar el panel contenedor recursivamente
-        JPanel contenedor = findContenedor(frame);
 
-        if (contenedor != null) {
-            // Crear el panel de productos
-            Producto productoPanel = new Producto(frame, true);
-            productoPanel.setSize(contenedor.getWidth(), contenedor.getHeight());
-            productoPanel.setLocation(0, 0);
 
-            // Limpiar y mostrar el panel de productos
-            contenedor.removeAll();
-            contenedor.add(productoPanel);
-            contenedor.revalidate();
-            contenedor.repaint();
-
-            // Cargar los productos de la categoría seleccionada
-            productoPanel.cargarProductosDeCategoria(categoria.getId());
-        }
-    }
-
-    private JPanel findContenedor(Container container) {
-        for (Component comp : container.getComponents()) {
-            if (comp instanceof JPanel && "contenedor".equals(((JPanel) comp).getName())) {
-                return (JPanel) comp;
-            }
-            if (comp instanceof Container) {
-                JPanel found = findContenedor((Container) comp);
-                if (found != null) {
-                    return found;
-                }
-            }
-        }
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
+  @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
-        panelPrincipal = new javax.swing.JPanel();
         Añadir1 = new rojeru_san.RSButtonRiple();
         Eliminar = new rojeru_san.RSButtonRiple();
 
@@ -241,6 +231,7 @@ void actualizarPanelCategorias() {
                 Añadir1ActionPerformed(evt);
             }
         });
+        jPanel2.add(Añadir1, new org.netbeans.lib.awtextra.AbsoluteConstraints(620, 40, 140, -1));
 
         Eliminar.setBackground(new java.awt.Color(46, 49, 82));
         Eliminar.setText("Eliminar");
@@ -251,29 +242,7 @@ void actualizarPanelCategorias() {
                 EliminarActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout panelPrincipalLayout = new javax.swing.GroupLayout(panelPrincipal);
-        panelPrincipal.setLayout(panelPrincipalLayout);
-        panelPrincipalLayout.setHorizontalGroup(
-            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelPrincipalLayout.createSequentialGroup()
-                .addContainerGap(667, Short.MAX_VALUE)
-                .addComponent(Añadir1, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(Eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(77, 77, 77))
-        );
-        panelPrincipalLayout.setVerticalGroup(
-            panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(panelPrincipalLayout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addGroup(panelPrincipalLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(Añadir1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Eliminar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(587, Short.MAX_VALUE))
-        );
-
-        jPanel2.add(panelPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 1030, 650));
+        jPanel2.add(Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(810, 40, 140, -1));
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1110, 710));
 
@@ -300,56 +269,19 @@ void actualizarPanelCategorias() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void Añadir1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_Añadir1ActionPerformed
-        // TODO add your handling code here:
-
-        catalogocategoria dialog = new catalogocategoria(
+  catalogocategoria dialog = new catalogocategoria(
                 new javax.swing.JFrame(),
                 true,
-                this // Pasa la referencia al catálogo actual
+                this
         );
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
+      
     }//GEN-LAST:event_Añadir1ActionPerformed
 
     private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
-        // TODO add your handling code here:
-        // Crear lista de categorías a eliminar
-        List<Catalogocategoria> categoriasAEliminar = new ArrayList<>();
+    
 
-        // Recorrer todos los componentes del panelPrincipal
-        for (Component comp : panelPrincipal.getComponents()) {
-            if (comp instanceof JPanel) {
-                JPanel panelCategoria = (JPanel) comp;
-
-                // Buscar el checkbox en el panel
-                for (Component innerComp : panelCategoria.getComponents()) {
-                    if (innerComp instanceof JPanel) {
-                        JPanel panelSuperior = (JPanel) innerComp;
-                        for (Component checkComp : panelSuperior.getComponents()) {
-                            if (checkComp instanceof JCheckBox) {
-                                JCheckBox checkBox = (JCheckBox) checkComp;
-                                if (checkBox.isSelected()) {
-                                    int index = Integer.parseInt(checkBox.getName());
-                                    categoriasAEliminar.add(categorias.get(index));
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        // Eliminar las categorías seleccionadas
-        categorias.removeAll(categoriasAEliminar);
-
-        // Actualizar la vista
-        actualizarPanelCategorias();
-
-        // Mostrar mensaje de confirmación
-        JOptionPane.showMessageDialog(this,
-                categoriasAEliminar.size() + " categorías eliminadas",
-                "Eliminación completada",
-                JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_EliminarActionPerformed
 
 
@@ -358,7 +290,6 @@ void actualizarPanelCategorias() {
     private rojeru_san.RSButtonRiple Eliminar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel panelPrincipal;
     // End of variables declaration//GEN-END:variables
-private javax.swing.JScrollPane scrollPane;
+
 }

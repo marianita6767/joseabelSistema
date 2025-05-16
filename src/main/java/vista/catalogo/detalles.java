@@ -1,26 +1,36 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
- */
 package vista.catalogo;
-
 
 import java.awt.Image;
 import javax.swing.ImageIcon;
-
-import vista.catalogo.catalogoNuevo;
+import modelo.producto;
 
 public class detalles extends javax.swing.JDialog {
-
+    
    
 
     public detalles(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-     
         initComponents();
-      
+        setLocationRelativeTo(parent);
     }
 
+   
+
+ public void setProducto(producto prod) {
+        if (prod.getImagen() != null) {
+            ImageIcon icon = new ImageIcon(prod.getImagen().getScaledInstance(
+                ImgPrincipal.getWidth(), 
+                ImgPrincipal.getHeight(), 
+                Image.SCALE_SMOOTH));
+            ImgPrincipal.setIcon(icon);
+        }
+          Nombre.setText(prod.getNombre());
+        material.setText("Material: " + (prod.getMaterial() != null ? prod.getMaterial() : "N/A"));
+        alto.setText("Alto: " + prod.getAltura());
+        ancho.setText("Ancho: " + prod.getAncho());
+        profundidad.setText("Profundidad: " + prod.getProfundidad());
+        color.setText("Color: " + (prod.getColor() != null ? prod.getColor() : "N/A"));
+    }
     
 
     @SuppressWarnings("unchecked")
@@ -28,51 +38,42 @@ public class detalles extends javax.swing.JDialog {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        Nombre = new javax.swing.JLabel();
         material = new javax.swing.JLabel();
         alto = new javax.swing.JLabel();
         ancho = new javax.swing.JLabel();
         profundidad = new javax.swing.JLabel();
         color = new javax.swing.JLabel();
         ImgPrincipal = new javax.swing.JLabel();
-        Imgenes = new javax.swing.JLabel();
         cerrar = new rojeru_san.RSButtonRiple();
-        editar = new rojeru_san.RSButtonRiple();
+        Nombre = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        Nombre.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel1.add(Nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(209, 18, 362, 51));
-
-        material.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        material.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         material.setText("Material:");
-        jPanel1.add(material, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 320, 70, -1));
+        jPanel1.add(material, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 220, 230, -1));
 
-        alto.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        alto.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         alto.setText("Alto:");
-        jPanel1.add(alto, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 150, 37, -1));
+        jPanel1.add(alto, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 70, 250, -1));
 
-        ancho.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        ancho.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         ancho.setText("Ancho:");
-        jPanel1.add(ancho, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 200, 50, -1));
+        jPanel1.add(ancho, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 120, 230, -1));
 
-        profundidad.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        profundidad.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         profundidad.setText("Profundidad:");
-        jPanel1.add(profundidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 260, 90, -1));
+        jPanel1.add(profundidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 170, 250, -1));
 
-        color.setFont(new java.awt.Font("Segoe UI", 0, 14)); // NOI18N
+        color.setFont(new java.awt.Font("Segoe UI Black", 0, 18)); // NOI18N
         color.setText("Color:");
-        jPanel1.add(color, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 380, 50, -1));
+        jPanel1.add(color, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 270, 290, -1));
 
         ImgPrincipal.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel1.add(ImgPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 141, 255, 199));
-
-        Imgenes.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel1.add(Imgenes, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 260, 80));
+        jPanel1.add(ImgPrincipal, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 70, 255, 220));
 
         cerrar.setBackground(new java.awt.Color(46, 49, 82));
         cerrar.setText("Cerrar");
@@ -83,20 +84,14 @@ public class detalles extends javax.swing.JDialog {
                 cerrarActionPerformed(evt);
             }
         });
-        jPanel1.add(cerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(430, 470, 140, -1));
+        jPanel1.add(cerrar, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 330, 140, -1));
 
-        editar.setBackground(new java.awt.Color(46, 49, 82));
-        editar.setText("Editar");
-        editar.setColorHover(new java.awt.Color(0, 153, 51));
-        editar.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 14)); // NOI18N
-        editar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                editarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(editar, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 470, 140, -1));
+        Nombre.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        Nombre.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
+        Nombre.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        jPanel1.add(Nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 10, 450, 40));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 740, 530));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 650, 380));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -104,11 +99,6 @@ public class detalles extends javax.swing.JDialog {
     private void cerrarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cerrarActionPerformed
 dispose();
     }//GEN-LAST:event_cerrarActionPerformed
-
-    private void editarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editarActionPerformed
-     
-
-    }//GEN-LAST:event_editarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -154,13 +144,11 @@ dispose();
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel ImgPrincipal;
-    private javax.swing.JLabel Imgenes;
     private javax.swing.JLabel Nombre;
     private javax.swing.JLabel alto;
     private javax.swing.JLabel ancho;
     private rojeru_san.RSButtonRiple cerrar;
     private javax.swing.JLabel color;
-    private rojeru_san.RSButtonRiple editar;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel material;
     private javax.swing.JLabel profundidad;

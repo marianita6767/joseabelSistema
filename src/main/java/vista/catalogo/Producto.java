@@ -1,21 +1,17 @@
-package vista.catalogo;
+ package vista.catalogo;
 
-import javax.swing.JFrame;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JScrollPane;
-import java.awt.FlowLayout;
-import java.awt.Color;
-import java.awt.Image;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import modelo.producto;
 
 public class Producto extends javax.swing.JPanel {
     private List<producto> productos = new ArrayList<>();
-    private List<JCheckBox> checkBoxes = new ArrayList<>();
     private JScrollPane scrollPane;
-    private JPanel panelPrincipal;
 
     public Producto(JFrame jFrame, boolean par) {
         initComponents();
@@ -23,53 +19,42 @@ public class Producto extends javax.swing.JPanel {
     }
 
     private void initCustomComponents() {
-    // Configuración del panel principal
-    this.setBackground(new Color(242, 242, 242));
-    this.setLayout(new BorderLayout());
+        this.setBackground(new Color(242, 242, 242));
+        this.setLayout(new BorderLayout());
 
-    // Configuración del panel de productos
-    PProductos.setBackground(new Color(242, 242, 242));
-    PProductos.setLayout(new GridLayout(0, 4, 20, 20)); // Cambiado a GridLayout con 4 columnas y espacios
+        PProductos.setBackground(new Color(242, 242, 242));
+        PProductos.setLayout(new GridLayout(0, 4, 20, 20));
 
-    // Ajustar columnas dinámicamente según tamaño para responsividad básica
-    PProductos.addComponentListener(new java.awt.event.ComponentAdapter() {
-        @Override
-        public void componentResized(java.awt.event.ComponentEvent evt) {
-            int width = PProductos.getWidth();
-            int columnas;
-            if (width < 600) {
-                columnas = 2;
-            } else {
-                columnas = 4;
-            }
-            ((GridLayout)PProductos.getLayout()).setColumns(columnas);
-            PProductos.revalidate();
-        }
-    });
-       JPanel panelBotones = new JPanel();
-    panelBotones.setBackground(new Color(242, 242, 242));
-    panelBotones.setLayout(new FlowLayout(FlowLayout.LEFT, 20, 10));
-    panelBotones.add(volver);
-    panelBotones.add(Nueva);
-    panelBotones.add(Eliminar);
+        // Panel de botones superior
+        JPanel panelBotones = new JPanel(new BorderLayout());
+        panelBotones.setBackground(new Color(242, 242, 242));
+        panelBotones.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-    // Configuración del scroll pane
-    scrollPane = new JScrollPane(PProductos);
-    scrollPane.setBackground(new Color(242, 242, 242));
-    scrollPane.getViewport().setBackground(new Color(242, 242, 242));
-    scrollPane.setBorder(null);
-    scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
-    scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER); // Mejor evitar scroll horizontal
+        // Botón Volver a la izquierda
+        JPanel panelIzquierdo = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        panelIzquierdo.setOpaque(false);
+        panelIzquierdo.add(volver);
+        panelBotones.add(panelIzquierdo, BorderLayout.WEST);
 
-    // Agregar componentes al panel principal
-    this.add(panelBotones, BorderLayout.NORTH);
-    this.add(scrollPane, BorderLayout.CENTER);
+        // Botón Añadir a la derecha
+        JPanel panelDerecho = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        panelDerecho.setOpaque(false);
+        panelDerecho.add(Nueva);
+        panelBotones.add(panelDerecho, BorderLayout.EAST);
 
-    // Configuración de botones
-    configurarBoton(Nueva);
-    configurarBoton(Eliminar);
-    configurarBoton(volver);
-}
+        // Configuración del scroll pane
+        scrollPane = new JScrollPane(PProductos);
+        scrollPane.setBackground(new Color(242, 242, 242));
+        scrollPane.getViewport().setBackground(new Color(242, 242, 242));
+        scrollPane.setBorder(null);
+        scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+
+        this.add(panelBotones, BorderLayout.NORTH);
+        this.add(scrollPane, BorderLayout.CENTER);
+
+        configurarBoton(Nueva);
+        configurarBoton(volver);
+    }
 
     private void configurarBoton(rojeru_san.RSButtonRiple boton) {
         boton.setBackground(new Color(46, 49, 82));
@@ -80,152 +65,176 @@ public class Producto extends javax.swing.JPanel {
     }
 
     public void agregarProducto(producto producto) {
-        productos.add(producto);
-        actualizarPanelProductos();
+        if (producto != null) {
+            productos.add(producto);
+            actualizarPanelProductos();
+            
+            SwingUtilities.invokeLater(() -> {
+                JScrollBar vertical = scrollPane.getVerticalScrollBar();
+                vertical.setValue(vertical.getMaximum());
+            });
+        }
     }
 
-    void actualizarPanelProductos() {
+    private void actualizarPanelProductos() {
         PProductos.removeAll();
-    // Ya no seteamos layout aquí porque se hace en initCustomComponents
-    checkBoxes.clear();
 
-    Color colorTarjeta = new Color(242, 242, 242);
+        if (productos.isEmpty()) {
+            JLabel mensaje = new JLabel("No hay productos para mostrar", SwingConstants.CENTER);
+            mensaje.setFont(new Font("Segoe UI", Font.PLAIN, 16));
+            mensaje.setForeground(Color.GRAY);
+            PProductos.add(mensaje);
+        } else {
+            PProductos.setLayout(new GridLayout(0, 4, 20, 20));
+            
+            for (producto prod : productos) {
+                JPanel panelProducto = crearPanelProducto(prod, Color.WHITE);
+                if (panelProducto != null) {
+                    PProductos.add(panelProducto);
+                }
+            }
+        }
 
-    for (producto prod : productos) {
-        JPanel panelProducto = crearPanelProducto(prod, colorTarjeta);
-        PProductos.add(panelProducto);
+        PProductos.revalidate();
+        PProductos.repaint();
     }
 
-    PProductos.revalidate();
-    PProductos.repaint();
-    scrollPane.getVerticalScrollBar().setValue(0);
-    }
-
-    private JPanel crearPanelProducto(producto prod, Color colorTarjeta) {
-           JPanel panelProducto = new JPanel(new BorderLayout());
-    panelProducto.setPreferredSize(new Dimension(280, 320)); // Tamaño similar a la imagen
-    panelProducto.setBackground(Color.WHITE);
-    panelProducto.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-    panelProducto.setLayout(new BorderLayout());
-
-    // Panel para la imagen (solo imagen)
-    JPanel panelImagen = new JPanel(new BorderLayout());
-    panelImagen.setPreferredSize(new Dimension(280, 280));
-    panelImagen.setBackground(Color.WHITE);
-
-    JLabel imagenLabel = new JLabel();
-    imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    if (prod.getImagen() != null) {
-        ImageIcon icon = new ImageIcon(prod.getImagen().getScaledInstance(280, 280, Image.SCALE_SMOOTH));
-        imagenLabel.setIcon(icon);
-    }
-    panelImagen.add(imagenLabel, BorderLayout.CENTER);
-
-    panelProducto.add(panelImagen, BorderLayout.CENTER);
-
-    // Panel inferior con nombre y botón editar a la derecha
-    JPanel panelInferior = new JPanel(new BorderLayout());
-    panelInferior.setBackground(Color.WHITE);
-    panelInferior.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-    // Label nombre producto
-    JLabel nombreLabel = new JLabel(prod.getNombre());
-    nombreLabel.setFont(new Font("Segoe UI Black", Font.PLAIN, 28));
-    nombreLabel.setForeground(Color.BLACK);
-    nombreLabel.setVerticalAlignment(SwingConstants.CENTER);
-
-    panelInferior.add(nombreLabel, BorderLayout.WEST);
-
-    // Botón editar circular blanco con icono negro
-    JButton btnEditar = new JButton();
-    btnEditar.setPreferredSize(new Dimension(48, 48));
-    btnEditar.setBackground(Color.WHITE);
-    btnEditar.setFocusPainted(false);
-    btnEditar.setBorder(BorderFactory.createLineBorder(new Color(220, 220, 220), 1));
-    btnEditar.setContentAreaFilled(true);
-    btnEditar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-    btnEditar.setToolTipText("Editar producto");
-    btnEditar.setIcon(new ImageIcon(getClass().getResource("/catalogo/pencil1.png")));
-    btnEditar.addActionListener(e -> abrirEditarProducto(prod));
-
-    panelInferior.add(btnEditar, BorderLayout.EAST);
-
-    panelProducto.add(panelInferior, BorderLayout.SOUTH);
-
-    return panelProducto;
-    }
-
-    private JPanel crearPanelSuperior(producto prod) {
-        JPanel panelSuperior = new JPanel(new BorderLayout());
-        panelSuperior.setOpaque(false);
-
-        // Checkbox para selección
-        JCheckBox checkBox = new JCheckBox();
-        checkBox.setOpaque(false);
-        checkBox.putClientProperty("producto", prod);
-        panelSuperior.add(checkBox, BorderLayout.WEST);
-        checkBoxes.add(checkBox);
-
-        // Botón de editar
-        JButton btnEditar = crearBotonEditar(prod);
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        buttonPanel.setOpaque(false);
-        buttonPanel.add(btnEditar);
-        panelSuperior.add(buttonPanel, BorderLayout.EAST);
-
-        return panelSuperior;
-    }
-
-    private JButton crearBotonEditar(producto prod) {
-        JButton btnEditar = new JButton();
-        btnEditar.setIcon(new ImageIcon(getClass().getResource("/catalogo/pencil1.png")));
-        btnEditar.setContentAreaFilled(false);
-        btnEditar.setBorder(BorderFactory.createCompoundBorder(
-            BorderFactory.createLineBorder(Color.BLACK, 2),
-            BorderFactory.createEmptyBorder(2, 2, 2, 2)
+ private JPanel crearPanelProducto(producto prod, Color colorTarjeta) {
+    try {
+        JPanel panelProducto = new JPanel(new BorderLayout());
+        panelProducto.setPreferredSize(new Dimension(250, 300));
+        panelProducto.setBackground(colorTarjeta);
+        panelProducto.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createLineBorder(new Color(200, 200, 200), 1),
+            BorderFactory.createEmptyBorder(10, 10, 10, 10)
         ));
-        btnEditar.setBackground(new Color(46, 49, 82));
-        btnEditar.setForeground(Color.WHITE);
-        btnEditar.setFocusPainted(false);
-        btnEditar.setCursor(new Cursor(Cursor.HAND_CURSOR));
-        btnEditar.addActionListener(e -> abrirEditarProducto(prod));
-        
-        return btnEditar;
-    }
 
-    private JPanel crearPanelImagen(producto prod) {
-        JPanel imagenContainer = new JPanel(new BorderLayout());
-        imagenContainer.setOpaque(false);
+        // Panel de imagen con efecto hover y click
+        JPanel panelImagen = new JPanel(new BorderLayout());
+        panelImagen.setPreferredSize(new Dimension(230, 180));
+        panelImagen.setBackground(Color.WHITE);
 
         JLabel imagenLabel = new JLabel();
         imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
         if (prod.getImagen() != null) {
-            ImageIcon icon = new ImageIcon(prod.getImagen().getScaledInstance(180, 140, Image.SCALE_SMOOTH));
-            imagenLabel.setIcon(icon);
-        }
-        imagenContainer.add(imagenLabel, BorderLayout.CENTER);
-        
-        return imagenContainer;
-    }
+            ImageIcon iconoNormal = new ImageIcon(prod.getImagen().getScaledInstance(230, 180, Image.SCALE_SMOOTH));
+            ImageIcon iconoHover = new ImageIcon(prod.getImagen().getScaledInstance(250, 200, Image.SCALE_SMOOTH));
+            
+            imagenLabel.setIcon(iconoNormal);
+            
+            // Efecto hover
+            panelImagen.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    imagenLabel.setIcon(iconoHover);
+                    panelImagen.setPreferredSize(new Dimension(250, 200));
+                    panelProducto.revalidate();
+                }
 
-    private JLabel crearLabelNombre(producto prod) {
-        JLabel nombreLabel = new JLabel(prod.getNombre(), SwingConstants.CENTER);
-        nombreLabel.setFont(new Font("Segoe UI Black", Font.BOLD, 18));
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    imagenLabel.setIcon(iconoNormal);
+                    panelImagen.setPreferredSize(new Dimension(230, 180));
+                    panelProducto.revalidate();
+                }
+
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    mostrarDetallesProducto(prod);
+                }
+            });
+        } else {
+            imagenLabel.setText("Sin imagen");
+            imagenLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            imagenLabel.setForeground(Color.GRAY);
+        }
+
+        panelImagen.add(imagenLabel, BorderLayout.CENTER);
+        panelProducto.add(panelImagen, BorderLayout.CENTER);
+
+        // Panel inferior con nombre y botones
+        JPanel panelInferior = new JPanel(new BorderLayout());
+        panelInferior.setOpaque(false);
+        panelInferior.setBorder(BorderFactory.createEmptyBorder(15, 0, 0, 0));
+
+        // Nombre del producto
+        JLabel nombreLabel = new JLabel(prod.getNombre());
+        nombreLabel.setFont(new Font("Segoe UI", Font.BOLD, 16));
         nombreLabel.setForeground(Color.BLACK);
-        return nombreLabel;
-    }
+        nombreLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        panelInferior.add(nombreLabel, BorderLayout.CENTER);
 
-    private void abrirEditarProducto(producto producto) {
-        productoEditar dialog = new productoEditar(
-            (JFrame)SwingUtilities.getWindowAncestor(this), 
-            true, 
-            producto
-        );
-        dialog.setVisible(true);
+        // Panel de botones (siempre visibles)
+        JPanel panelBotones = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 5));
+        panelBotones.setOpaque(false);
+
+        // Botón Editar
+        JButton btnEditar = crearBotonAccion("/catalogo/pencil1.png", "Editar", e -> {
+            productoEditar dialog = new productoEditar(
+                (JFrame) SwingUtilities.getWindowAncestor(this),
+                true,
+                prod
+            );
+            dialog.setVisible(true);
+
+            if (dialog.getProductoEditado() != null) {
+                actualizarProducto(dialog.getProductoEditado());
+            }
+        });
+        panelBotones.add(btnEditar);
+
+        // Botón Eliminar
+        JButton btnEliminar = crearBotonAccion("/catalogo/delete.png", "Eliminar", e -> {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Estás seguro de que quieres eliminar este producto?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION);
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                productos.remove(prod);
+                actualizarPanelProductos();
+            }
+        });
+        panelBotones.add(btnEliminar);
+
+        panelInferior.add(panelBotones, BorderLayout.SOUTH);
+        panelProducto.add(panelInferior, BorderLayout.SOUTH);
+
+        return panelProducto;
+    } catch (Exception e) {
+        System.err.println("Error al crear panel de producto");
+        e.printStackTrace();
+        return null;
+    }
+}
+
+
+
+  private void mostrarDetallesProducto(producto prod) {
+    detalles dialog = new detalles((JFrame)SwingUtilities.getWindowAncestor(this), true);
+    dialog.setProducto(prod); // Usamos el nuevo método para configurar los datos
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
+}
+
+    private JButton crearBotonAccion(String iconPath, String tooltip, ActionListener listener) {
+        JButton boton = new JButton();
+        boton.setPreferredSize(new Dimension(24, 24));
+        boton.setContentAreaFilled(false);
+        boton.setBorderPainted(false);
+        boton.setFocusPainted(false);
+        boton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        boton.setToolTipText(tooltip);
         
-        if (dialog.getProductoEditado() != null) {
-            actualizarProducto(dialog.getProductoEditado());
+        try {
+            boton.setIcon(new ImageIcon(getClass().getResource(iconPath)));
+        } catch (Exception e) {
+            boton.setText(tooltip.substring(0, 1));
         }
+        
+        boton.addActionListener(listener);
+        return boton;
     }
 
     public void actualizarProducto(producto productoActualizado) {
@@ -236,55 +245,13 @@ public class Producto extends javax.swing.JPanel {
         }
     }
 
-    public void cargarProductosDeCategoria(int idCategoria) {
-        productos.clear();
-        
-        // Aquí deberías implementar la carga real de productos desde tu fuente de datos
-        List<producto> todosProductos = obtenerTodosLosProductos();
-        for (producto producto : todosProductos) {
-            if (producto.getIdCategoria() == idCategoria) {
-                productos.add(producto);
-            }
-        }
-        
-        actualizarPanelProductos();
-    }
-
-    private List<producto> obtenerTodosLosProductos() {
-        // Implementa este método para obtener los productos de tu base de datos o almacenamiento
-        return new ArrayList<>();
-    }
-
  
-
-
-
-
-    private JPanel findContenedor(Container container) {
-        for (Component comp : container.getComponents()) {
-            if (comp instanceof JPanel && "contenedor".equals(((JPanel) comp).getName())) {
-                return (JPanel) comp;
-            }
-            if (comp instanceof Container) {
-                JPanel found = findContenedor((Container) comp);
-                if (found != null) {
-                    return found;
-                }
-            }
-        }
-        return null;
-    }
-
-  
-
-       
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         Nueva = new rojeru_san.RSButtonRiple();
         volver = new rojeru_san.RSButtonRiple();
-        Eliminar = new rojeru_san.RSButtonRiple();
         PProductos = new javax.swing.JPanel();
 
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -311,70 +278,32 @@ public class Producto extends javax.swing.JPanel {
         });
         add(volver, new org.netbeans.lib.awtextra.AbsoluteConstraints(6, 16, 140, -1));
 
-        Eliminar.setBackground(new java.awt.Color(46, 49, 82));
-        Eliminar.setText("Eliminar");
-        Eliminar.setColorHover(new java.awt.Color(0, 153, 51));
-        Eliminar.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 14)); // NOI18N
-        Eliminar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                EliminarActionPerformed(evt);
-            }
-        });
-        add(Eliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 140, -1));
-
         PProductos.setLayout(new java.awt.BorderLayout());
         add(PProductos, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1250, 640));
     }// </editor-fold>//GEN-END:initComponents
 
     private void NuevaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NuevaActionPerformed
     catalogoNuevo dialog = new catalogoNuevo((JFrame)this.getTopLevelAncestor(), true);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
-        
-        producto nuevoProducto = dialog.getProductoCreado();
-        if (nuevoProducto != null) {
-            agregarProducto(nuevoProducto);
-        }
+dialog.setVisible(true);
+
+// Después de que se cierra el diálogo
+producto nuevoProducto = dialog.getProductoCreado();
+if (nuevoProducto != null) {
+    // Asegúrate de que este método realmente añade el producto a la lista y actualiza la vista
+    agregarProducto(nuevoProducto); 
+}
 
     }//GEN-LAST:event_NuevaActionPerformed
-
-    private void EliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EliminarActionPerformed
-     
-        List<producto> productosAEliminar = new ArrayList<>();
-    
-        for (JCheckBox checkBox : checkBoxes) {
-            if (checkBox.isSelected()) {
-                producto producto = (producto) checkBox.getClientProperty("producto");
-                productosAEliminar.add(producto);
-            }
-        }
-        
-        productos.removeAll(productosAEliminar);
-        actualizarPanelProductos();
-     
-    }//GEN-LAST:event_EliminarActionPerformed
                          
 
     private void volverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_volverActionPerformed
- JFrame frame = (JFrame) SwingUtilities.getWindowAncestor(this);
-        JPanel contenedor = findContenedor(frame);
+
         
-        if (contenedor != null) {
-            contenedor.removeAll();
-            catalogo catalogoPanel = new catalogo(frame, true);
-            contenedor.add(catalogoPanel);
-            contenedor.revalidate();
-            contenedor.repaint();
-        }
     }//GEN-LAST:event_volverActionPerformed
 
-       //ol               
-
-        //"                          
-
+       
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private rojeru_san.RSButtonRiple Eliminar;
     private rojeru_san.RSButtonRiple Nueva;
     private javax.swing.JPanel PProductos;
     private rojeru_san.RSButtonRiple volver;
