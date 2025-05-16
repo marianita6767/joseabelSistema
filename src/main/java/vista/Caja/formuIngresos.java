@@ -121,7 +121,7 @@ public class formuIngresos extends javax.swing.JDialog {
         jLabel3.setText("Categoria");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, 110, 30));
 
-        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione categoria:", "Servicios Publicos", "Compra de Productos e Insumos", "Arriendo", "Nómina", "Gastos Administrativos", "Mercadeo y Publicidad", "Transporte", "Domicilios y Logistica", "mantenimineto y Reparaciones", "Muebles", "Equipos o Maquinaria", "Otros" }));
+        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Categoria:", "Ventas", "Servicios", "Donaciones", "Préstamos", "Inversiones", "Subsidios", "Reembolsos", "Intereses", "Venta Activos", "Alquileres", "Comisiones", "Otros Ingresos" }));
         comboCategoria.setColorMaterial(new java.awt.Color(0, 0, 0));
         comboCategoria.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
         comboCategoria.addActionListener(new java.awt.event.ActionListener() {
