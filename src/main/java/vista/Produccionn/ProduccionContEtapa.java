@@ -6,6 +6,7 @@ package vista.Produccionn;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +14,7 @@ import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
@@ -47,19 +49,13 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Nombre","Fecha inicio", "Fecha final", "Estado", "Materiales", "Asignado"}
+                new String[]{"Nombre","Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"}
         ));
 
         Tabla1.setCellSelectionEnabled(false);
         Tabla1.setRowSelectionAllowed(true);
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         
-
-        Color colorSeleccion = new Color(109, 160, 221);
-        Color colorTexto = Color.white;
-
-        Tabla1.setSelectionBackground(colorSeleccion);
-        Tabla1.setSelectionForeground(colorTexto);
         
         Tabla1.getColumnModel().getColumn(3).setCellRenderer(new EstadoTableCellRenderer());
 
@@ -68,7 +64,11 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     // Renderizador para la columna de estado
 
     private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
-
+        
+        private final Color textColor = new Color(46, 49, 82);
+        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
+        
         public EstadoTableCellRenderer() {
             setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
         }
@@ -77,35 +77,44 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             // Llamar al método padre primero
-            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            JLabel label = (JLabel) super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+
+            label.setHorizontalAlignment(CENTER);
+            label.setText(value != null ? value.toString() : "");
 
             if (isSelected) {
                 // Cuando está seleccionado, texto blanco y fondo de selección
-                c.setForeground(Color.WHITE);
-                c.setBackground(table.getSelectionBackground());
+                label.setForeground(Color.WHITE);
+                label.setBackground(table.getSelectionBackground());
+                label.setFont(fontBold);
             } else {
                 // Cuando no está seleccionado, mantener el color original del texto
-                c.setForeground(new Color(46, 49, 82));
+                label.setForeground(textColor);
+                label.setFont(fontNormal);
 
                 // Aplicar colores de fondo según el estado
-                String estado = (String) value;
-                switch (estado) {
+                String estado = value != null ? value.toString() : "";
+                switch (estado.toLowerCase()) {
                     case "pendiente":
-                        c.setBackground(new Color(255, 204, 204));
+                        label.setBackground(new Color(255, 204, 204)); // Rojo claro
                         break;
                     case "en proceso":
-                        c.setBackground(new Color(255, 255, 153));
+                        label.setBackground(new Color(255, 255, 153)); // Amarillo claro
                         break;
                     case "completado":
-                        c.setBackground(new Color(204, 255, 204));
+                        label.setBackground(new Color(204, 255, 204)); // Verde claro
                         break;
                     default:
-                        c.setBackground(table.getBackground());
+                        label.setBackground(Color.WHITE);
                         break;
                 }
             }
 
-            return c;
+            // Borde igual al resto de la tabla
+            label.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+            Tabla1.setRowHeight(23); // Altura más delgada para las filas
+            return label;
         }
 
     }
@@ -154,18 +163,18 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     private void initComponents() {
 
         txtbuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Tabla1 = new RSMaterialComponent.RSTableMetro();
         btnEditar = new RSMaterialComponent.RSButtonShape();
         btnNuevo = new RSMaterialComponent.RSButtonShape();
         btnElimi = new RSMaterialComponent.RSButtonShape();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
 
-        setBackground(new java.awt.Color(234, 234, 234));
+        setBackground(new java.awt.Color(255, 255, 255));
         setMaximumSize(new java.awt.Dimension(1150, 510));
         setMinimumSize(new java.awt.Dimension(1150, 510));
         setPreferredSize(new java.awt.Dimension(1150, 510));
+        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        txtbuscar.setBackground(new java.awt.Color(255, 255, 255));
         txtbuscar.setForeground(new java.awt.Color(29, 30, 91));
         txtbuscar.setColorIcon(new java.awt.Color(29, 30, 111));
         txtbuscar.setColorMaterial(new java.awt.Color(29, 30, 111));
@@ -176,18 +185,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                 txtbuscarActionPerformed(evt);
             }
         });
-
-        Tabla1.setBackground(new java.awt.Color(255, 255, 255));
-        Tabla1.setForeground(new java.awt.Color(255, 255, 255));
-        Tabla1.setAlignmentX(0.1F);
-        Tabla1.setAlignmentY(0.1F);
-        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        Tabla1.setBackgoundHover(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorBorderRows(new java.awt.Color(153, 153, 153));
-        Tabla1.setColorPrimaryText(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
-        Tabla1.setColorSecundaryText(new java.awt.Color(46, 49, 82));
-        jScrollPane2.setViewportView(Tabla1);
+        add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 22, 430, 40));
 
         btnEditar.setBackground(new java.awt.Color(46, 49, 82));
         btnEditar.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -201,6 +199,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                 btnEditarActionPerformed(evt);
             }
         });
+        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(894, 20, 120, 40));
 
         btnNuevo.setBackground(new java.awt.Color(46, 49, 82));
         btnNuevo.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -214,6 +213,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                 btnNuevoActionPerformed(evt);
             }
         });
+        add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(764, 20, 120, 40));
 
         btnElimi.setBackground(new java.awt.Color(46, 49, 82));
         btnElimi.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -227,39 +227,56 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                 btnElimiActionPerformed(evt);
             }
         });
+        add(btnElimi, new org.netbeans.lib.awtextra.AbsoluteConstraints(1024, 20, 120, 40));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 430, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 310, Short.MAX_VALUE)
-                        .addComponent(btnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(10, 10, 10)
-                        .addComponent(btnElimi, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(btnNuevo, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txtbuscar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(btnEditar, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnElimi, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 413, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(51, Short.MAX_VALUE))
-        );
+        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Nombre", "Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        Tabla1.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setRowHeight(23);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
+        Tabla1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Tabla1MouseClicked(evt);
+            }
+        });
+        jScrollPane3.setViewportView(Tabla1);
+        Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
+
+        add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 1120, 470));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbuscarActionPerformed
@@ -358,13 +375,17 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnElimiActionPerformed
 
+    private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
+
+    }//GEN-LAST:event_Tabla1MouseClicked
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSTableMetro Tabla1;
+    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private RSMaterialComponent.RSButtonShape btnEditar;
     private RSMaterialComponent.RSButtonShape btnElimi;
     private RSMaterialComponent.RSButtonShape btnNuevo;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 

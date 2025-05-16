@@ -71,8 +71,8 @@ public class cotizacion extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Tabla1 = new RSMaterialComponent.RSTableMetro();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
         combox_Unidad = new RSMaterialComponent.RSComboBoxMaterial();
         txt_total = new RSMaterialComponent.RSTextFieldMaterial();
         txtNombre4 = new RSMaterialComponent.RSTextFieldMaterial();
@@ -110,25 +110,56 @@ public class cotizacion extends javax.swing.JPanel {
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
-        Tabla1.setForeground(new java.awt.Color(255, 255, 255));
-        Tabla1.setAlignmentX(0.1F);
-        Tabla1.setAlignmentY(0.1F);
+        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Producto", "Unidad", "Cantidad", "Valor Unitario", "Subtotal", "Editar", "Eliminar"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, true, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
         Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        Tabla1.setBackgoundHover(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorBorderRows(new java.awt.Color(153, 153, 153));
-        Tabla1.setColorPrimaryText(new java.awt.Color(46, 49, 82));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        Tabla1.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
         Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
-        Tabla1.setColorSecundaryText(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setRowHeight(23);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
         Tabla1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 Tabla1MouseClicked(evt);
             }
         });
-        jScrollPane2.setViewportView(Tabla1);
+        jScrollPane3.setViewportView(Tabla1);
+        Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
 
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 20, 1180, 320));
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 20, 1150, 330));
 
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, 1220, 370));
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 140, 1220, 350));
 
         combox_Unidad.setColorMaterial(new java.awt.Color(0, 0, 0));
         combox_Unidad.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
@@ -241,7 +272,7 @@ public class cotizacion extends javax.swing.JPanel {
             }
         });
         add(txt_NombreCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(100, 50, 200, 30));
-        add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1300, 640));
+        add(fondo, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 10, 1300, 640));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel7.setText("Total:");
@@ -413,6 +444,10 @@ public class cotizacion extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_txtNombre6ActionPerformed
 
+    private void txt_NombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_NombreClienteActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txt_NombreClienteActionPerformed
+
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
         if (evt.getClickCount() == 1) {
             int columna = Tabla1.columnAtPoint(evt.getPoint());
@@ -426,15 +461,15 @@ public class cotizacion extends javax.swing.JPanel {
                 }
             }
         }
-    }
+        }
 
-    private void eliminarFila(int fila) {
-        // Obtener datos del producto a eliminar para mostrar en el mensaje
-        String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
-        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Cantidad ahora en índice 2
+        private void eliminarFila(int fila) {
+            // Obtener datos del producto a eliminar para mostrar en el mensaje
+            String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
+            String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Cantidad ahora en índice 2
 
-        // Resto del método permanece igual...
-        int confirmacion = JOptionPane.showConfirmDialog(
+            // Resto del método permanece igual...
+            int confirmacion = JOptionPane.showConfirmDialog(
                 this,
                 "<html>¿Está seguro que desea eliminar el producto:<br><br>"
                 + "<b>Producto:</b> " + producto + "<br>"
@@ -443,53 +478,49 @@ public class cotizacion extends javax.swing.JPanel {
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE
-        );
+            );
 
-        if (confirmacion == JOptionPane.YES_OPTION) {
-            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-            modelo.removeRow(fila);
-            calcularTotal();
+            if (confirmacion == JOptionPane.YES_OPTION) {
+                DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+                modelo.removeRow(fila);
+                calcularTotal();
 
-            JOptionPane.showMessageDialog(
+                JOptionPane.showMessageDialog(
                     this,
                     "Producto eliminado correctamente",
                     "Eliminación exitosa",
                     JOptionPane.INFORMATION_MESSAGE
-            );
-        }
-    }
-
-    private void editarFila(int fila) {
-        // Obtener los valores de la fila seleccionada con los nuevos índices
-        String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
-        String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
-        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
-        String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
-
-        // Resto del método permanece igual...
-        txtNombre6.setText(producto);
-
-        for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
-            if (combox_Unidad.getItemAt(i).equals(unidad)) {
-                combox_Unidad.setSelectedIndex(i);
-                break;
+                );
             }
         }
 
-        txtNombre4.setText(cantidad);
-        txtNombre5.setText(valorUnitario);
+        private void editarFila(int fila) {
+            // Obtener los valores de la fila seleccionada con los nuevos índices
+            String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
+            String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
+            String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
+            String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
 
-        Tabla1.putClientProperty("filaEditando", fila);
-        jButton_anadir_producto.setText("  Guardar");
+            // Resto del método permanece igual...
+            txtNombre6.setText(producto);
+
+            for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
+                if (combox_Unidad.getItemAt(i).equals(unidad)) {
+                    combox_Unidad.setSelectedIndex(i);
+                    break;
+                }
+            }
+
+            txtNombre4.setText(cantidad);
+            txtNombre5.setText(valorUnitario);
+
+            Tabla1.putClientProperty("filaEditando", fila);
+            jButton_anadir_producto.setText("  Guardar");
     }//GEN-LAST:event_Tabla1MouseClicked
-
-    private void txt_NombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_NombreClienteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txt_NombreClienteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSTableMetro Tabla1;
+    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private RSMaterialComponent.RSButtonShape btnAñadir;
     private RSMaterialComponent.RSComboBoxMaterial combox_Unidad;
     private javax.swing.JLabel fondo;
@@ -502,7 +533,7 @@ public class cotizacion extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JToggleButton jToggleButton1;
     private RSMaterialComponent.RSTextFieldMaterial txtNombre4;
     private RSMaterialComponent.RSTextFieldMaterial txtNombre5;

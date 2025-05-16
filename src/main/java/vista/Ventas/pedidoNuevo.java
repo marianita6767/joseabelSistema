@@ -281,7 +281,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
             }
         });
         tablaDetalles.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        tablaDetalles.setBackgoundHover(new java.awt.Color(67, 150, 209));
+        tablaDetalles.setBackgoundHover(new java.awt.Color(109, 160, 221));
         tablaDetalles.setBorderHead(null);
         tablaDetalles.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         tablaDetalles.setColorBorderHead(new java.awt.Color(46, 49, 82));
@@ -293,7 +293,7 @@ public class pedidoNuevo extends javax.swing.JDialog {
         tablaDetalles.setFontHead(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
         tablaDetalles.setFontRowHover(new java.awt.Font("Tahoma", 0, 13)); // NOI18N
         tablaDetalles.setFontRowSelect(new java.awt.Font("Tahoma", 1, 13)); // NOI18N
-        tablaDetalles.setSelectionBackground(new java.awt.Color(67, 150, 209));
+        tablaDetalles.setSelectionBackground(new java.awt.Color(109, 160, 221));
         tablaDetalles.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaDetallesMouseClicked(evt);

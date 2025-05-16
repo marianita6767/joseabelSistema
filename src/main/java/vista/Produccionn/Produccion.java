@@ -8,17 +8,20 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import static javax.swing.SwingConstants.CENTER;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -38,21 +41,12 @@ public final class Produccion extends javax.swing.JPanel {
     public Produccion(JFrame jFrame) {
         initComponents();
 
-        // Configuración básica de la tabla
-        Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        Tabla1.setCellSelectionEnabled(false);
-        Tabla1.setRowSelectionAllowed(true);
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        //lineas de la tabla
-        Tabla1.setShowGrid(true);
-        Tabla1.setGridColor(new Color(200, 200, 200));
-        Tabla1.setShowHorizontalLines(true);
-        Tabla1.setShowVerticalLines(true);
-        Tabla1.setIntercellSpacing(new Dimension(1, 1));
+
         // Configura el modelo de tabla correctamente
         DefaultTableModel model = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"ID", "Nombre", "Fecha inicio", "Fecha Final", "Estado", "Detalle", "Cantidad", "Dimensiones"}
+                new String[]{"Codigo", "Nombre", "Fecha inicio", "Fecha Final", "Estado", "Detalle", "Cantidad", "Dimensiones"}
         ) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -71,25 +65,6 @@ public final class Produccion extends javax.swing.JPanel {
         Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(6)); // Oculta Dimensiones
         Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(6)); // Oculta Cantidad
 
-        // Color del texto para todas las celdas
-        Color textColor = new Color(46, 49, 82);
-        Tabla1.setForeground(textColor);
-
-        // Configuración de colores de selección
-        Color colorSeleccion = new Color(109, 160, 221);
-        Tabla1.setSelectionBackground(colorSeleccion);
-        Tabla1.setSelectionForeground(Color.WHITE); // Color del texto cuando está seleccionado
-
-        // Centrar todo el contenido de la tabla
-        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
-        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
-        centerRenderer.setForeground(textColor);
-
-        // Aplicar el renderizador centrado a todas las columnas
-        for (int i = 0; i < Tabla1.getColumnCount(); i++) {
-            Tabla1.getColumnModel().getColumn(i).setCellRenderer(centerRenderer);
-        }
-
         // Configura el renderizador especial para la columna de estado (sobrescribe el general)
         Tabla1.getColumnModel().getColumn(4).setCellRenderer(new EstadoTableCellRenderer());
 
@@ -107,6 +82,10 @@ public final class Produccion extends javax.swing.JPanel {
 // Renderizador para la columna de estado
     private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
 
+        private final Color textColor = new Color(46, 49, 82);
+        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
+
         public EstadoTableCellRenderer() {
             setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
         }
@@ -114,49 +93,71 @@ public final class Produccion extends javax.swing.JPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
+
             // Llamar al método padre primero
-            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            JLabel label = (JLabel) super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+
+            label.setHorizontalAlignment(CENTER);
+            label.setText(value != null ? value.toString() : "");
 
             if (isSelected) {
                 // Cuando está seleccionado, texto blanco y fondo de selección
-                c.setForeground(Color.WHITE);
-                c.setBackground(table.getSelectionBackground());
+                label.setForeground(Color.WHITE);
+                label.setBackground(table.getSelectionBackground());
+                label.setFont(fontBold);
             } else {
                 // Cuando no está seleccionado, mantener el color original del texto
-                c.setForeground(new Color(46, 49, 82));
+                label.setForeground(textColor);
+                label.setFont(fontNormal);
 
                 // Aplicar colores de fondo según el estado
-                String estado = (String) value;
-                switch (estado) {
+                String estado = value != null ? value.toString() : "";
+                switch (estado.toLowerCase()) {
                     case "pendiente":
-                        c.setBackground(new Color(255, 204, 204));
+                        label.setBackground(new Color(255, 204, 204)); // Rojo claro
                         break;
                     case "proceso":
-                        c.setBackground(new Color(255, 255, 153));
+                        label.setBackground(new Color(255, 255, 153)); // Amarillo claro
                         break;
                     case "finalizado":
-                        c.setBackground(new Color(204, 255, 204));
+                        label.setBackground(new Color(204, 255, 204)); // Verde claro
                         break;
                     default:
-                        c.setBackground(table.getBackground());
+                        label.setBackground(Color.WHITE);
                         break;
                 }
             }
 
-            return c;
+            // Borde igual al resto de la tabla
+            label.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+            Tabla1.setRowHeight(23); // Altura más delgada para las filas
+            return label;
         }
     }
 
 // Renderizador para la columna "Ver"
     private class VerTableCellRenderer extends DefaultTableCellRenderer {
 
+        private final Color textColor = new Color(46, 49, 82); // Color de texto normal
+        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
+
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
             c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+            c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+            c.setFont(isSelected ? fontBold : fontNormal);
+
             setHorizontalAlignment(CENTER);
             setText("Ver");
+
+            // Bordes iguales al resto
+            setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+            Tabla1.setRowHeight(23); // Altura más delgada para las filas
             return c;
         }
     }
@@ -165,19 +166,19 @@ public final class Produccion extends javax.swing.JPanel {
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
-     * 
+     *
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        Tabla1 = new RSMaterialComponent.RSTableMetro();
         txtbuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
         btnEditar = new RSMaterialComponent.RSButtonShape();
         btnNuevo = new RSMaterialComponent.RSButtonShape();
         btnElimi = new RSMaterialComponent.RSButtonShape();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setPreferredSize(new java.awt.Dimension(1250, 630));
@@ -185,35 +186,6 @@ public final class Produccion extends javax.swing.JPanel {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        Tabla1.setForeground(new java.awt.Color(255, 255, 255));
-        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        Tabla1.setAlignmentX(0.1F);
-        Tabla1.setAlignmentY(0.1F);
-        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        Tabla1.setBackgoundHover(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorBorderRows(new java.awt.Color(153, 153, 153));
-        Tabla1.setColorPrimaryText(new java.awt.Color(46, 49, 82));
-        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
-        Tabla1.setColorSecundaryText(new java.awt.Color(46, 49, 82));
-        Tabla1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                Tabla1MouseClicked(evt);
-            }
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                Tabla1MouseEntered(evt);
-            }
-        });
-        jScrollPane2.setViewportView(Tabla1);
-
-        jPanel1.add(jScrollPane2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 80, 1210, 490));
 
         txtbuscar.setBackground(new java.awt.Color(245, 245, 245));
         txtbuscar.setForeground(new java.awt.Color(29, 30, 91));
@@ -269,6 +241,56 @@ public final class Produccion extends javax.swing.JPanel {
             }
         });
         jPanel1.add(btnElimi, new org.netbeans.lib.awtextra.AbsoluteConstraints(1080, 20, 120, 40));
+
+        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo", "Nombre", "Fecha inicio", "Fecha final", "Estado", "Detalle"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, true, true, true, true, true
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        Tabla1.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setRowHeight(23);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
+        Tabla1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                Tabla1MouseClicked(evt);
+            }
+        });
+        jScrollPane4.setViewportView(Tabla1);
+        Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
+
+        jPanel1.add(jScrollPane4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 100, 1210, 500));
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
     }// </editor-fold>//GEN-END:initComponents
@@ -346,130 +368,124 @@ public final class Produccion extends javax.swing.JPanel {
     }//GEN-LAST:event_btnElimiActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
-    // 1. Obtener posición del clic
-    int column = Tabla1.columnAtPoint(evt.getPoint());
-    int viewRow = Tabla1.rowAtPoint(evt.getPoint());
-    
-    // 2. Validar clic
-    if (viewRow < 0 || column < 0) {
-        System.out.println("Clic fuera de las filas/columnas");
-        return;
-    }
+        // 1. Obtener posición del clic
+        int column = Tabla1.columnAtPoint(evt.getPoint());
+        int viewRow = Tabla1.rowAtPoint(evt.getPoint());
 
-    // 3. Solo procesar clic en columna "Ver" (índice 5)
-    if (column == 5) {
-        // 4. Convertir índice de vista a modelo (importante si hay filtros aplicados)
-        int modelRow = Tabla1.convertRowIndexToModel(viewRow);
-        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-        
-        // 5. Debug: Mostrar todos los valores de la fila
-        System.out.println("\n--- DATOS DE LA FILA SELECCIONADA ---");
-        for (int i = 0; i < model.getColumnCount(); i++) {
-            System.out.printf("Columna %d (%s): %s %n", 
-                i, 
-                model.getColumnName(i), 
-                model.getValueAt(modelRow, i));
-        }
-        
-        // 6. Obtener y validar el ID
-        Object idObj = model.getValueAt(modelRow, 0);
-        int idProduccion = 0;
-        
-        try {
-            idProduccion = Integer.parseInt(idObj.toString());
-            System.out.println("ID obtenido: " + idProduccion);
-            
-            if (idProduccion <= 0) {
-                JOptionPane.showMessageDialog(this,
-                    "Error: ID de producción no válido (" + idProduccion + ")",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                "Error: El ID no es un número válido (" + idObj + ")",
-                "Error", JOptionPane.ERROR_MESSAGE);
+        // 2. Validar clic
+        if (viewRow < 0 || column < 0) {
+            System.out.println("Clic fuera de las filas/columnas");
             return;
         }
-        
-        // 7. Obtener el resto de datos con validación de nulos
-        String nombre = model.getValueAt(modelRow, 1) != null ? 
-                      model.getValueAt(modelRow, 1).toString() : "";
-        
-        String fechaInicio = model.getValueAt(modelRow, 2) != null ? 
-                           model.getValueAt(modelRow, 2).toString() : "";
-        
-        String fechaFin = model.getValueAt(modelRow, 3) != null ? 
-                        model.getValueAt(modelRow, 3).toString() : "En proceso";
-        
-        String estado = model.getValueAt(modelRow, 4) != null ? 
-                      model.getValueAt(modelRow, 4).toString() : "";
-        
-        // 8. Obtener datos de columnas ocultas (cantidad y dimensiones)
-        int cantidad = 0;
-        try {
-            Object cantObj = model.getValueAt(modelRow, 6);
-            cantidad = cantObj != null ? Integer.parseInt(cantObj.toString()) : 0;
-        } catch (NumberFormatException e) {
-            System.out.println("Error al convertir cantidad: " + e.getMessage());
+
+        // 3. Solo procesar clic en columna "Ver" (índice 5)
+        if (column == 5) {
+            // 4. Convertir índice de vista a modelo (importante si hay filtros aplicados)
+            int modelRow = Tabla1.convertRowIndexToModel(viewRow);
+            DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+
+            // 5. Debug: Mostrar todos los valores de la fila
+            System.out.println("\n--- DATOS DE LA FILA SELECCIONADA ---");
+            for (int i = 0; i < model.getColumnCount(); i++) {
+                System.out.printf("Columna %d (%s): %s %n",
+                        i,
+                        model.getColumnName(i),
+                        model.getValueAt(modelRow, i));
+            }
+
+            // 6. Obtener y validar el ID
+            Object idObj = model.getValueAt(modelRow, 0);
+            int idProduccion = 0;
+
+            try {
+                idProduccion = Integer.parseInt(idObj.toString());
+                System.out.println("ID obtenido: " + idProduccion);
+
+                if (idProduccion <= 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "Error: ID de producción no válido (" + idProduccion + ")",
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error: El ID no es un número válido (" + idObj + ")",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // 7. Obtener el resto de datos con validación de nulos
+            String nombre = model.getValueAt(modelRow, 1) != null
+                    ? model.getValueAt(modelRow, 1).toString() : "";
+
+            String fechaInicio = model.getValueAt(modelRow, 2) != null
+                    ? model.getValueAt(modelRow, 2).toString() : "";
+
+            String fechaFin = model.getValueAt(modelRow, 3) != null
+                    ? model.getValueAt(modelRow, 3).toString() : "En proceso";
+
+            String estado = model.getValueAt(modelRow, 4) != null
+                    ? model.getValueAt(modelRow, 4).toString() : "";
+
+            // 8. Obtener datos de columnas ocultas (cantidad y dimensiones)
+            int cantidad = 0;
+            try {
+                Object cantObj = model.getValueAt(modelRow, 6);
+                cantidad = cantObj != null ? Integer.parseInt(cantObj.toString()) : 0;
+            } catch (NumberFormatException e) {
+                System.out.println("Error al convertir cantidad: " + e.getMessage());
+            }
+
+            String dimensiones = "";
+            try {
+                Object dimObj = model.getValueAt(modelRow, 7);
+                dimensiones = dimObj != null ? dimObj.toString() : "";
+            } catch (Exception e) {
+                System.out.println("Error al obtener dimensiones: " + e.getMessage());
+            }
+
+            // 9. Debug: Mostrar datos que se enviarán
+            System.out.println("\n--- DATOS A ENVIAR AL PANEL ---");
+            System.out.println("ID: " + idProduccion);
+            System.out.println("Nombre: " + nombre);
+            System.out.println("Fecha inicio: " + fechaInicio);
+            System.out.println("Fecha fin: " + fechaFin);
+            System.out.println("Estado: " + estado);
+            System.out.println("Cantidad: " + cantidad);
+            System.out.println("Dimensiones: " + dimensiones);
+
+            // 10. Crear y configurar el panel de detalle
+            DetalleProduProducto detallePanel = new DetalleProduProducto(
+                    idProduccion,
+                    nombre,
+                    fechaInicio,
+                    fechaFin,
+                    estado,
+                    String.valueOf(cantidad),
+                    dimensiones
+            );
+
+            // 11. Mostrar el panel de detalle
+            removeAll();
+            setLayout(new BorderLayout());
+            add(detallePanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+
+            System.out.println("Panel de detalle mostrado con ID: " + idProduccion);
         }
-        
-        String dimensiones = "";
-        try {
-            Object dimObj = model.getValueAt(modelRow, 7);
-            dimensiones = dimObj != null ? dimObj.toString() : "";
-        } catch (Exception e) {
-            System.out.println("Error al obtener dimensiones: " + e.getMessage());
-        }
-        
-        // 9. Debug: Mostrar datos que se enviarán
-        System.out.println("\n--- DATOS A ENVIAR AL PANEL ---");
-        System.out.println("ID: " + idProduccion);
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Fecha inicio: " + fechaInicio);
-        System.out.println("Fecha fin: " + fechaFin);
-        System.out.println("Estado: " + estado);
-        System.out.println("Cantidad: " + cantidad);
-        System.out.println("Dimensiones: " + dimensiones);
-        
-        // 10. Crear y configurar el panel de detalle
-        DetalleProduProducto detallePanel = new DetalleProduProducto(
-            idProduccion,
-            nombre,
-            fechaInicio,
-            fechaFin,
-            estado,
-            String.valueOf(cantidad),
-            dimensiones
-        );
-        
-        
-        
-        // 11. Mostrar el panel de detalle
-        removeAll();
-        setLayout(new BorderLayout());
-        add(detallePanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
-        
-        System.out.println("Panel de detalle mostrado con ID: " + idProduccion);
-    }
 
 
     }//GEN-LAST:event_Tabla1MouseClicked
 
-    private void Tabla1MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseEntered
-        // TODO add your handling code here:
-    }//GEN-LAST:event_Tabla1MouseEntered
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSTableMetro Tabla1;
+    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private RSMaterialComponent.RSButtonShape btnEditar;
     private RSMaterialComponent.RSButtonShape btnElimi;
     private RSMaterialComponent.RSButtonShape btnNuevo;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane4;
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 

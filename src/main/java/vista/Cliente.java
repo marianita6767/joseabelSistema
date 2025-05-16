@@ -164,7 +164,7 @@ public class Cliente extends javax.swing.JPanel {
             }
         });
         tablaclientes.setBackgoundHead(new java.awt.Color(46, 49, 82));
-        tablaclientes.setBackgoundHover(new java.awt.Color(67, 150, 209));
+        tablaclientes.setBackgoundHover(new java.awt.Color(109, 160, 221));
         tablaclientes.setBorderHead(null);
         tablaclientes.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         tablaclientes.setColorBorderHead(new java.awt.Color(46, 49, 82));
@@ -177,7 +177,7 @@ public class Cliente extends javax.swing.JPanel {
         tablaclientes.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         tablaclientes.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         tablaclientes.setRowHeight(23);
-        tablaclientes.setSelectionBackground(new java.awt.Color(67, 150, 209));
+        tablaclientes.setSelectionBackground(new java.awt.Color(109, 160, 221));
         tablaclientes.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
                 tablaclientesMouseClicked(evt);
