@@ -113,7 +113,7 @@ private Image obtenerImagenDelLabel() {
         txtColor.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtColor.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtColor.setPhColor(new java.awt.Color(0, 0, 0));
-        txtColor.setPlaceholder("Ingrese el id");
+        txtColor.setPlaceholder("Ingrese el color");
         txtColor.setSelectionColor(new java.awt.Color(0, 0, 0));
         txtColor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -156,7 +156,7 @@ private Image obtenerImagenDelLabel() {
         txtAltura.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtAltura.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtAltura.setPhColor(new java.awt.Color(0, 0, 0));
-        txtAltura.setPlaceholder("Ingrese el id");
+        txtAltura.setPlaceholder("Ingrese el alto");
         txtAltura.setSelectionColor(new java.awt.Color(0, 0, 0));
         txtAltura.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -169,7 +169,7 @@ private Image obtenerImagenDelLabel() {
         txtProfundidad.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtProfundidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtProfundidad.setPhColor(new java.awt.Color(0, 0, 0));
-        txtProfundidad.setPlaceholder("Ingrese el id");
+        txtProfundidad.setPlaceholder("Ingrese la profundidad");
         txtProfundidad.setSelectionColor(new java.awt.Color(0, 0, 0));
         txtProfundidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -182,7 +182,7 @@ private Image obtenerImagenDelLabel() {
         txtMaterial.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtMaterial.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtMaterial.setPhColor(new java.awt.Color(0, 0, 0));
-        txtMaterial.setPlaceholder("Ingrese el id");
+        txtMaterial.setPlaceholder("Ingrese el material");
         txtMaterial.setSelectionColor(new java.awt.Color(0, 0, 0));
         txtMaterial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -211,7 +211,7 @@ private Image obtenerImagenDelLabel() {
         txtAncho.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtAncho.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
         txtAncho.setPhColor(new java.awt.Color(0, 0, 0));
-        txtAncho.setPlaceholder("Ingrese el id");
+        txtAncho.setPlaceholder("Ingrese el ancho");
         txtAncho.setSelectionColor(new java.awt.Color(0, 0, 0));
         txtAncho.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -290,30 +290,53 @@ private Image obtenerImagenDelLabel() {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-       
-      try {
-        // Validación de campos
+                                
+    try {
+        // Validación de campos obligatorios
         if(txtNombre.getText().isEmpty() || lblImagen.getIcon() == null) {
-            JOptionPane.showMessageDialog(this, "Complete todos los campos");
+            JOptionPane.showMessageDialog(this, "Nombre e imagen son campos obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
         
-        // Crear producto
+        // Validación de campos numéricos
+        double ancho, altura, profundidad;
+        try {
+            ancho = txtAncho.getText().isEmpty() ? 0 : Double.parseDouble(txtAncho.getText());
+            altura = txtAltura.getText().isEmpty() ? 0 : Double.parseDouble(txtAltura.getText());
+            profundidad = txtProfundidad.getText().isEmpty() ? 0 : Double.parseDouble(txtProfundidad.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Los campos de medidas deben ser números válidos", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Obtener la imagen
+        Image imagen = ((ImageIcon)lblImagen.getIcon()).getImage();
+        if (imagen == null) {
+            JOptionPane.showMessageDialog(this, "Debe seleccionar una imagen", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        
+        // Crear el producto
         this.productoCreado = new producto(
             txtNombre.getText(),
             txtColor.getText(),
             txtMaterial.getText(),
-            Double.parseDouble(txtAncho.getText()),
-            Double.parseDouble(txtAltura.getText()),
-            Double.parseDouble(txtProfundidad.getText()),
-            ((ImageIcon)lblImagen.getIcon()).getImage(),
-            1 // idCategoria
+            ancho,
+            altura,
+            profundidad,
+            imagen,
+            1 // idCategoria - deberías tener un campo para esto
         );
         
         this.dispose();
     } catch(Exception e) {
-        JOptionPane.showMessageDialog(this, "Error: " + e.getMessage());
+        JOptionPane.showMessageDialog(this, 
+            "Error al crear el producto: " + e.getMessage(), 
+            "Error", 
+            JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
     }
+
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void txtColorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtColorActionPerformed

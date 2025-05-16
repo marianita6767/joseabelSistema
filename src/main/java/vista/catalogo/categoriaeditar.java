@@ -184,7 +184,7 @@ private void cargarDatosCategoria() {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-
+/*
          String nombre = txtNombre.getText().trim();
     
     if (nombre.isEmpty()) {
@@ -204,7 +204,7 @@ private void cargarDatosCategoria() {
     
     JOptionPane.showMessageDialog(this, "Categoría actualizada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
     dispose();
-     
+     */
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     /**

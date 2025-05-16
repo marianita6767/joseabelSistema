@@ -166,7 +166,7 @@ public class catalogocategoria extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-
+/*
         String nombre = txtNombre.getText().trim();
     if (nombre.isEmpty()) {
         JOptionPane.showMessageDialog(this, 
@@ -211,12 +211,11 @@ public class catalogocategoria extends javax.swing.JDialog {
             JOptionPane.ERROR_MESSAGE);
         e.printStackTrace();
     }
-
+  */
     }//GEN-LAST:event_btnGuardarActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
+    
+     
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
