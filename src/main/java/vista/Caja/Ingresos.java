@@ -50,8 +50,10 @@ public final class Ingresos extends javax.swing.JPanel {
     DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
     model.setRowCount(0);
 
-    Ctrl_CajaIngresos ctrl = new Ctrl_CajaIngresos();
-    for (Caja caja : ctrl.obtenerCategorias()) {
+   Ctrl_CajaIngresos ctrl = new Ctrl_CajaIngresos();
+    
+    // Obtener la lista de ingresos (objetos Caja) desde la base de datos
+    for (Caja caja : ctrl.obtenerIngresos()) {  // Cambiado de obtenerCategoriasIngreso() a obtenerIngresos()
         model.addRow(new Object[]{
             caja.getId_codigo(),
             caja.getFecha(),

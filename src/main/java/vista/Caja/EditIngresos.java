@@ -12,12 +12,17 @@ import java.sql.SQLException;
 import java.util.Date;
 import javax.swing.JOptionPane;
 import modelo.Conexion;
+import vista.Produccionn.DatosActualizados;
+import vista.Produccionn.Datos_guardados;
+import vista.Produccionn.Error_guardar;
+import vista.Produccionn.Error_id_;
 
 /**
  *
  * @author ADSO
  */
 public class EditIngresos extends javax.swing.JDialog {
+
     private int idIngresoActual;
     private int id_codigo;
 
@@ -53,6 +58,7 @@ public class EditIngresos extends javax.swing.JDialog {
         comboCategoria = new RSMaterialComponent.RSComboBoxMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -165,31 +171,31 @@ public class EditIngresos extends javax.swing.JDialog {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-       
-       Alertaa confirmDialog = new Alertaa(
-            (Frame) this.getParent(),
-            true,
-            "Confirmar",
-            "¿Desea guardar los datos?"
-    );
-    confirmDialog.setVisible(true);
-    
-     if (!confirmDialog.opcionConfirmada) {
-        return;
-    }
-        if (txtPago.getDateFormatString()== null || txtDetalleEdit.getText()== null
-                || txtCantidadEdit.getText()== null|| comboCategoria.getSelectedItem()== null || comboCategoria.getSelectedIndex() == 0) {
 
-            JOptionPane.showMessageDialog(this,
-                    "Todos los campos son obligatorios",
+        if (txtPago.getDateFormatString() == null || txtDetalleEdit.getText() == null
+                || txtCantidadEdit.getText() == null || comboCategoria.getSelectedItem() == null || comboCategoria.getSelectedIndex() == 0) {
+
+            new AlertaaVacio(
+                    (Frame) this.getParent(),
+                    true,
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
+                    "¿Desea guardar los datos?").setVisible(true);
+        }else{
+        Alertaa confirmDialog = new Alertaa(
+                (Frame) this.getParent(),
+                true,
+                "Confirmar",
+                "¿Desea guardar los datos?"
+        );
+        confirmDialog.setVisible(true);
+        if (!confirmDialog.opcionConfirmada) {
             return;
         }
-
+        }
         try {
             // Obtener valores
             java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
@@ -197,10 +203,7 @@ public class EditIngresos extends javax.swing.JDialog {
             double cantidad = Double.parseDouble(txtCantidadEdit.getText());
             String categoria = comboCategoria.getSelectedItem().toString();
 
-            
-
             Connection con = Conexion.getConnection();
-            
 
             if (idIngresoActual == 0) {
                 // Insertar nuevo registro
@@ -214,10 +217,11 @@ public class EditIngresos extends javax.swing.JDialog {
 
                     ps.executeUpdate();
 
-                    JOptionPane.showMessageDialog(this,
-                            "Datos guardados correctamente",
-                            "Éxito",
-                            JOptionPane.INFORMATION_MESSAGE);
+                    new Datos_guardados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
                 }
             } else {
                 // Actualizar registro existente
@@ -232,10 +236,12 @@ public class EditIngresos extends javax.swing.JDialog {
 
                     int affectedRows = ps.executeUpdate();
                     if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this,
-                                "Datos actualizados correctamente",
-                                "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        
+                        new DatosActualizados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
                     }
                 }
             }
@@ -243,13 +249,13 @@ public class EditIngresos extends javax.swing.JDialog {
             con.close();
             this.dispose();
 
-         
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar: " + e.getMessage(),
+            new Error_guardar(
+                    (Frame) this.getParent(),
+                    true,
                     "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }       
+                    "¿Desea guardar los datos?").setVisible(true);
+        }
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
@@ -259,51 +265,62 @@ public class EditIngresos extends javax.swing.JDialog {
 
     private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
         try {
-        String idStr = txtBusca.getText().trim();
-        if (idStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Ingrese un ID válido", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+            String idStr = txtBusca.getText().trim();
+            if (idStr.isEmpty()) {
+                new Error_id_(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
+            }
 
-        int id = Integer.parseInt(idStr);
-        
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement ps = con.prepareStatement("SELECT * FROM caja WHERE id_codigo = ?")) {
-            
-            ps.setInt(1, id);
-            
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    id_codigo = id;
-                    idIngresoActual = id;
-                    
-                    // Llenar los campos con los datos
-                    txtPago.setDate(rs.getDate("fecha"));
-                    txtCantidadEdit.setText(String.valueOf(rs.getDouble("monto")));
-                    txtDetalleEdit.setText(rs.getString("descripcion"));
-                    
-                    // Establecer la categoría seleccionada
-                    String categoria = rs.getString("categoria");
-                    for (int i = 0; i < comboCategoria.getItemCount(); i++) {
-                        if (comboCategoria.getItemAt(i).equals(categoria)) {
-                            comboCategoria.setSelectedIndex(i);
-                            break;
+            int id = Integer.parseInt(idStr);
+
+            try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT * FROM caja WHERE id_codigo = ?")) {
+
+                ps.setInt(1, id);
+
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        id_codigo = id;
+                        idIngresoActual = id;
+
+                        // Llenar los campos con los datos
+                        txtPago.setDate(rs.getDate("fecha"));
+                        txtCantidadEdit.setText(String.valueOf(rs.getDouble("monto")));
+                        txtDetalleEdit.setText(rs.getString("descripcion"));
+
+                        // Establecer la categoría seleccionada
+                        String categoria = rs.getString("categoria");
+                        for (int i = 0; i < comboCategoria.getItemCount(); i++) {
+                            if (comboCategoria.getItemAt(i).equals(categoria)) {
+                                comboCategoria.setSelectedIndex(i);
+                                break;
+                            }
                         }
+                    } else {
+                        new Error_id_(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
                     }
-                } else {
-                    JOptionPane.showMessageDialog(this, 
-                        "No se encontró un ingreso con ese ID", 
-                        "Error", 
-                        JOptionPane.ERROR_MESSAGE);
                 }
             }
+        } catch (NumberFormatException e) {
+           new Error_id_(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
+        } catch (Exception e) {
+            new AlertaErrorBusqueda(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "¿Desea guardar los datos?").setVisible(true);
+            e.printStackTrace();
         }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this, "El ID debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
     }//GEN-LAST:event_btnBuscarActionPerformed
 
     private void txtBuscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscaActionPerformed

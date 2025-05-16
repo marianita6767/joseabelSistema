@@ -122,7 +122,7 @@ public class formuEgresos extends javax.swing.JDialog {
         });
         jPanel1.add(txtDetallenuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 240, 420, 40));
 
-        cmbStock.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione categoria:", "Servicios Publicos", "Compra de Productos e Insumos", "Arriendo", "Nómina", "Gastos Administrativos", "Mercadeo y Publicidad", "Transporte, Domicilios y Logistica", "mantenimineto y Reparaciones ", "Muebles, Equipos o Maquinaria", "Otros" }));
+        cmbStock.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione categoria:", "Servicios Publicos", "Compra de Productos e Insumos", "Arriendo", "Nómina", "Gastos Administrativos", "Mercadeo y Publicidad", "Transporte", "Domicilios y Logistica", "mantenimiento y Reparaciones ", "Muebles ", "Equipos o Maquinaria", "Otros" }));
         cmbStock.setColorMaterial(new java.awt.Color(0, 0, 0));
         cmbStock.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
         cmbStock.addActionListener(new java.awt.event.ActionListener() {

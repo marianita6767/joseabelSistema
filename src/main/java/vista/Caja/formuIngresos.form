@@ -217,19 +217,19 @@
           <Properties>
             <Property name="model" type="javax.swing.ComboBoxModel" editor="org.netbeans.modules.form.editors2.ComboBoxModelEditor">
               <StringArray count="13">
-                <StringItem index="0" value="Seleccione categoria:"/>
-                <StringItem index="1" value="Servicios Publicos"/>
-                <StringItem index="2" value="Compra de Productos e Insumos"/>
-                <StringItem index="3" value="Arriendo"/>
-                <StringItem index="4" value="N&#xf3;mina"/>
-                <StringItem index="5" value="Gastos Administrativos"/>
-                <StringItem index="6" value="Mercadeo y Publicidad"/>
-                <StringItem index="7" value="Transporte"/>
-                <StringItem index="8" value="Domicilios y Logistica"/>
-                <StringItem index="9" value="mantenimineto y Reparaciones"/>
-                <StringItem index="10" value="Muebles"/>
-                <StringItem index="11" value="Equipos o Maquinaria"/>
-                <StringItem index="12" value="Otros"/>
+                <StringItem index="0" value="Seleccione Categoria:"/>
+                <StringItem index="1" value="Ventas"/>
+                <StringItem index="2" value="Servicios"/>
+                <StringItem index="3" value="Donaciones"/>
+                <StringItem index="4" value="Pr&#xe9;stamos"/>
+                <StringItem index="5" value="Inversiones"/>
+                <StringItem index="6" value="Subsidios"/>
+                <StringItem index="7" value="Reembolsos"/>
+                <StringItem index="8" value="Intereses"/>
+                <StringItem index="9" value="Venta Activos"/>
+                <StringItem index="10" value="Alquileres"/>
+                <StringItem index="11" value="Comisiones"/>
+                <StringItem index="12" value="Otros Ingresos"/>
               </StringArray>
             </Property>
             <Property name="colorMaterial" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
