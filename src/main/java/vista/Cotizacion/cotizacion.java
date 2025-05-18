@@ -4,6 +4,10 @@
  */
 package vista.Cotizacion;
 
+import controlador.GeneradorCotizacionPDF;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import RSMaterialComponent.RSTextFieldMaterial;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -296,20 +300,37 @@ public class cotizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_txtNombre5ActionPerformed
 
     private void btnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadirActionPerformed
+        System.out.println("Botón Generar PDF presionado");
+
         if (Tabla1.getRowCount() == 0) {
+            System.out.println("Tabla vacía, mostrando advertencia");
             JOptionPane.showMessageDialog(this,
                     "No hay productos en la cotización",
                     "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Aquí iría el código para generar el PDF pero topdavia no he hecho suficiente invest.
-        // podria funcionar el Apache PDFBox :D
-        JOptionPane.showMessageDialog(this,
-                "PDF generado exitosamente",
-                "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        System.out.println("Creando instancia de GeneradorCotizacionPDF");
+        GeneradorCotizacionPDF generador = new GeneradorCotizacionPDF();
+        DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+        String cliente = txt_NombreCliente.getText().trim();
+        String total = txt_total.getText().trim();
+        String archivoSalida = "cotizacion_" + cliente.replace(" ", "_") + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".pdf";
 
-        reiniciarCotizacion(); // Limpiar para nueva cotización
+        System.out.println("Cliente: " + cliente);
+        System.out.println("Total: " + total);
+        System.out.println("Archivo de salida: " + archivoSalida);
+        System.out.println("Llamando a generarPDF...");
+
+        try {
+            generador.generarPDF(cliente, modelo, total, archivoSalida);
+            System.out.println("PDF generado correctamente, reiniciando cotización");
+            reiniciarCotizacion();
+        } catch (Exception e) {
+            System.out.println("Error al generar PDF: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al generar PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
 
     }//GEN-LAST:event_btnAñadirActionPerformed
 
@@ -461,15 +482,15 @@ public class cotizacion extends javax.swing.JPanel {
                 }
             }
         }
-        }
+    }
 
-        private void eliminarFila(int fila) {
-            // Obtener datos del producto a eliminar para mostrar en el mensaje
-            String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
-            String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Cantidad ahora en índice 2
+    private void eliminarFila(int fila) {
+        // Obtener datos del producto a eliminar para mostrar en el mensaje
+        String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
+        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Cantidad ahora en índice 2
 
-            // Resto del método permanece igual...
-            int confirmacion = JOptionPane.showConfirmDialog(
+        // Resto del método permanece igual...
+        int confirmacion = JOptionPane.showConfirmDialog(
                 this,
                 "<html>¿Está seguro que desea eliminar el producto:<br><br>"
                 + "<b>Producto:</b> " + producto + "<br>"
@@ -478,44 +499,44 @@ public class cotizacion extends javax.swing.JPanel {
                 "Confirmar eliminación",
                 JOptionPane.YES_NO_OPTION,
                 JOptionPane.WARNING_MESSAGE
-            );
+        );
 
-            if (confirmacion == JOptionPane.YES_OPTION) {
-                DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-                modelo.removeRow(fila);
-                calcularTotal();
+        if (confirmacion == JOptionPane.YES_OPTION) {
+            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+            modelo.removeRow(fila);
+            calcularTotal();
 
-                JOptionPane.showMessageDialog(
+            JOptionPane.showMessageDialog(
                     this,
                     "Producto eliminado correctamente",
                     "Eliminación exitosa",
                     JOptionPane.INFORMATION_MESSAGE
-                );
+            );
+        }
+    }
+
+    private void editarFila(int fila) {
+        // Obtener los valores de la fila seleccionada con los nuevos índices
+        String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
+        String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
+        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
+        String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
+
+        // Resto del método permanece igual...
+        txtNombre6.setText(producto);
+
+        for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
+            if (combox_Unidad.getItemAt(i).equals(unidad)) {
+                combox_Unidad.setSelectedIndex(i);
+                break;
             }
         }
 
-        private void editarFila(int fila) {
-            // Obtener los valores de la fila seleccionada con los nuevos índices
-            String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
-            String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
-            String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
-            String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
+        txtNombre4.setText(cantidad);
+        txtNombre5.setText(valorUnitario);
 
-            // Resto del método permanece igual...
-            txtNombre6.setText(producto);
-
-            for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
-                if (combox_Unidad.getItemAt(i).equals(unidad)) {
-                    combox_Unidad.setSelectedIndex(i);
-                    break;
-                }
-            }
-
-            txtNombre4.setText(cantidad);
-            txtNombre5.setText(valorUnitario);
-
-            Tabla1.putClientProperty("filaEditando", fila);
-            jButton_anadir_producto.setText("  Guardar");
+        Tabla1.putClientProperty("filaEditando", fila);
+        jButton_anadir_producto.setText("  Guardar");
     }//GEN-LAST:event_Tabla1MouseClicked
 
 
