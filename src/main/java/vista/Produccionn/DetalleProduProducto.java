@@ -166,7 +166,7 @@ public class DetalleProduProducto extends javax.swing.JPanel {
         mostrarPanelSecundario(detalle);
     }//GEN-LAST:event_btndetalleActionPerformed
     private void mostrarPanelSecundario(JPanel panel) {
-        panel.setSize(1090, 690);
+        panel.setSize(1250, 690);
         panel.setLocation(0, 0);
 
         jPanel2.removeAll();

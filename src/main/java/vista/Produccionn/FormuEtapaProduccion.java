@@ -4,7 +4,16 @@
  */
 package vista.Produccionn;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -13,11 +22,28 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.accessibility.Accessible;
+import javax.swing.AbstractAction;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.ComboPopup;
 import modelo.Conexion;
 
 /**
@@ -26,8 +52,8 @@ import modelo.Conexion;
  */
 public class FormuEtapaProduccion extends javax.swing.JDialog {
 
-    private JList<String> listMateriales;
-    private JScrollPane scrollMateriales;
+    private CheckedComboBox<CheckableItem> cmbMateriales;
+    private CheckedComboBox<CheckableItem> cmbHerramientas;
 
     /**
      * Creates new form EtapaProduccion
@@ -36,13 +62,189 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
-        txtetapa.setEditable(true); // Habilitar edición del campo
+        txtetapa.setEditable(true);
+        cargarTrabajadores();
 
-        listMateriales = new JList<>();
-        listMateriales.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        scrollMateriales = new JScrollPane(listMateriales);
-        jPanel1.add(scrollMateriales, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, 200, 100));
-        cargarMaterialesDesdeBD();
+        // Cargar materiales (tipo 'material')
+        cmbMateriales = new CheckedComboBox<>(makeProductModel("material"));
+        cmbMateriales.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        jPanel1.add(cmbMateriales, new org.netbeans.lib.awtextra.AbsoluteConstraints(245, 188, 200, 30));
+
+        // Cargar herramientas (tipo 'herramienta')
+        cmbHerramientas = new CheckedComboBox<>(makeProductModel("herramienta"));
+        cmbHerramientas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        jPanel1.add(cmbHerramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(245, 267, 200, 30));
+
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 490, 480));
+    }
+
+    private DefaultComboBoxModel<CheckableItem> makeProductModel(String tipo) {
+        DefaultComboBoxModel<CheckableItem> model = new DefaultComboBoxModel<>();
+        try {
+            Connection con = new Conexion().getConnection();
+            String sql = "SELECT nombre FROM inventario WHERE tipo = ? AND estado = 'disponible'";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ps.setString(1, tipo);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                model.addElement(new CheckableItem(rs.getString("nombre"), false));
+            }
+            con.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
+
+            // Mostrar mensaje de error al usuario
+            Error_guardar errorDialog = new Error_guardar(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "No se pudieron cargar los " + tipo + ": " + ex.getMessage()
+            );
+            errorDialog.setLocationRelativeTo(null);
+            errorDialog.setVisible(true);
+        }
+        return model;
+    }
+// Clases internas para el CheckedComboBox
+
+    class CheckableItem {
+
+        private final String text;
+        private boolean selected;
+
+        protected CheckableItem(String text, boolean selected) {
+            this.text = text;
+            this.selected = selected;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
+
+    class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
+
+        protected boolean keepOpen;
+        private final JPanel panel = new JPanel(new BorderLayout());
+
+        protected CheckedComboBox(ComboBoxModel<E> model) {
+            super(model);
+            setBackground(new Color(255, 255, 255)); // Fondo blanco para coincidir con jPanel1
+            setForeground(Color.DARK_GRAY); // Texto oscuro
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(200, 40); // Aumentar altura para un look más moderno
+        }
+
+        @Override
+        public void updateUI() {
+            setRenderer(null);
+            super.updateUI();
+
+            Accessible a = getAccessibleContext().getAccessibleChild(0);
+            if (a instanceof ComboPopup) {
+                ((ComboPopup) a).getList().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        JList<?> list = (JList<?>) e.getComponent();
+                        if (SwingUtilities.isLeftMouseButton(e)) {
+                            keepOpen = true;
+                            updateItem(list.locationToIndex(e.getPoint()));
+                        }
+                    }
+                });
+            }
+
+            DefaultListCellRenderer renderer = new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (index >= 0) {
+                        c.setBackground(isSelected ? new Color(0, 120, 215, 50) : new Color(255, 255, 255));
+                        c.setForeground(Color.DARK_GRAY);
+                    } else {
+                        c.setBackground(new Color(0, 0, 0, 0)); // Fondo transparente para el texto seleccionado
+                    }
+                    return c;
+                }
+            };
+            JCheckBox check = new JCheckBox();
+            check.setOpaque(false);
+            check.setForeground(new Color(0, 120, 215)); // Color de casilla moderna
+            setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+                panel.removeAll();
+                Component c = renderer.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                if (index < 0) {
+                    String txt = getCheckedItemString(list.getModel());
+                    JLabel l = (JLabel) c;
+                    l.setText(txt.isEmpty() ? " " : txt);
+                    l.setForeground(Color.DARK_GRAY);
+                    l.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                    panel.setOpaque(false); // Hacer el panel transparente
+                    panel.setBackground(new Color(0, 0, 0, 0)); // Fondo transparente
+                } else {
+                    check.setSelected(value.isSelected());
+                    panel.add(check, BorderLayout.WEST);
+                    panel.setBackground(isSelected ? new Color(0, 120, 215, 50) : new Color(255, 255, 255));
+                }
+                panel.add(c, BorderLayout.CENTER);
+                return panel;
+            });
+            initActionMap();
+        }
+
+        protected void initActionMap() {
+            KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0);
+            getInputMap(JComponent.WHEN_FOCUSED).put(ks, "checkbox-select");
+            getActionMap().put("checkbox-select", new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    Accessible a = getAccessibleContext().getAccessibleChild(0);
+                    if (a instanceof ComboPopup) {
+                        updateItem(((ComboPopup) a).getList().getSelectedIndex());
+                    }
+                }
+            });
+        }
+
+        protected void updateItem(int index) {
+            if (isPopupVisible() && index >= 0) {
+                E item = getItemAt(index);
+                item.setSelected(!item.isSelected());
+                setSelectedIndex(-1);
+                setSelectedItem(item);
+            }
+        }
+
+        @Override
+        public void setPopupVisible(boolean v) {
+            if (keepOpen) {
+                keepOpen = false;
+            } else {
+                super.setPopupVisible(v);
+            }
+        }
+
+        protected static <E extends CheckableItem> String getCheckedItemString(ListModel<E> model) {
+            return IntStream.range(0, model.getSize())
+                    .mapToObj(model::getElementAt)
+                    .filter(CheckableItem::isSelected)
+                    .map(Objects::toString)
+                    .sorted()
+                    .collect(Collectors.joining(", "));
+        }
     }
 
     /**
@@ -69,10 +271,10 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         btnCancelar1 = new rojeru_san.RSButtonRiple();
         jLabel12 = new javax.swing.JLabel();
         txtcantidad = new RSMaterialComponent.RSTextFieldMaterial();
-        Boxmateriales = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel7 = new javax.swing.JLabel();
         BoxAsignado = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel8 = new javax.swing.JLabel();
+        jLabel13 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -93,12 +295,12 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("Estado:");
-        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 70, -1, -1));
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 70, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Fecha final:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 320, -1, -1));
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 310, -1, -1));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel10.setForeground(new java.awt.Color(0, 0, 0));
@@ -123,7 +325,7 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
         jLabel11.setText("Fecha inicio:");
-        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, -1, -1));
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 230, -1, -1));
 
         Boxestado.setForeground(new java.awt.Color(102, 102, 102));
         Boxestado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccionar", "pendiente", "proceso", "completado" }));
@@ -156,7 +358,7 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
                 btnGuardar1ActionPerformed(evt);
             }
         });
-        jPanel1.add(btnGuardar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(200, 580, 140, -1));
+        jPanel1.add(btnGuardar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 410, 140, -1));
 
         btnCancelar1.setBackground(new java.awt.Color(46, 49, 82));
         btnCancelar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/salida (1).png"))); // NOI18N
@@ -168,14 +370,13 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
                 btnCancelar1ActionPerformed(evt);
             }
         });
-        jPanel1.add(btnCancelar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 590, 140, -1));
+        jPanel1.add(btnCancelar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 410, 140, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Nombre etapa:");
         jPanel1.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, -1, -1));
 
-        txtcantidad.setEditable(false);
         txtcantidad.setBackground(new java.awt.Color(255, 255, 255));
         txtcantidad.setForeground(new java.awt.Color(0, 0, 0));
         txtcantidad.setColorMaterial(new java.awt.Color(0, 0, 0));
@@ -190,20 +391,10 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         });
         jPanel1.add(txtcantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 190, 30));
 
-        Boxmateriales.setForeground(new java.awt.Color(102, 102, 102));
-        Boxmateriales.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccionar", "pendiente", "proceso", "completado" }));
-        Boxmateriales.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
-        Boxmateriales.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                BoxmaterialesActionPerformed(evt);
-            }
-        });
-        jPanel1.add(Boxmateriales, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, -1, -1));
-
         jLabel7.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel7.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel7.setText("Materiales:");
-        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 160, -1, -1));
+        jLabel7.setText("Heramientas:");
+        jPanel1.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 230, -1, -1));
 
         BoxAsignado.setForeground(new java.awt.Color(102, 102, 102));
         BoxAsignado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccionar", "pendiente", "proceso", "completado" }));
@@ -213,12 +404,17 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
                 BoxAsignadoActionPerformed(evt);
             }
         });
-        jPanel1.add(BoxAsignado, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 260, -1, -1));
+        jPanel1.add(BoxAsignado, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 340, -1, -1));
 
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel8.setForeground(new java.awt.Color(0, 0, 0));
         jLabel8.setText("Asignado:");
-        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 240, -1, -1));
+        jPanel1.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 310, -1, -1));
+
+        jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel13.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel13.setText("Materiales:");
+        jPanel1.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 160, -1, -1));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -228,7 +424,7 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 503, Short.MAX_VALUE)
         );
 
         pack();
@@ -253,7 +449,19 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         String estado = Boxestado.getSelectedItem().toString();
         Date fechaInicio = new Date(txtFechainicio.getDate().getTime());
         Date fechaFin = new Date(txtfechafin.getDate().getTime());
+        String trabajador = BoxAsignado.getSelectedItem().toString();
 
+        if (trabajador.equals("Seleccionar")) {
+            espacio_alerta errorDialog = new espacio_alerta(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "Debe seleccionar un trabajador"
+            );
+            errorDialog.setLocationRelativeTo(null);
+            errorDialog.setVisible(true);
+            return;
+        }
         // 3. Mostrar diálogo de confirmación
         alertaa confirmDialog = new alertaa(
                 (Frame) this.getParent(),
@@ -270,7 +478,7 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
 
         // 4. Intentar guardar en la base de datos
         try {
-            boolean exito = insertarEtapa(nombreEtapa, estado, fechaInicio, fechaFin);
+            boolean exito = insertarEtapa(nombreEtapa, estado, fechaInicio, fechaFin, trabajador);
             if (exito) {
                 // Mostrar diálogo de éxito
                 Datos_guardados exitoDialog = new Datos_guardados(
@@ -335,43 +543,35 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         return true;
     }
 
-    private boolean insertarEtapa(String nombre, String estado, Date inicio, Date fin) throws SQLException {
+    private boolean insertarEtapa(String nombre, String estado, Date inicio, Date fin, String trabajador) throws SQLException {
         Connection con = null;
         try {
             con = new Conexion().getConnection();
-            con.setAutoCommit(false); // Iniciar transacción
+            con.setAutoCommit(false);
 
             // 1. Insertar la etapa
-            String sqlEtapa = "INSERT INTO etapa_produccion (nombre_etapa, estado, fecha_inicio, fecha_fin) VALUES (?, ?, ?, ?)";
+            String sqlEtapa = "INSERT INTO etapa_produccion (nombre_etapa, estado, fecha_inicio, fecha_fin, trabajador_asignado) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement psEtapa = con.prepareStatement(sqlEtapa, Statement.RETURN_GENERATED_KEYS);
             psEtapa.setString(1, nombre);
             psEtapa.setString(2, estado);
             psEtapa.setDate(3, inicio);
             psEtapa.setDate(4, fin);
+            psEtapa.setString(5, trabajador);
             psEtapa.executeUpdate();
 
-            // Obtener el ID de la etapa insertada
+            // Obtener ID de la etapa
             ResultSet rs = psEtapa.getGeneratedKeys();
             int idEtapa = rs.next() ? rs.getInt(1) : -1;
-
             if (idEtapa == -1) {
                 throw new SQLException("No se pudo obtener el ID de la etapa");
             }
 
-            // 2. Insertar los materiales asociados
-            List<String> materialesSeleccionados = listMateriales.getSelectedValuesList();
-            String sqlMaterial = "INSERT INTO etapa_material (id_etapa, id_material) VALUES (?, ?)";
-            PreparedStatement psMaterial = con.prepareStatement(sqlMaterial);
+            // 2. Insertar materiales seleccionados
+            insertarRelaciones(con, idEtapa, cmbMateriales, "etapa_material");
 
-            for (String material : materialesSeleccionados) {
-                // Aquí necesitarías obtener el ID del material basado en su nombre
-                int idMaterial = obtenerIdMaterial(con, material);
-                psMaterial.setInt(1, idEtapa);
-                psMaterial.setInt(2, idMaterial);
-                psMaterial.addBatch();
-            }
+            // 3. Insertar herramientas seleccionadas
+            insertarRelaciones(con, idEtapa, cmbHerramientas, "etapa_herramienta");
 
-            psMaterial.executeBatch();
             con.commit();
             return true;
         } catch (SQLException ex) {
@@ -384,15 +584,6 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
                 con.setAutoCommit(true);
                 con.close();
             }
-        }
-    }
-
-    private int obtenerIdMaterial(Connection con, String nombreMaterial) throws SQLException {
-        String sql = "SELECT id FROM materiales WHERE nombre = ?";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, nombreMaterial);
-            ResultSet rs = ps.executeQuery();
-            return rs.next() ? rs.getInt(1) : -1;
         }
 
     }//GEN-LAST:event_btnGuardar1ActionPerformed
@@ -408,10 +599,6 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
     private void BoxAsignadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BoxAsignadoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_BoxAsignadoActionPerformed
-
-    private void BoxmaterialesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BoxmaterialesActionPerformed
-
-    }//GEN-LAST:event_BoxmaterialesActionPerformed
 
     /**
      * @param args the command line arguments
@@ -449,13 +636,13 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSComboBoxMaterial BoxAsignado;
     private RSMaterialComponent.RSComboBoxMaterial Boxestado;
-    private RSMaterialComponent.RSComboBoxMaterial Boxmateriales;
     private rojeru_san.RSButtonRiple btnCancelar1;
     private rojeru_san.RSButtonRiple btnGuardar1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
@@ -467,24 +654,68 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
     private RSMaterialComponent.RSTextFieldMaterial txtetapa;
     private com.toedter.calendar.JDateChooser txtfechafin;
     // End of variables declaration//GEN-END:variables
+private void insertarRelaciones(Connection con, int idEtapa, CheckedComboBox<CheckableItem> combo, String tabla) throws SQLException {
+        String sql = "INSERT INTO " + tabla + " (id_etapa, id_item) VALUES (?, ?)";
+        PreparedStatement ps = con.prepareStatement(sql);
 
-    private void cargarMaterialesDesdeBD() {
-        try (Connection con = new Conexion().getConnection(); Statement stmt = con.createStatement(); ResultSet rs = stmt.executeQuery("SELECT nombre FROM inventario")) {
-
-            List<String> materiales = new ArrayList<>();
-            while (rs.next()) {
-                materiales.add(rs.getString("nombre"));
+        for (int i = 0; i < combo.getModel().getSize(); i++) {
+            CheckableItem item = combo.getModel().getElementAt(i);
+            if (item.isSelected()) {
+                int idItem = obtenerIdItem(con, item.toString());
+                ps.setInt(1, idEtapa);
+                ps.setInt(2, idItem);
+                ps.addBatch();
             }
+        }
+        ps.executeBatch();
+    }
 
-            // Para JList
-            listMateriales.setListData(materiales.toArray(new String[0]));
-
-            // Para CheckBoxPanel
-            // String[] arrayMateriales = materiales.toArray(new String[0]);
-            // panelMateriales = new CheckBoxPanel(arrayMateriales);
-        } catch (SQLException ex) {
-            Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
+    private int obtenerIdItem(Connection con, String nombreItem) throws SQLException {
+        String sql = "SELECT id_inventario FROM inventario WHERE nombre = ? AND estado = 'disponible'";
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreItem);
+            ResultSet rs = ps.executeQuery();
+            if (!rs.next()) {
+                throw new SQLException("El item no está disponible o no existe");
+            }
+            return rs.getInt("id_inventario");
         }
     }
 
+    private void cargarTrabajadores() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Seleccionar");
+
+        try {
+            Connection con = new Conexion().getConnection();
+            String sql = "SELECT nombre FROM usuario WHERE rol = 'trabajador'";
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                model.addElement(rs.getString("nombre"));
+            }
+            con.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        BoxAsignado.setModel(model);
+    }
+
+    private int obtenerIdTrabajador(String nombreTrabajador) throws SQLException {
+        Connection con = new Conexion().getConnection();
+        String sql = "SELECT id FROM usuario WHERE nombre = ? AND rol = 'trabajador'";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.setString(1, nombreTrabajador);
+        ResultSet rs = ps.executeQuery();
+
+        if (rs.next()) {
+            int id = rs.getInt("id");
+            con.close(); 
+            return id;
+        }
+        con.close();
+        throw new SQLException("Trabajador no encontrado");
+    }
 }

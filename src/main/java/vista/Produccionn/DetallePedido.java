@@ -19,31 +19,33 @@ import modelo.Conexion;
 public class DetallePedido extends javax.swing.JPanel {
 
     private int idProduccion;
-public DetallePedido(int idProduccion) {
-    this.idProduccion = idProduccion;
-    initComponents();
-    cargarDatosPedido();
-}
+
+    public DetallePedido(int idProduccion) {
+        this.idProduccion = idProduccion;
+        initComponents();
+        cargarDatosPedido();
+    }
+
     /**
      * Creates new form DetallePedido
      */
     // Constructor corregido
-    public DetallePedido(int idProduccion, String nombre, String fechaInicio, 
-                    String fechaFin, String estado, String cantidad, String dimensiones) {
-    System.out.println("ID recibido en constructor: " + idProduccion); // Debug
-    this.idProduccion = idProduccion;
-    initComponents();
-    // Asignar valores directamente
-    this.nombre.setText(nombre != null ? nombre : "");
-    this.fecha_ini.setText(fechaInicio != null ? fechaInicio : "");
-    this.fecha_fin.setText(fechaFin != null ? fechaFin : "");
-    this.estado.setText(estado != null ? estado : "");
-    this.cantidad.setText(cantidad != null ? cantidad : "0");
-    this.dimensiones.setText(dimensiones != null ? dimensiones : "");
-}
+    public DetallePedido(int idProduccion, String nombre, String fechaInicio,
+            String fechaFin, String estado, String cantidad, String dimensiones) {
+        System.out.println("ID recibido en constructor: " + idProduccion); // Debug
+        this.idProduccion = idProduccion;
+        initComponents();
+        // Asignar valores directamente
+        this.nombre.setText(nombre != null ? nombre : "");
+        this.fecha_ini.setText(fechaInicio != null ? fechaInicio : "");
+        this.fecha_fin.setText(fechaFin != null ? fechaFin : "");
+        this.estado.setText(estado != null ? estado : "");
+        this.cantidad.setText(cantidad != null ? cantidad : "0");
+        this.cantidad1.setText(cantidad != null ? cantidad : "0");
+        this.dimensiones.setText(dimensiones != null ? dimensiones : "");
+    }
 
     private void cargarDatosPedido() {
-        
 
         try (Connection con = new Conexion().getConnection()) {
             String sql = "SELECT p.fecha_inicio, p.fecha_fin, p.estado, "
@@ -65,7 +67,8 @@ public DetallePedido(int idProduccion) {
                         fecha_fin.setText(rs.getDate("fecha_fin") != null ? sdf.format(rs.getDate("fecha_fin")) : "No definida");
                         estado.setText(rs.getString("estado") != null ? rs.getString("estado") : "Sin estado");
                         cantidad.setText(rs.getString("cantidad") != null ? rs.getString("cantidad") : "0");
-                        cantidad1.setText(cantidad.getText()); // Usamos el mismo valor
+                        cantidad1.setText(rs.getString("cantidad") != null ? rs.getString("cantidad") : "0");
+
                         dimensiones.setText(rs.getString("dimension") != null ? rs.getString("dimension") : "No especificadas");
                     } else {
                         // Si no hay datos, muestra un mensaje en un campo
@@ -218,16 +221,6 @@ public DetallePedido(int idProduccion) {
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void limpiarCampos() {
-        nombre.setText("");
-        fecha_ini.setText("");
-        fecha_fin.setText("");
-        estado.setText("");
-        cantidad.setText("");
-        cantidad1.setText("");
-        dimensiones.setText("");
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel cantidad;
     private javax.swing.JLabel cantidad1;

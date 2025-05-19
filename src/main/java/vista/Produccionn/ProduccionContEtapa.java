@@ -32,9 +32,7 @@ import modelo.Conexion;
 public final class ProduccionContEtapa extends javax.swing.JPanel {
 
     private final int idProduccion;
-
-    
-    
+   
     /**
      * Creates new form ProduccionContDetalle
      *
@@ -44,12 +42,12 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         System.out.println("ID recibido en constructor: " + idProduccion); 
         this.idProduccion = idProduccion;
         initComponents();
-        cargarEtapasProduccion();
+        
 
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Nombre","Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"}
+                new String[]{"Nombre","Cantidad","Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"}
         ));
 
         Tabla1.setCellSelectionEnabled(false);
@@ -231,18 +229,18 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
 
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "Nombre", "Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"
+                "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -276,7 +274,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         jScrollPane3.setViewportView(Tabla1);
         Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
 
-        add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 1120, 470));
+        add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 1120, 260));
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbuscarActionPerformed
@@ -292,7 +290,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        formuProduccion dialog = new formuProduccion(new javax.swing.JFrame(), true);
+        FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaEtapa();
@@ -411,8 +409,8 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                         sdf.format(rs.getDate("fecha_inicio")),
                         sdf.format(rs.getDate("fecha_fin")),
                         rs.getString("estado"),
-                        "Materiales", // Placeholder - ajustar según necesidad
-                        "Asignado"    // Placeholder - ajustar según necesidad
+                        "Materiales", 
+                        "Asignado"    
                     });
                 }
             }
