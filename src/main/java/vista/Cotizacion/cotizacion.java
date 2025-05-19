@@ -11,6 +11,13 @@ import java.util.Date;
 import RSMaterialComponent.RSTextFieldMaterial;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import controlador.GeneradorCotizacionPDF;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.io.File;
+import java.awt.Desktop;
 
 /**
  *
@@ -310,12 +317,17 @@ public class cotizacion extends javax.swing.JPanel {
             return;
         }
 
+        String cliente = txt_NombreCliente.getText().trim();
+        if (cliente.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, ingrese un nombre de cliente", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
         System.out.println("Creando instancia de GeneradorCotizacionPDF");
         GeneradorCotizacionPDF generador = new GeneradorCotizacionPDF();
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-        String cliente = txt_NombreCliente.getText().trim();
         String total = txt_total.getText().trim();
-        String archivoSalida = "cotizacion_" + cliente.replace(" ", "_") + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".pdf";
+        String archivoSalida = "cotizacion_" + cliente.replaceAll("[^a-zA-Z0-9_-]", "_") + "_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".pdf";
 
         System.out.println("Cliente: " + cliente);
         System.out.println("Total: " + total);
@@ -324,14 +336,31 @@ public class cotizacion extends javax.swing.JPanel {
 
         try {
             generador.generarPDF(cliente, modelo, total, archivoSalida);
-            System.out.println("PDF generado correctamente, reiniciando cotización");
+            System.out.println("PDF generado correctamente, intentando abrir en el navegador");
+
+            // Abrir el archivo en el navegador predeterminado
+            File pdfFile = new File(archivoSalida);
+            if (pdfFile.exists()) {
+                if (Desktop.isDesktopSupported()) {
+                    Desktop.getDesktop().open(pdfFile);
+                    System.out.println("Archivo PDF abierto en el navegador predeterminado");
+                } else {
+                    System.out.println("Desktop no soportado en este sistema");
+                    JOptionPane.showMessageDialog(this, "No se puede abrir el PDF automáticamente. El archivo se encuentra en: " + archivoSalida, "Información", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                System.out.println("El archivo PDF no se encontró en: " + archivoSalida);
+                JOptionPane.showMessageDialog(this, "El archivo PDF no se encontró en: " + archivoSalida, "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            System.out.println("Reiniciando cotización");
             reiniciarCotizacion();
         } catch (Exception e) {
-            System.out.println("Error al generar PDF: " + e.getMessage());
+            System.out.println("Error al generar o abrir PDF: " + e.getMessage());
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al generar PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al generar o abrir PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
+//GEN-LAST:event_btnAñadirActionPerformed
     }//GEN-LAST:event_btnAñadirActionPerformed
 
     private void jButton_anadir_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_productoActionPerformed
