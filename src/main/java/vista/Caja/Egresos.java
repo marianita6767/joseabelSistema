@@ -25,31 +25,34 @@ public final class Egresos extends javax.swing.JPanel {
      */
     public Egresos() {
         initComponents();
-        
+
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Id Registro", "Fecha Pago", "Detalle", "Categoria",  "Cantidad ingresada"}
+                new String[]{"Codigo", "Fecha Pago", "Monto", "Descripcion", "Categoria", "Detalle"}
         ));
 
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         cargarTablaEgresos();
     }
-    public void cargarTablaEgresos() {
-    DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-    model.setRowCount(0);
 
-    Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
-    for (modelo.Caja caja : ctrl.obtenerEgresos()) {
-        model.addRow(new Object[]{
-            caja.getId_codigo(),
-            caja.getFecha(),
-            caja.getDescripcion(),
-            caja.getCategoria(),
-            caja.getMonto()
-        });
+    public void cargarTablaEgresos() {
+        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+        model.setRowCount(0);
+
+        Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
+        for (modelo.Caja caja : ctrl.obtenerEgresos()) {
+            model.addRow(new Object[]{
+                caja.getId_codigo(),
+                caja.getFecha(),
+                caja.getMonto(),
+                caja.getDescripcion(),
+                caja.getCategoria(),
+                "Ver"
+
+            });
+        }
     }
-}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,7 +67,6 @@ public final class Egresos extends javax.swing.JPanel {
         jPanel3 = new javax.swing.JPanel();
         txtbuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
         btnNuevoProduc = new rojeru_san.RSButtonRiple();
-        btnGuardar = new rojeru_san.RSButtonRiple();
         btnEliminar = new rojeru_san.RSButtonRiple();
         jLabel1 = new javax.swing.JLabel();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -98,16 +100,7 @@ public final class Egresos extends javax.swing.JPanel {
                 btnNuevoProducActionPerformed(evt);
             }
         });
-        jPanel3.add(btnNuevoProduc, new org.netbeans.lib.awtextra.AbsoluteConstraints(830, 20, 120, 40));
-
-        btnGuardar.setBackground(new java.awt.Color(46, 49, 82));
-        btnGuardar.setText("Editar");
-        btnGuardar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnGuardarActionPerformed(evt);
-            }
-        });
-        jPanel3.add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(960, 20, 120, 40));
+        jPanel3.add(btnNuevoProduc, new org.netbeans.lib.awtextra.AbsoluteConstraints(920, 20, 120, 40));
 
         btnEliminar.setBackground(new java.awt.Color(46, 49, 82));
         btnEliminar.setText(" Eliminar");
@@ -116,7 +109,7 @@ public final class Egresos extends javax.swing.JPanel {
                 btnEliminarActionPerformed(evt);
             }
         });
-        jPanel3.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1090, 20, 120, 40));
+        jPanel3.add(btnEliminar, new org.netbeans.lib.awtextra.AbsoluteConstraints(1060, 20, 120, 40));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 25)); // NOI18N
         jLabel1.setText("Egresos");
@@ -205,7 +198,7 @@ public final class Egresos extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void txtbuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtbuscarActionPerformed
-filtrarTabla();
+        filtrarTabla();
     }//GEN-LAST:event_txtbuscarActionPerformed
 
     private void btnNuevoProducActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoProducActionPerformed
@@ -215,31 +208,24 @@ filtrarTabla();
         cargarTablaEgresos();
     }//GEN-LAST:event_btnNuevoProducActionPerformed
 
-    private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-        cargarTablaEgresos();
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         int[] selectedRows = Tabla1.getSelectedRows();
 
         if (selectedRows.length == 0) {
             JOptionPane.showMessageDialog(
-                this,
-                "Por favor seleccione al menos una fila para eliminar",
-                "Advertencia",
-                JOptionPane.WARNING_MESSAGE
+                    this,
+                    "Por favor seleccione al menos una fila para eliminar",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE
             );
             return;
         }
 
         int confirm = JOptionPane.showConfirmDialog(
-            this,
-            "¿Está seguro que desea eliminar los " + selectedRows.length + " registros seleccionados?",
-            "Confirmar eliminación",
-            JOptionPane.YES_NO_OPTION
+                this,
+                "¿Está seguro que desea eliminar los " + selectedRows.length + " registros seleccionados?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
         );
 
         if (confirm != JOptionPane.YES_OPTION) {
@@ -259,22 +245,33 @@ filtrarTabla();
         }
 
         JOptionPane.showMessageDialog(
-            this,
-            "Se eliminaron " + eliminados + " registros correctamente.",
-            "Éxito",
-            JOptionPane.INFORMATION_MESSAGE
+                this,
+                "Se eliminaron " + eliminados + " registros correctamente.",
+                "Éxito",
+                JOptionPane.INFORMATION_MESSAGE
         );
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
 
+        if (evt.getClickCount() == 1) {
+            int columna = Tabla1.columnAtPoint(evt.getPoint());
+            int fila = Tabla1.rowAtPoint(evt.getPoint());
+
+            if (fila >= 0) {
+                if (columna == 5) { // Columna Editar (ahora índice 5)
+                    editarFila(fila);
+                }
+            }
+        }
     }//GEN-LAST:event_Tabla1MouseClicked
- private void filtrarTabla() {
+
+    private void filtrarTabla() {
         String textoBusqueda = txtbuscar.getText().trim();
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
         TableRowSorter<DefaultTableModel> tr = new TableRowSorter<>(modelo);
         Tabla1.setRowSorter(tr);
-            List<RowFilter<Object, Object>> filters = new ArrayList<>();
+        List<RowFilter<Object, Object>> filters = new ArrayList<>();
 
         if (textoBusqueda.isEmpty()) {
             tr.setRowFilter(null);
@@ -287,23 +284,22 @@ filtrarTabla();
             filters.add(RowFilter.regexFilter(textoBusqueda, 1));
             filters.add(RowFilter.regexFilter(textoBusqueda, 4));
 
-        }  // Si contiene letras (aunque sea parcial)
+        } // Si contiene letras (aunque sea parcial)
         else {
-        // Buscar en Detalle (columna 2) y Categoría (columna 3)
-        String regex = "(?i)" + textoBusqueda; // (?i) = ignore case
-        filters.add(RowFilter.regexFilter(regex, 2)); // Detalle
-        filters.add(RowFilter.regexFilter(regex, 3)); // Categoría
-    }
+            // Buscar en Detalle (columna 2) y Categoría (columna 3)
+            String regex = "(?i)" + textoBusqueda; // (?i) = ignore case
+            filters.add(RowFilter.regexFilter(regex, 2)); // Detalle
+            filters.add(RowFilter.regexFilter(regex, 3)); // Categoría
+        }
 
-    // Aplicar todos los filtros combinados con OR
-    tr.setRowFilter(RowFilter.orFilter(filters));
+        // Aplicar todos los filtros combinados con OR
+        tr.setRowFilter(RowFilter.orFilter(filters));
 
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private rojeru_san.RSButtonRiple btnEliminar;
-    private rojeru_san.RSButtonRiple btnGuardar;
     private rojeru_san.RSButtonRiple btnNuevoProduc;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel2;
@@ -312,5 +308,16 @@ filtrarTabla();
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 
-    
+    private void editarFila(int fila) {
+        // Obtener el ID de la fila seleccionada
+        int codigo = (int) Tabla1.getValueAt(fila, 0);
+
+        // Abrir el formulario de edición
+        EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
+        dialog.setLocationRelativeTo(null);
+        // Aquí puedes pasar los datos de la fila al formulario EditEgresos si es necesario
+        dialog.setVisible(true);
+        cargarTablaEgresos();
+
+    }
 }

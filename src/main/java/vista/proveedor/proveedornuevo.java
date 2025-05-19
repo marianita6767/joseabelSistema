@@ -206,6 +206,7 @@ public class proveedornuevo extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
    
     }//GEN-LAST:event_btnCancelarActionPerformed
