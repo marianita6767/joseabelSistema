@@ -21,6 +21,13 @@ import vista.Produccionn.Error_id_;
  */
 public class Ctrl_CajaIngresos {
        /*
+    
+    
+    
+    
+    por si acaso en caso que se dañe el de mas abajo o sea el actual
+   
+    
     private final String movimiento = "ingreso";
     
     public String[] obtenerCategoriasIngreso() {
@@ -206,8 +213,6 @@ public class Ctrl_CajaIngresos {
         }
         return false;
     }
-    
-    
     
     private void mostrarError(String mensaje) {
         JOptionPane.showMessageDialog(null, mensaje, "Error", JOptionPane.ERROR_MESSAGE);

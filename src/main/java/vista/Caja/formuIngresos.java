@@ -54,7 +54,7 @@ public class formuIngresos extends javax.swing.JDialog {
         jLabel2 = new javax.swing.JLabel();
         txtDetallenuevo = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel3 = new javax.swing.JLabel();
-        comboCategoria = new RSMaterialComponent.RSComboBoxMaterial();
+        comboCategoria1 = new RSMaterialComponent.RSComboBoxMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -121,15 +121,15 @@ public class formuIngresos extends javax.swing.JDialog {
         jLabel3.setText("Categoria");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 280, 110, 30));
 
-        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Categoria:", "Ventas", "Servicios", "Donaciones", "Préstamos", "Inversiones", "Subsidios", "Reembolsos", "Intereses", "Venta Activos", "Alquileres", "Comisiones", "Otros Ingresos" }));
-        comboCategoria.setColorMaterial(new java.awt.Color(0, 0, 0));
-        comboCategoria.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
-        comboCategoria.addActionListener(new java.awt.event.ActionListener() {
+        comboCategoria1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Categoria:", "Ventas", "Servicios", "Donaciones", "Préstamos", "Inversiones", "Subsidios", "Reembolsos", "Intereses", "Venta Activos", "Alquileres", "Comisiones", "Otros Ingresos" }));
+        comboCategoria1.setColorMaterial(new java.awt.Color(0, 0, 0));
+        comboCategoria1.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        comboCategoria1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                comboCategoriaActionPerformed(evt);
+                comboCategoria1ActionPerformed(evt);
             }
         });
-        jPanel1.add(comboCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 420, 30));
+        jPanel1.add(comboCategoria1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 320, 420, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -169,10 +169,10 @@ public class formuIngresos extends javax.swing.JDialog {
             java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
             String descripcion = txtDetallenuevo.getText();
             double monto = Double.parseDouble(txtCantidadnuevo.getText().trim());
-            String categoria = comboCategoria.getSelectedItem().toString();
+            String categoria = comboCategoria1.getSelectedItem().toString();
 
             // Validar categoría seleccionada
-            if (comboCategoria.getSelectedIndex() == 0) {
+            if (comboCategoria1.getSelectedIndex() == 0) {
                 mostrarError("Debe seleccionar una categoría válida");
                 return;
             }
@@ -226,7 +226,7 @@ public class formuIngresos extends javax.swing.JDialog {
     if (txtPago.getDate() == null || 
         txtCantidadnuevo.getText().trim().isEmpty() || 
         txtDetallenuevo.getText().trim().isEmpty() || 
-        comboCategoria.getSelectedIndex() == 0) {
+        comboCategoria1.getSelectedIndex() == 0) {
         
         espacio_alerta errorDialog = new espacio_alerta(
             (Frame) this.getParent(),
@@ -245,9 +245,9 @@ public class formuIngresos extends javax.swing.JDialog {
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void comboCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCategoriaActionPerformed
+    private void comboCategoria1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCategoria1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_comboCategoriaActionPerformed
+    }//GEN-LAST:event_comboCategoria1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -294,7 +294,7 @@ public class formuIngresos extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojeru_san.RSButtonRiple btnCancelar;
     private rojeru_san.RSButtonRiple btnGuardar;
-    private RSMaterialComponent.RSComboBoxMaterial comboCategoria;
+    private RSMaterialComponent.RSComboBoxMaterial comboCategoria1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
