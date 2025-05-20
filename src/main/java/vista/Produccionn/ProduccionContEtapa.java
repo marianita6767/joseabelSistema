@@ -15,11 +15,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.BorderFactory;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
@@ -32,29 +34,27 @@ import modelo.Conexion;
 public final class ProduccionContEtapa extends javax.swing.JPanel {
 
     private final int idProduccion;
-   
+
     /**
      * Creates new form ProduccionContDetalle
      *
      * @param idProduccion
      */
     public ProduccionContEtapa(int idProduccion) {
-        System.out.println("ID recibido en constructor: " + idProduccion); 
+        System.out.println("ID recibido en constructor: " + idProduccion);
         this.idProduccion = idProduccion;
         initComponents();
-        
 
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Nombre","Cantidad","Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"}
+                new String[]{"Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"}
         ));
 
         Tabla1.setCellSelectionEnabled(false);
         Tabla1.setRowSelectionAllowed(true);
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        
-        
+
         Tabla1.getColumnModel().getColumn(3).setCellRenderer(new EstadoTableCellRenderer());
 
         cargarTablaEtapa();    // Carga Tabla1
@@ -62,11 +62,11 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     // Renderizador para la columna de estado
 
     private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
-        
+
         private final Color textColor = new Color(46, 49, 82);
         private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
         private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
-        
+
         public EstadoTableCellRenderer() {
             setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
         }
@@ -283,94 +283,99 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     }//GEN-LAST:event_txtbuscarActionPerformed
 
     private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        EditEtapaProduccion dialog = new EditEtapaProduccion(new javax.swing.JFrame(), true);
+        int selectedRow = Tabla1.getSelectedRow();
+        if (selectedRow < 0) {
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione una etapa para editar",
+                    "Advertencia",
+                    JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        int idEtapa = (int) Tabla1.getValueAt(selectedRow, 0);
+
+        EditEtapaProduccion dialog = new EditEtapaProduccion(
+                (JFrame) SwingUtilities.getWindowAncestor(this),
+                true,
+                idEtapa
+        );
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaEtapa();
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
+        FormuEtapaProduccion dialog = new FormuEtapaProduccion(
+                (JFrame) SwingUtilities.getWindowAncestor(this),
+                true,
+                this.idProduccion
+        );
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
-        cargarTablaEtapa();
+        cargarTablaEtapa(); // Refrescar la tabla después de cerrar el diálogo
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnElimiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnElimiActionPerformed
-        int[] selectedRows = Tabla1.getSelectedRows(); // Obtener todas las filas seleccionadas
+        int[] selectedRows = Tabla1.getSelectedRows();
 
         if (selectedRows.length == 0) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Por favor seleccione al menos una fila para eliminar",
+            JOptionPane.showMessageDialog(this,
+                    "Seleccione al menos una etapa para eliminar",
                     "Advertencia",
-                    JOptionPane.WARNING_MESSAGE
-            );
+                    JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        // Confirmar eliminación
-        int confirm = JOptionPane.showConfirmDialog(
-                this,
-                "¿Está seguro que desea eliminar los " + selectedRows.length + " registros seleccionados?",
+        int confirm = JOptionPane.showConfirmDialog(this,
+                "¿Está seguro de eliminar las " + selectedRows.length + " etapas seleccionadas?",
                 "Confirmar eliminación",
-                JOptionPane.YES_NO_OPTION
-        );
+                JOptionPane.YES_NO_OPTION);
 
         if (confirm != JOptionPane.YES_OPTION) {
-            return; // Si el usuario cancela, no hacer nada
+            return;
         }
 
         try (Connection con = Conexion.getConnection()) {
-            // Desactivar auto-commit para manejar transacciones
             con.setAutoCommit(false);
+            String sql = "DELETE FROM etapa_produccion WHERE idetapa_produccion = ?";
 
-            String sql = "DELETE FROM detalle_produccion WHERE idetalle_produccion = ?";
+            DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
             boolean error = false;
 
-            // Eliminar en orden inverso para evitar problemas con los índices de la tabla
             for (int i = selectedRows.length - 1; i >= 0; i--) {
-                int selectedRow = selectedRows[i];
-                int idProduccion = (int) Tabla1.getValueAt(selectedRow, 0);
+                int row = selectedRows[i];
+                int idEtapa = (int) model.getValueAt(row, 0);
 
                 try (PreparedStatement ps = con.prepareStatement(sql)) {
-                    ps.setInt(1, idProduccion);
+                    ps.setInt(1, idEtapa);
                     ps.executeUpdate();
-
-                    // Eliminar la fila de la tabla visual
-                    DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-                    model.removeRow(selectedRow);
+                    model.removeRow(row);
                 } catch (SQLException e) {
                     error = true;
-                    JOptionPane.showMessageDialog(
-                            this,
-                            "Error al eliminar el registro con ID " + idProduccion + ": " + e.getMessage(),
+                    JOptionPane.showMessageDialog(this,
+                            "Error al eliminar etapa: " + e.getMessage(),
                             "Error",
-                            JOptionPane.ERROR_MESSAGE
-                    );
-                    break; // Detener si hay un error
+                            JOptionPane.ERROR_MESSAGE);
+                    break;
                 }
             }
 
             if (error) {
-                con.rollback(); // Si hay error, deshacer cambios
+                con.rollback();
             } else {
-                con.commit(); // Si todo va bien, confirmar cambios
-                JOptionPane.showMessageDialog(
-                        this,
-                        "Se eliminaron " + selectedRows.length + " registros correctamente",
+                con.commit();
+                JOptionPane.showMessageDialog(this,
+                        "Etapas eliminadas correctamente",
                         "Éxito",
-                        JOptionPane.INFORMATION_MESSAGE
-                );
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Error en la conexión: " + e.getMessage(),
+            JOptionPane.showMessageDialog(this,
+                    "Error de conexión: " + e.getMessage(),
                     "Error",
-                    JOptionPane.ERROR_MESSAGE
-            );
+                    JOptionPane.ERROR_MESSAGE);
         }
+
     }//GEN-LAST:event_btnElimiActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
@@ -389,28 +394,37 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
 
     public void cargarTablaEtapa() {
     try (Connection con = Conexion.getConnection()) {
-        String sql = "SELECT ep.idetapa_produccion, ep.nombre_etapa, " +
-                     "ep.fecha_inicio, ep.fecha_fin, ep.estado " +
-                     "FROM etapa_produccion ep " +
-                     "WHERE ep.produccion_id_produccion = ? " +
-                     "ORDER BY ep.idetapa_produccion ASC";
+        // Consulta SQL que usa la tabla asignada
+        String sql = "SELECT "
+                + "ep.idetapa_produccion, "
+                + "ep.nombre_etapa, "
+                + "ep.cantidad, "
+                + "ep.fecha_inicio, "
+                + "ep.fecha_fin, "
+                + "ep.estado, "
+                + "u.nombre AS trabajador_asignado "
+                + "FROM etapa_produccion ep "
+                + "LEFT JOIN asignada a ON ep.idetapa_produccion = a.etapa_produccion_idetapa_produccion "
+                + "LEFT JOIN usuario u ON a.usuario_id_usuario = u.id_usuario "
+                + "WHERE ep.produccion_id_produccion = ? "
+                + "ORDER BY ep.fecha_inicio ASC";
 
         try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, this.idProduccion);
             try (ResultSet rs = ps.executeQuery()) {
                 DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-                model.setRowCount(0); // Limpiar tabla antes de cargar nuevos datos
+                model.setRowCount(0);
 
                 SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
                 while (rs.next()) {
                     model.addRow(new Object[]{
                         rs.getString("nombre_etapa"),
+                        rs.getInt("cantidad"),
                         sdf.format(rs.getDate("fecha_inicio")),
-                        sdf.format(rs.getDate("fecha_fin")),
+                        rs.getDate("fecha_fin") != null ? sdf.format(rs.getDate("fecha_fin")) : "En proceso",
                         rs.getString("estado"),
-                        "Materiales", 
-                        "Asignado"    
+                        rs.getString("trabajador_asignado")
                     });
                 }
             }

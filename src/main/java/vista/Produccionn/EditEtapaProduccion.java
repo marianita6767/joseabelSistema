@@ -30,7 +30,7 @@ public class EditEtapaProduccion extends javax.swing.JDialog {
      * @param modal
      * @param produccionPanel
      */
-    public EditEtapaProduccion(Frame parent, boolean modal) {
+    public EditEtapaProduccion(Frame parent, boolean modal, int idEtapa) {
         super(parent, modal);
 
         initComponents();
@@ -360,10 +360,11 @@ public class EditEtapaProduccion extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             private Produccion produccionPanel;
+            private int idProduccion;
 
             @Override
             public void run() {
-                FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
+                FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true, this.idProduccion);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
