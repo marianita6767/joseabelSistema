@@ -35,6 +35,8 @@ import modelo.Conexion;
  */
 public final class Produccion extends javax.swing.JPanel {
 
+    private int idProduccion;
+
     /**
      * Creates new form produccionContenido
      */
@@ -307,7 +309,7 @@ public final class Produccion extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEditarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true);
+        FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true, this.idProduccion);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaProduccion();
@@ -455,6 +457,7 @@ public final class Produccion extends javax.swing.JPanel {
             System.out.println("Dimensiones: " + dimensiones);
 
             // 10. Crear y configurar el panel de detalle
+            
             DetalleProduProducto detallePanel = new DetalleProduProducto(
                     idProduccion,
                     nombre,
