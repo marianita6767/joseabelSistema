@@ -13,6 +13,8 @@ import java.sql.SQLException;
 import javax.swing.JOptionPane;
 import javax.swing.UnsupportedLookAndFeelException;
 import modelo.Conexion;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
 
 /**
  *
@@ -22,16 +24,22 @@ public class EditProduccion extends javax.swing.JDialog {
 
     private Produccion produccionPanel;
     private int idProduccionActual;
+    private int idProduccion;
+    private boolean datosModificados = false;
 
     /**
      * Creates new form EditTresProduccion
      */
-    public EditProduccion(Frame parent, boolean modal) {
+    public EditProduccion(Frame parent, boolean modal, int idProduccion) {
         super(parent, modal);
         initComponents();
-        this.produccionPanel = produccionPanel;
+        this.idProduccion = idProduccion;
         setLocationRelativeTo(parent);
 
+        // Si se pasa un ID válido, cargar los datos automáticamente
+        if (idProduccion > 0) {
+            cargarDatosProduccion(idProduccion);
+        }
     }
 
     /**
@@ -52,9 +60,6 @@ public class EditProduccion extends javax.swing.JDialog {
         Boxestado = new RSMaterialComponent.RSComboBoxMaterial();
         txtinicio = new com.toedter.calendar.JDateChooser();
         txtfinal = new com.toedter.calendar.JDateChooser();
-        jLabel11 = new javax.swing.JLabel();
-        btnBusca = new rojeru_san.RSButtonRiple();
-        txtBusca = new RSMaterialComponent.RSTextFieldTwo();
         btnGuardar1 = new rojeru_san.RSButtonRiple();
         btnCancelar1 = new rojeru_san.RSButtonRiple();
 
@@ -75,19 +80,16 @@ public class EditProduccion extends javax.swing.JDialog {
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 520, 50));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("fecha final:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, -1, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Estado:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 150, -1, -1));
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("fecha inicial:");
-        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, -1));
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 150, -1, -1));
 
         Boxestado.setForeground(new java.awt.Color(102, 102, 102));
         Boxestado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccionar", "pendiente", "proceso", "finalizado" }));
@@ -97,45 +99,18 @@ public class EditProduccion extends javax.swing.JDialog {
                 BoxestadoActionPerformed(evt);
             }
         });
-        jPanel1.add(Boxestado, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 170, -1, -1));
+        jPanel1.add(Boxestado, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 190, -1));
 
         txtinicio.setBackground(new java.awt.Color(255, 255, 255));
         txtinicio.setForeground(new java.awt.Color(255, 255, 255));
         txtinicio.setDateFormatString("y-MM-d");
         txtinicio.setMaxSelectableDate(new java.util.Date(253370786472000L));
-        jPanel1.add(txtinicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 110, 190, 30));
+        jPanel1.add(txtinicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, 190, 30));
 
         txtfinal.setBackground(new java.awt.Color(255, 255, 255));
         txtfinal.setForeground(new java.awt.Color(255, 255, 255));
         txtfinal.setDateFormatString("y-MM-d");
         jPanel1.add(txtfinal, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 180, 190, 30));
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel11.setText("Busca ID:");
-        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
-
-        btnBusca.setBackground(new java.awt.Color(46, 49, 82));
-        btnBusca.setText("Buscar");
-        btnBusca.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 14)); // NOI18N
-        btnBusca.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscaActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnBusca, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 110, 90, 30));
-
-        txtBusca.setForeground(new java.awt.Color(46, 49, 82));
-        txtBusca.setBorderColor(new java.awt.Color(46, 49, 82));
-        txtBusca.setPhColor(new java.awt.Color(46, 49, 82));
-        txtBusca.setPlaceholder("");
-        txtBusca.setSelectionColor(new java.awt.Color(46, 49, 82));
-        txtBusca.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBuscaActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txtBusca, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, 100, 30));
 
         btnGuardar1.setBackground(new java.awt.Color(46, 49, 82));
         btnGuardar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus (2).png"))); // NOI18N
@@ -177,133 +152,94 @@ public class EditProduccion extends javax.swing.JDialog {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void btnBuscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscaActionPerformed
-        try {
-            String idStr = txtBusca.getText();
-            if (idStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese un ID válido", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-
-            int id = Integer.parseInt(idStr);
-            Connection con = Conexion.getConnection();
-            String sql = "SELECT * FROM produccion WHERE id_produccion = ?";
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                idProduccionActual = id;
-                // Llenar los campos con los datos de la base de datos
-                txtinicio.setDate(rs.getDate("fecha_inicio"));
-                txtfinal.setDate(rs.getDate("fecha_fin"));
-                String estado = rs.getString("estado");
-                Boxestado.setSelectedItem(estado);
-                // Puedes agregar más campos según necesites
-            } else {
-                JOptionPane.showMessageDialog(this, "No se encontró producción con ese ID", "Error", JOptionPane.ERROR_MESSAGE);
-            }
-
-            con.close();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El ID debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }//GEN-LAST:event_btnBuscaActionPerformed
-
-    private void txtBuscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtBuscaActionPerformed
-
     private void BoxestadoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BoxestadoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_BoxestadoActionPerformed
 
     private void btnGuardar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardar1ActionPerformed
-    // 1. Mostrar diálogo de confirmación
-    alertaa confirmDialog = new alertaa(
-            (Frame) this.getParent(),
-            true,
-            "Confirmar",
-            "¿Desea guardar los datos?"
-    );
-    confirmDialog.setVisible(true);
+// 1. Mostrar diálogo de confirmación
+        alertaa confirmDialog = new alertaa(
+                (Frame) this.getParent(),
+                true,
+                "Confirmar",
+                "¿Desea guardar los datos?"
+        );
+        confirmDialog.setVisible(true);
 
-    // 2. Si el usuario no confirma, salir
-    if (!confirmDialog.opcionConfirmada) {
-        return;
-    }
-
-    // 3. Validación de campos
-    if (txtinicio.getDate() == null || txtfinal.getDate() == null
-            || Boxestado.getSelectedItem() == null || Boxestado.getSelectedIndex() == 0) {
-        new espacio_alerta((Frame) this.getParent(), true, "Error", "Todos los campos son obligatorios").setVisible(true);
-        return;
-    }
-
-    try {
-        // 4. Obtener valores
-        Date fechaInicio = new Date(txtinicio.getDate().getTime());
-        Date fechaFin = new Date(txtfinal.getDate().getTime());
-        String estado = Boxestado.getSelectedItem().toString();
-
-        // 5. Validar fechas
-        if (fechaFin.before(fechaInicio)) {
-            new Error_fecha((Frame) this.getParent(), true, "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+        // 2. Si el usuario no confirma, salir
+        if (!confirmDialog.opcionConfirmada) {
             return;
         }
 
-        // 6. Conexión y operación en BD
-        try (Connection con = Conexion.getConnection()) {
-            if (idProduccionActual == 0) {
-                // Insertar nuevo registro
-                try (PreparedStatement ps = con.prepareStatement(
-                        "INSERT INTO produccion (fecha_inicio, fecha_fin, estado) VALUES (?, ?, ?)")) {
-                    ps.setDate(1, fechaInicio);
-                    ps.setDate(2, fechaFin);
-                    ps.setString(3, estado);
-                    ps.executeUpdate();
-                }
-            } else {
-                // Actualizar registro existente
-                try (PreparedStatement ps = con.prepareStatement(
-                        "UPDATE produccion SET fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id_produccion = ?")) {
-                    ps.setDate(1, fechaInicio);
-                    ps.setDate(2, fechaFin);
-                    ps.setString(3, estado);
-                    ps.setInt(4, idProduccionActual);
-                    ps.executeUpdate();
-                }
-            }
-
-            // 7. Mostrar mensaje de éxito
-            if (idProduccionActual == 0) {
-                new Datos_guardados(
-                    (Frame) this.getParent(),
-                    true,
-                    "Éxito",
-                    "Datos guardados correctamente"
-                ).setVisible(true);
-            } else {
-                new DatosActualizados(
-                    (Frame) this.getParent(),
-                    true,
-                    "Éxito",
-                    "Datos actualizados correctamente"
-                ).setVisible(true);
-            }
-
-            // 8. Cerrar el diálogo
-            this.dispose();
+        // 3. Validación de campos
+        if (txtinicio.getDate() == null || txtfinal.getDate() == null
+                || Boxestado.getSelectedItem() == null || Boxestado.getSelectedIndex() == 0) {
+            new espacio_alerta((Frame) this.getParent(), true, "Error", "Todos los campos son obligatorios").setVisible(true);
+            return;
         }
-    } catch (SQLException e) {
-        new Error_guardar((Frame) this.getParent(), true, "Error",
-                    "Error al guardar: " + e.getMessage()).setVisible(true);
-        e.printStackTrace();
-    }
 
+        try {
+            // 4. Obtener valores
+            Date fechaInicio = new Date(txtinicio.getDate().getTime());
+            Date fechaFin = new Date(txtfinal.getDate().getTime());
+            String estado = Boxestado.getSelectedItem().toString();
+
+            // 5. Validar fechas
+            if (fechaFin.before(fechaInicio)) {
+                new Error_fecha((Frame) this.getParent(), true, "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+                return;
+            }
+
+            // 6. Conexión y operación en BD
+            try (Connection con = Conexion.getConnection()) {
+                if (idProduccionActual == 0) {
+                    // Insertar nuevo registro
+                    try (PreparedStatement ps = con.prepareStatement(
+                            "INSERT INTO produccion (fecha_inicio, fecha_fin, estado) VALUES (?, ?, ?)")) {
+                        ps.setDate(1, fechaInicio);
+                        ps.setDate(2, fechaFin);
+                        ps.setString(3, estado);
+                    }
+                } else {
+                    // Actualizar registro existente
+                    try (PreparedStatement ps = con.prepareStatement(
+                            "UPDATE produccion SET fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id_produccion = ?")) {
+                        ps.setDate(1, fechaInicio);
+                        ps.setDate(2, fechaFin);
+                        ps.setString(3, estado);
+                        ps.setInt(4, idProduccionActual);
+                        ps.executeUpdate();
+                    }
+                }
+
+                // Marcar que los datos fueron modificados
+                this.datosModificados = true;
+
+                // 7. Mostrar mensaje de éxito
+                if (idProduccionActual == 0) {
+                    new Datos_guardados(
+                            (Frame) this.getParent(),
+                            true,
+                            "Éxito",
+                            "Datos guardados correctamente"
+                    ).setVisible(true);
+                } else {
+                    new DatosActualizados(
+                            (Frame) this.getParent(),
+                            true,
+                            "Éxito",
+                            "Datos actualizados correctamente"
+                    ).setVisible(true);
+                }
+
+                // 8. Cerrar el diálogo
+                this.dispose();
+            }
+        } catch (SQLException e) {
+            new Error_guardar((Frame) this.getParent(), true, "Error",
+                    "Error al guardar: " + e.getMessage()).setVisible(true);
+            e.printStackTrace();
+        }
 
     }//GEN-LAST:event_btnGuardar1ActionPerformed
 
@@ -331,6 +267,7 @@ public class EditProduccion extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
             private Produccion produccionPanel;
             private int idProduccion;
+
             @Override
             public void run() {
                 FormuEtapaProduccion dialog = new FormuEtapaProduccion(new javax.swing.JFrame(), true, this.idProduccion);
@@ -347,18 +284,86 @@ public class EditProduccion extends javax.swing.JDialog {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSComboBoxMaterial Boxestado;
-    private rojeru_san.RSButtonRiple btnBusca;
     private rojeru_san.RSButtonRiple btnCancelar1;
     private rojeru_san.RSButtonRiple btnGuardar1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private RSMaterialComponent.RSTextFieldTwo txtBusca;
     private com.toedter.calendar.JDateChooser txtfinal;
     private com.toedter.calendar.JDateChooser txtinicio;
     // End of variables declaration//GEN-END:variables
+public void setDatos(int idProduccion, String nombre, String fechaInicio, 
+                   String fechaFin, String estado, int cantidad, String dimensiones) {
+    this.idProduccion = idProduccion;
+    this.datosModificados = false; // Resetear el estado de modificaciones
+    
+    try {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        
+        // Fecha inicio
+        if (fechaInicio != null && !fechaInicio.isEmpty()) {
+            txtinicio.setDate(sdf.parse(fechaInicio));
+        }
+        
+        // Fecha fin (puede ser "En proceso")
+        if (fechaFin != null && !fechaFin.isEmpty() && !fechaFin.equals("En proceso")) {
+            txtfinal.setDate(sdf.parse(fechaFin));
+        }
+        
+        // Estado
+        if (estado != null && !estado.isEmpty()) {
+            Boxestado.setSelectedItem(estado);
+        }
+        
+        
+    } catch (ParseException e) {
+        JOptionPane.showMessageDialog(this, 
+            "Error al parsear fechas: " + e.getMessage(), 
+            "Error", JOptionPane.ERROR_MESSAGE);
+    }
+}
+
+    private void cargarDatosProduccion(int idProduccion) {
+        try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement(
+                "SELECT p.id_produccion, dp.descripcion, p.fecha_inicio, "
+                + "p.fecha_fin, p.estado, dp.cantidad, dp.dimension "
+                + "FROM produccion p "
+                + "JOIN detalle_pedido dp ON p.detalle_pedido_iddetalle_pedido = dp.iddetalle_pedido "
+                + "WHERE p.id_produccion = ?")) {
+
+            ps.setInt(1, idProduccion);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    // ... procesar resultados ...
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar datos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+private boolean validarFechas(Date fechaInicio, Date fechaFin) {
+    if (fechaInicio == null || fechaFin == null) {
+        return false;
+    }
+    
+    // La fecha final no puede ser anterior a la inicial
+    if (fechaFin.before(fechaInicio)) {
+        new Error_fecha((Frame) this.getParent(), true, 
+            "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+        return false;
+    }
+    
+    // Puedes agregar más validaciones según tus necesidades
+    return true;
+}
+    public boolean datosModificados() {
+
+        return this.datosModificados;
+    }
+
 }
