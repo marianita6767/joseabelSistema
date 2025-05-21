@@ -4,30 +4,20 @@
  */
 package vista.Caja;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import javax.swing.JOptionPane;
-import modelo.Conexion;
+import vista.proveedor.proveedornuevo;
 
 /**
  *
  * @author ADSO
  */
-public class formuEgresos extends javax.swing.JDialog {
+public class EgresoProveedor extends javax.swing.JDialog {
 
     /**
-     * Creates new form formuEgresos
+     * Creates new form EgresoProveedor
      */
-    
-    private Egresos ingresoPanel;
-    
-    public formuEgresos(java.awt.Frame parent, boolean modal) {
+    public EgresoProveedor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        
-        
     }
 
     /**
@@ -52,6 +42,15 @@ public class formuEgresos extends javax.swing.JDialog {
         txtDetallenuevo = new RSMaterialComponent.RSTextFieldMaterial();
         cmbStock = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel3 = new javax.swing.JLabel();
+        jPanel3 = new javax.swing.JPanel();
+        cmbStock1 = new RSMaterialComponent.RSComboBoxMaterial();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel5 = new javax.swing.JLabel();
+        txtCantidadnuevo1 = new RSMaterialComponent.RSTextFieldMaterial();
+        jLabel6 = new javax.swing.JLabel();
+        cmbStock2 = new RSMaterialComponent.RSComboBoxMaterial();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -76,10 +75,10 @@ public class formuEgresos extends javax.swing.JDialog {
                 btnGuardarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 260, 180, -1));
+        jPanel1.add(btnGuardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(340, 470, 180, -1));
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel9.setText("Detalle de Egreso:");
+        jLabel9.setText("Descripcion:");
         jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 80, 150, -1));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
@@ -94,7 +93,7 @@ public class formuEgresos extends javax.swing.JDialog {
                 btnCancelarActionPerformed(evt);
             }
         });
-        jPanel1.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 260, 180, -1));
+        jPanel1.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 470, 180, -1));
 
         txtPago.setBackground(new java.awt.Color(255, 255, 255));
         txtPago.setForeground(new java.awt.Color(255, 255, 255));
@@ -112,8 +111,8 @@ public class formuEgresos extends javax.swing.JDialog {
         jPanel1.add(txtCantidadnuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 190, 210, 30));
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
-        jLabel2.setText("Cantidad del Egreso:");
-        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 170, -1));
+        jLabel2.setText("Monto:");
+        jPanel1.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 160, 150, -1));
 
         txtDetallenuevo.setForeground(new java.awt.Color(0, 0, 0));
         txtDetallenuevo.setPlaceholder("Ingrese detalles de egreso");
@@ -137,11 +136,90 @@ public class formuEgresos extends javax.swing.JDialog {
                 cmbStockActionPerformed(evt);
             }
         });
-        jPanel1.add(cmbStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 190, 260, 30));
+        jPanel1.add(cmbStock, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, 270, 30));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel3.setText("Categoria");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 160, 90, -1));
+
+        jPanel3.setBackground(new java.awt.Color(0, 0, 0));
+
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 520, Short.MAX_VALUE)
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 2, Short.MAX_VALUE)
+        );
+
+        jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 520, 2));
+
+        cmbStock1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione un Proveedor:", "Item 1", "Item 2", "Item 3" }));
+        cmbStock1.setColorMaterial(new java.awt.Color(0, 0, 0));
+        cmbStock1.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        cmbStock1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cmbStock1MouseClicked(evt);
+            }
+        });
+        cmbStock1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbStock1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(cmbStock1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 220, 30));
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel4.setText("Proveedor:");
+        jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 270, 90, -1));
+
+        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel5.setText("Cantidad:");
+        jPanel1.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 360, 170, -1));
+
+        txtCantidadnuevo1.setForeground(new java.awt.Color(0, 0, 0));
+        txtCantidadnuevo1.setPlaceholder("Ingrese cantidad");
+        txtCantidadnuevo1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                txtCantidadnuevo1ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(txtCantidadnuevo1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 390, 220, 30));
+
+        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
+        jLabel6.setText("Producto:");
+        jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 270, 80, -1));
+
+        cmbStock2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Producto:", "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbStock2.setColorMaterial(new java.awt.Color(0, 0, 0));
+        cmbStock2.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        cmbStock2.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                cmbStock2MouseClicked(evt);
+            }
+        });
+        cmbStock2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbStock2ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(cmbStock2, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 310, 230, 30));
+
+        jButton2.setBackground(new java.awt.Color(46, 49, 82));
+        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus-pequeno.png"))); // NOI18N
+        jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 270, 20, 20));
+
+        jButton3.setBackground(new java.awt.Color(46, 49, 82));
+        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus-pequeno.png"))); // NOI18N
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel1.add(jButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 270, 20, 20));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -151,7 +229,7 @@ public class formuEgresos extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 330, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
         );
 
         pack();
@@ -159,36 +237,13 @@ public class formuEgresos extends javax.swing.JDialog {
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
 
-        try {
-            // Obtener valores
-
-            java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
-            String descripcion = txtDetallenuevo.getText();
-            Double monto = Double.parseDouble(txtCantidadnuevo.getText().trim());
-            String categoria = (String) cmbStock.getSelectedItem();
-
-            // Insertar en BD
-            if (insertarEtapa(fecha, descripcion,monto,categoria)) {
-                this.dispose();
-
-            }
-
-            if (ingresoPanel != null) {
-
-            }
-        } catch (Exception e) {
-            mostrarError("Error al guardar: " + e.getMessage());
-            e.printStackTrace();
-        }
+        
+        
     }//GEN-LAST:event_btnGuardarActionPerformed
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
-
-    private void cmbStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStockActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbStockActionPerformed
 
     private void txtCantidadnuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadnuevoActionPerformed
         // TODO add your handling code here:
@@ -199,8 +254,41 @@ public class formuEgresos extends javax.swing.JDialog {
     }//GEN-LAST:event_txtDetallenuevoActionPerformed
 
     private void cmbStockMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbStockMouseClicked
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_cmbStockMouseClicked
+
+    private void cmbStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStockActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStockActionPerformed
+
+    private void cmbStock1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbStock1MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStock1MouseClicked
+
+    private void cmbStock1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStock1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStock1ActionPerformed
+
+    private void txtCantidadnuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadnuevo1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCantidadnuevo1ActionPerformed
+
+    private void cmbStock2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbStock2MouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStock2MouseClicked
+
+    private void cmbStock2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStock2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbStock2ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        proveedornuevo dialog = new proveedornuevo(new javax.swing.JFrame(), true);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+        
+
+
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -219,20 +307,20 @@ public class formuEgresos extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(formuEgresos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EgresoProveedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(formuEgresos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EgresoProveedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(formuEgresos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EgresoProveedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(formuEgresos.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(EgresoProveedor.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                formuEgresos dialog = new formuEgresos(new javax.swing.JFrame(), true);
+                EgresoProveedor dialog = new EgresoProveedor(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -248,50 +336,24 @@ public class formuEgresos extends javax.swing.JDialog {
     private rojeru_san.RSButtonRiple btnCancelar;
     private rojeru_san.RSButtonRiple btnGuardar;
     private RSMaterialComponent.RSComboBoxMaterial cmbStock;
+    private RSMaterialComponent.RSComboBoxMaterial cmbStock1;
+    private RSMaterialComponent.RSComboBoxMaterial cmbStock2;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private RSMaterialComponent.RSTextFieldMaterial txtCantidadnuevo;
+    private RSMaterialComponent.RSTextFieldMaterial txtCantidadnuevo1;
     private RSMaterialComponent.RSTextFieldMaterial txtDetallenuevo;
     private com.toedter.calendar.JDateChooser txtPago;
     // End of variables declaration//GEN-END:variables
-
-   private boolean insertarEtapa(java.util.Date fecha, String descripcion, Double monto, String categoria) throws SQLException {
-        String sql = "INSERT INTO caja (fecha, descripcion, monto, movimiento,categoria) VALUES (?, ?,?,'egreso',?)";
-
-         try (Connection con = Conexion.getConnection();
-         PreparedStatement ps = con.prepareStatement(sql)) {
-
-        // Convertir java.util.Date a java.sql.Date
-        ps.setDate(1, new java.sql.Date(fecha.getTime()));
-        ps.setString(2, descripcion);
-        
-        // Usar setDouble para valores numéricos
-        ps.setDouble(3, monto);
-        ps.setString(4, categoria);
-        
-        int resultado = ps.executeUpdate();
-        if (resultado > 0) {
-            mostrarMensaje("Registro guardado correctamente");
-            return true;
-        }
-    } catch (SQLException e) {
-        mostrarError("Error de base de datos: " + e.getMessage());
-        throw e;  // Relanzar la excepción para manejo superior
-    }
-    return false;
-}
-
-    private void mostrarError(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    
-    private void mostrarMensaje(String mensaje) {
-        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-    }     
 }

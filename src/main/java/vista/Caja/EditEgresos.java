@@ -5,6 +5,7 @@
 package vista.Caja;
 
 import controlador.Ctrl_CajaEgresos;
+import java.awt.Color;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -20,6 +21,8 @@ public class EditEgresos extends javax.swing.JDialog {
 
     private int idEgresoActual;
     private int id_codigo;
+    private boolean isEditable = false;
+
     /**
      * Creates new form EditEgresos
      */
@@ -28,6 +31,11 @@ public class EditEgresos extends javax.swing.JDialog {
     public EditEgresos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+
+        txtPago.setEnabled(false);
+        txtCantidadEdit.setEditable(false);
+        txtDetalleEdit.setEditable(false);
+        comboCategoria.setEnabled(false);
     }
 
     /**
@@ -47,9 +55,6 @@ public class EditEgresos extends javax.swing.JDialog {
         jLabel10 = new javax.swing.JLabel();
         btnCancelar = new rojeru_san.RSButtonRiple();
         txtPago = new com.toedter.calendar.JDateChooser();
-        jLabel11 = new javax.swing.JLabel();
-        btnBuscar = new rojeru_san.RSButtonRiple();
-        txtBusca = new RSMaterialComponent.RSTextFieldTwo();
         txtCantidadEdit = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel2 = new javax.swing.JLabel();
         txtDetalleEdit = new RSMaterialComponent.RSTextFieldMaterial();
@@ -66,13 +71,13 @@ public class EditEgresos extends javax.swing.JDialog {
 
         jLabel1.setFont(new java.awt.Font("Century751 BT", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel1.setText("Produccion");
+        jLabel1.setText("Egresos");
         jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
 
-        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 520, 50));
+        jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 480, 50));
 
         btnGuardar.setBackground(new java.awt.Color(46, 49, 82));
-        btnGuardar.setText("Guardar");
+        btnGuardar.setText("Editar");
         btnGuardar.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 14)); // NOI18N
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -87,7 +92,7 @@ public class EditEgresos extends javax.swing.JDialog {
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
         jLabel10.setText("Fecha Pago:");
-        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, -1));
+        jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
 
         btnCancelar.setBackground(new java.awt.Color(46, 49, 82));
         btnCancelar.setText("Volver");
@@ -103,33 +108,7 @@ public class EditEgresos extends javax.swing.JDialog {
         txtPago.setForeground(new java.awt.Color(255, 255, 255));
         txtPago.setDateFormatString("y-MM-d");
         txtPago.setMaxSelectableDate(new java.util.Date(253370786472000L));
-        jPanel1.add(txtPago, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 110, 160, 30));
-
-        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
-        jLabel11.setText("Busca ID:");
-        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 80, -1, -1));
-
-        btnBuscar.setBackground(new java.awt.Color(46, 49, 82));
-        btnBuscar.setText("Buscar");
-        btnBuscar.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 14)); // NOI18N
-        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnBuscarActionPerformed(evt);
-            }
-        });
-        jPanel1.add(btnBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 110, 90, 30));
-
-        txtBusca.setForeground(new java.awt.Color(46, 49, 82));
-        txtBusca.setBorderColor(new java.awt.Color(46, 49, 82));
-        txtBusca.setPhColor(new java.awt.Color(46, 49, 82));
-        txtBusca.setPlaceholder("");
-        txtBusca.setSelectionColor(new java.awt.Color(46, 49, 82));
-        txtBusca.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtBuscaActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txtBusca, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 110, 100, 30));
+        jPanel1.add(txtPago, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 120, 320, 30));
 
         txtCantidadEdit.setForeground(new java.awt.Color(0, 0, 0));
         txtCantidadEdit.setPlaceholder("Cantidad de Egreso");
@@ -147,7 +126,7 @@ public class EditEgresos extends javax.swing.JDialog {
         jLabel3.setText("Categoria:");
         jPanel1.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 330, 70, -1));
 
-        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione categoria:", "Servicios Publicos", "Compra de Productos e Insumos", "Arriendo", "Nómina", "Gastos Administrativos", "Mercadeo y Publicidad", "Transporte", "Domicilios y Logistica", "mantenimineto y Reparaciones", "Muebles", "Equipos o Maquinaria", "Otros" }));
+        comboCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione categoria:", "Servicios Publicos", "Compra de Productos e Insumos", "Arriendo", "Nómina", "Prestamos", "Mantenimiento y reparaciones", "Transporte, domicilios y logistica", "Otros" }));
         comboCategoria.setColorMaterial(new java.awt.Color(0, 0, 0));
         comboCategoria.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
         comboCategoria.addActionListener(new java.awt.event.ActionListener() {
@@ -172,145 +151,116 @@ public class EditEgresos extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-         int confirm = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de guardar los cambios?",
-            "Confirmar",
-            JOptionPane.YES_NO_OPTION);
 
-    if (confirm != JOptionPane.YES_OPTION) {
-        return;
-    }
+        if (!isEditable) {
+            // Modo "Editar" - Habilitar campos y cambiar texto a "Guardar"
+            isEditable = true;
+            txtPago.setEnabled(true);
+            txtCantidadEdit.setEditable(true);
+            txtDetalleEdit.setEditable(true);
+            comboCategoria.setEnabled(true);
+            btnGuardar.setText("Guardar");
+            jPanel2.setBackground(new java.awt.Color(36, 174, 255));
+            jLabel1.setForeground(new java.awt.Color(46, 49, 82));
 
-    // Validación de campos mejorada
-    if (txtPago.getDate() == null || txtDetalleEdit.getText().trim().isEmpty()
-            || txtCantidadEdit.getText().trim().isEmpty() || comboCategoria.getSelectedIndex() <= 0) {
-        JOptionPane.showMessageDialog(this,
-                "Todos los campos son obligatorios",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
+        } else {
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Está seguro de guardar los cambios?",
+                    "Confirmar",
+                    JOptionPane.YES_NO_OPTION);
 
-    try {
-        // Obtener valores
-        java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
-        String descripcion = txtDetalleEdit.getText().trim();
-        double cantidad = Double.parseDouble(txtCantidadEdit.getText().trim());
-        String categoria = comboCategoria.getSelectedItem().toString();
-
-        try (Connection con = Conexion.getConnection()) {
-            if (idEgresoActual <= 0) {
-                // Insertar nuevo registro
-                try (PreparedStatement ps = con.prepareStatement(
-                        "INSERT INTO caja (fecha, monto, descripcion, categoria, movimiento) VALUES (?, ?, ?, ?, 'egreso')")) {
-                    ps.setDate(1, fecha);
-                    ps.setDouble(2, cantidad);
-                    ps.setString(3, descripcion);
-                    ps.setString(4, categoria);
-
-                    int result = ps.executeUpdate();
-                    if (result > 0) {
-                        JOptionPane.showMessageDialog(this,
-                                "Egreso guardado correctamente",
-                                "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        this.dispose();
-                    }
-                }
-            } else {
-                // Actualizar registro existente
-                try (PreparedStatement ps = con.prepareStatement(
-                        "UPDATE caja SET fecha = ?, monto = ?, descripcion = ?, categoria = ? WHERE id_codigo = ? AND movimiento = 'egreso'")) {
-                    ps.setDate(1, fecha);
-                    ps.setDouble(2, cantidad);
-                    ps.setString(3, descripcion);
-                    ps.setString(4, categoria);
-                    ps.setInt(5, idEgresoActual);
-
-                    int affectedRows = ps.executeUpdate();
-                    if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this,
-                                "Egreso actualizado correctamente",
-                                "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE);
-                        this.dispose();
-                    } else {
-                        JOptionPane.showMessageDialog(this,
-                                "No se pudo actualizar el egreso",
-                                "Error",
-                                JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-            }
-        }
-    } catch (NumberFormatException e) {
-        JOptionPane.showMessageDialog(this,
-                "El monto debe ser un número válido",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al guardar: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }       
-        
-    }//GEN-LAST:event_btnGuardarActionPerformed
-
-    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
-        this.dispose();
-    }//GEN-LAST:event_btnCancelarActionPerformed
-
-    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
-        try {
-            String idStr = txtBusca.getText();
-            if (idStr.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Ingrese un ID válido", "Error", JOptionPane.ERROR_MESSAGE);
+            if (confirm != JOptionPane.YES_OPTION) {
                 return;
             }
 
-            int id = Integer.parseInt(idStr);
-            Connection con = Conexion.getConnection();
-            String sql = "SELECT * FROM caja WHERE id_codigo = ? AND movimiento = 'egreso'"; // Filtra solo egresos
-            PreparedStatement ps = con.prepareStatement(sql);
-            ps.setInt(1, id);
-
-            ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                id_codigo = id;
-                idEgresoActual = id; // ¡ESTA ES LA LÍNEA CLAVE QUE FALTABA!
-
-                // Llenar los campos con los datos de la base de datos
-                txtPago.setDate(rs.getDate("fecha"));
-                txtCantidadEdit.setText(rs.getString("monto"));
-                txtDetalleEdit.setText(rs.getString("descripcion"));
-
-                // Establecer la categoría seleccionada
-                String categoriaBD = rs.getString("categoria");
-                for (int i = 0; i < comboCategoria.getItemCount(); i++) {
-                    if (comboCategoria.getItemAt(i).equals(categoriaBD)) {
-                        comboCategoria.setSelectedIndex(i);
-                        break;
-                    }
-                }
-            } else {
-                JOptionPane.showMessageDialog(this, "No se encontró un egreso con ese ID", "Error", JOptionPane.ERROR_MESSAGE);
+            // Validación de campos mejorada
+            if (txtPago.getDate() == null || txtDetalleEdit.getText().trim().isEmpty()
+                    || txtCantidadEdit.getText().trim().isEmpty() || comboCategoria.getSelectedIndex() <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "Todos los campos son obligatorios",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                return;
             }
 
-            con.close();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "El ID debe ser un número", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this, "Error al buscar: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            try {
+                // Obtener valores
+                java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
+                String descripcion = txtDetalleEdit.getText().trim();
+                double cantidad = Double.parseDouble(txtCantidadEdit.getText().trim());
+                String categoria = comboCategoria.getSelectedItem().toString();
+
+                try (Connection con = Conexion.getConnection()) {
+                    if (idEgresoActual <= 0) {
+                        // Insertar nuevo registro
+                        try (PreparedStatement ps = con.prepareStatement(
+                                "INSERT INTO caja (fecha, monto, descripcion, categoria, movimiento) VALUES (?, ?, ?, ?, 'egreso')")) {
+                            ps.setDate(1, fecha);
+                            ps.setDouble(2, cantidad);
+                            ps.setString(3, descripcion);
+                            ps.setString(4, categoria);
+
+                            int result = ps.executeUpdate();
+                            if (result > 0) {
+                                JOptionPane.showMessageDialog(this,
+                                        "Egreso guardado correctamente",
+                                        "Éxito",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                this.dispose();
+                            }
+                        }
+                    } else {
+                        // Actualizar registro existente
+                        try (PreparedStatement ps = con.prepareStatement(
+                                "UPDATE caja SET fecha = ?, monto = ?, descripcion = ?, categoria = ? WHERE id_codigo = ? AND movimiento = 'egreso'")) {
+                            ps.setDate(1, fecha);
+                            ps.setDouble(2, cantidad);
+                            ps.setString(3, descripcion);
+                            ps.setString(4, categoria);
+                            ps.setInt(5, idEgresoActual);
+
+                            int affectedRows = ps.executeUpdate();
+                            if (affectedRows > 0) {
+                                JOptionPane.showMessageDialog(this,
+                                        "Egreso actualizado correctamente",
+                                        "Éxito",
+                                        JOptionPane.INFORMATION_MESSAGE);
+                                this.dispose();
+                            } else {
+                                JOptionPane.showMessageDialog(this,
+                                        "No se pudo actualizar el egreso",
+                                        "Error",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                        }
+                    }
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this,
+                        "El monto debe ser un número válido",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al guardar: " + e.getMessage(),
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            isEditable = false;
+            txtPago.setEnabled(false);
+            txtCantidadEdit.setEditable(false);
+            txtDetalleEdit.setEditable(false);
+            comboCategoria.setEnabled(false);
+            btnGuardar.setText("Editar");
+            jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         }
+    }//GEN-LAST:event_btnGuardarActionPerformed
 
-    }//GEN-LAST:event_btnBuscarActionPerformed
+    private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
 
-    private void txtBuscaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtBuscaActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtBuscaActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_btnCancelarActionPerformed
 
     private void comboCategoriaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_comboCategoriaActionPerformed
         // TODO add your handling code here:
@@ -359,21 +309,35 @@ public class EditEgresos extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private rojeru_san.RSButtonRiple btnBuscar;
     private rojeru_san.RSButtonRiple btnCancelar;
     private rojeru_san.RSButtonRiple btnGuardar;
     private RSMaterialComponent.RSComboBoxMaterial comboCategoria;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private RSMaterialComponent.RSTextFieldTwo txtBusca;
     private RSMaterialComponent.RSTextFieldMaterial txtCantidadEdit;
     private RSMaterialComponent.RSTextFieldMaterial txtDetalleEdit;
     private com.toedter.calendar.JDateChooser txtPago;
     // End of variables declaration//GEN-END:variables
+public void cargarDatosEgreso(int id, java.sql.Date fecha, double monto, String descripcion, String categoria) {
+        idEgresoActual = id;
+        id_codigo = id;
+
+        // Establecer los valores en los campos
+        txtPago.setDate(fecha);
+        txtCantidadEdit.setText(String.valueOf(monto));
+        txtDetalleEdit.setText(descripcion);
+
+        // Seleccionar la categoría en el combo box
+        for (int i = 0; i < comboCategoria.getItemCount(); i++) {
+            if (comboCategoria.getItemAt(i).equals(categoria)) {
+                comboCategoria.setSelectedIndex(i);
+                break;
+            }
+        }
+    }
 }

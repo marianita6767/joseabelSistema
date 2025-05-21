@@ -111,7 +111,7 @@ public class cotizacion extends javax.swing.JPanel {
         add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 60, 30));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel3.setText("Nombre :");
+        jLabel3.setText("Pedido :");
         add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 100, 70, 30));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -360,7 +360,7 @@ public class cotizacion extends javax.swing.JPanel {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al generar o abrir PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-//GEN-LAST:event_btnAñadirActionPerformed
+                                         
     }//GEN-LAST:event_btnAñadirActionPerformed
 
     private void jButton_anadir_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_productoActionPerformed
