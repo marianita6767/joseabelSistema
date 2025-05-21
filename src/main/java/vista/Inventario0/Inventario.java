@@ -17,7 +17,7 @@ public class Inventario extends javax.swing.JPanel {
     /**
      * Creates new form Inventario
      */
-    public Inventario() {
+    public Inventario(int aInt, String string, String string1, String string2, String string3, String string4, int aInt1) {
 
         initComponents();
         

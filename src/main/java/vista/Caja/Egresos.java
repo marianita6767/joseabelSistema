@@ -6,6 +6,8 @@ package vista.Caja;
 
 import controlador.Ctrl_CajaEgresos;
 import java.awt.Color;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -29,10 +31,16 @@ public final class Egresos extends javax.swing.JPanel {
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
                 new String[]{"Codigo", "Fecha Pago", "Monto", "Descripcion", "Categoria", "Detalle"}
-        ));
-
+        ) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        });
+        
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-
+        Tabla1.setRowSelectionAllowed(true);
+        Tabla1.setFocusable(false);
         cargarTablaEgresos();
     }
 
@@ -42,6 +50,7 @@ public final class Egresos extends javax.swing.JPanel {
 
         Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
         for (modelo.Caja caja : ctrl.obtenerEgresos()) {
+
             model.addRow(new Object[]{
                 caja.getId_codigo(),
                 caja.getFecha(),
@@ -253,15 +262,17 @@ public final class Egresos extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
-
         if (evt.getClickCount() == 1) {
             int columna = Tabla1.columnAtPoint(evt.getPoint());
             int fila = Tabla1.rowAtPoint(evt.getPoint());
 
-            if (fila >= 0) {
-                if (columna == 5) { // Columna Editar (ahora índice 5)
-                    editarFila(fila);
-                }
+            System.out.println("Clic detectado - Fila: " + fila + ", Columna: " + columna);
+
+            if (fila >= 0 && columna == 5) { // Columna "Ver" (índice 5)
+                System.out.println("Llamando a editarFila para la fila: " + fila);
+                editarFila(fila);
+            } else {
+                System.out.println("Columna no coincide con 'Ver' (índice 5)");
             }
         }
     }//GEN-LAST:event_Tabla1MouseClicked
@@ -308,16 +319,38 @@ public final class Egresos extends javax.swing.JPanel {
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 
-    private void editarFila(int fila) {
-        // Obtener el ID de la fila seleccionada
-        int codigo = (int) Tabla1.getValueAt(fila, 0);
+   private void editarFila(int fila) {
+    // Obtener los datos de la fila seleccionada
+    int codigo = (int) Tabla1.getValueAt(fila, 0);
+    String fechaStr = (String) Tabla1.getValueAt(fila, 1); // La fecha viene como String desde la tabla
+    double monto = ((Number) Tabla1.getValueAt(fila, 2)).doubleValue(); // Convertir a double
+    String descripcion = (String) Tabla1.getValueAt(fila, 3);
+    String categoria = (String) Tabla1.getValueAt(fila, 4);
 
-        // Abrir el formulario de edición
-        EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
-        dialog.setLocationRelativeTo(null);
-        // Aquí puedes pasar los datos de la fila al formulario EditEgresos si es necesario
-        dialog.setVisible(true);
-        cargarTablaEgresos();
-
+    // Convertir el String de fecha a java.sql.Date
+    java.sql.Date fecha = null;
+    try {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // Ajusta el formato según cómo se muestra la fecha en la tabla
+        java.util.Date parsedDate = sdf.parse(fechaStr);
+        fecha = new java.sql.Date(parsedDate.getTime());
+    } catch (ParseException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al parsear la fecha: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+        return; // Salir si hay un error al parsear la fecha
     }
+
+    System.out.println("Editando fila - Código: " + codigo + ", Fecha: " + fecha + 
+                       ", Monto: " + monto + ", Descripción: " + descripcion + 
+                       ", Categoría: " + categoria);
+
+    // Abrir el formulario de edición y pasar los datos
+    EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
+    dialog.cargarDatosEgreso(codigo, fecha, monto, descripcion, categoria);
+    dialog.setLocationRelativeTo(null);
+    dialog.setVisible(true);
+    cargarTablaEgresos();
+}
 }
