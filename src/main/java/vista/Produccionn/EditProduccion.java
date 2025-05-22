@@ -199,6 +199,7 @@ public class EditProduccion extends javax.swing.JDialog {
                         ps.setDate(1, fechaInicio);
                         ps.setDate(2, fechaFin);
                         ps.setString(3, estado);
+                        ps.executeUpdate();
                     }
                 } else {
                     // Actualizar registro existente
@@ -298,6 +299,7 @@ public class EditProduccion extends javax.swing.JDialog {
 public void setDatos(int idProduccion, String nombre, String fechaInicio, 
                    String fechaFin, String estado, int cantidad, String dimensiones) {
     this.idProduccion = idProduccion;
+    this.idProduccionActual=idProduccion;
     this.datosModificados = false; // Resetear el estado de modificaciones
     
     try {

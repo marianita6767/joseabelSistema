@@ -102,7 +102,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                     case "pendiente":
                         label.setBackground(new Color(255, 204, 204)); // Rojo claro
                         break;
-                    case "en proceso":
+                    case "proceso":
                         label.setBackground(new Color(255, 255, 153)); // Amarillo claro
                         break;
                     case "completado":
