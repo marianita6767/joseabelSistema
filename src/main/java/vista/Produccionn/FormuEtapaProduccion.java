@@ -307,7 +307,6 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
         jLabel10.setText("Cantidad");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, -1));
 
-        txtetapa.setBackground(new java.awt.Color(255, 255, 255));
         txtetapa.setForeground(new java.awt.Color(0, 0, 0));
         txtetapa.setColorMaterial(new java.awt.Color(0, 0, 0));
         txtetapa.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N

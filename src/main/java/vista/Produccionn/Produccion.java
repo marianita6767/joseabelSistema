@@ -414,6 +414,7 @@ public final class Produccion extends javax.swing.JPanel {
                     "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+        cargarTablaProduccion();
     }
 
 // Método auxiliar para obtener el ID de producción con validación
@@ -509,6 +510,7 @@ public final class Produccion extends javax.swing.JPanel {
         } catch (Exception e) {
             throw new RuntimeException("Error al editar producción: " + e.getMessage(), e);
         }
+        cargarTablaProduccion();
     }
 
 // Métodos auxiliares para obtener valores de celdas con valores por defecto
