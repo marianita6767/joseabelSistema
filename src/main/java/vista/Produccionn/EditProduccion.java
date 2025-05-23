@@ -34,9 +34,11 @@ public class EditProduccion extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         this.idProduccion = idProduccion;
+        this.idProduccionActual = idProduccion;
         setLocationRelativeTo(parent);
 
-        // Si se pasa un ID válido, cargar los datos automáticamente
+        cargarDetallesPedido();
+
         if (idProduccion > 0) {
             cargarDatosProduccion(idProduccion);
         }
@@ -62,6 +64,8 @@ public class EditProduccion extends javax.swing.JDialog {
         txtfinal = new com.toedter.calendar.JDateChooser();
         btnGuardar1 = new rojeru_san.RSButtonRiple();
         btnCancelar1 = new rojeru_san.RSButtonRiple();
+        jLabel11 = new javax.swing.JLabel();
+        BoxNombre = new RSMaterialComponent.RSComboBoxMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setUndecorated(true);
@@ -79,15 +83,21 @@ public class EditProduccion extends javax.swing.JDialog {
 
         jPanel1.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 520, 50));
 
+        jLabel6.setBackground(new java.awt.Color(0, 0, 0));
         jLabel6.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel6.setForeground(new java.awt.Color(0, 0, 0));
         jLabel6.setText("fecha final:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 150, -1, -1));
 
+        jLabel9.setBackground(new java.awt.Color(0, 0, 0));
         jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Estado:");
-        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jPanel1.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 80, -1, -1));
 
+        jLabel10.setBackground(new java.awt.Color(0, 0, 0));
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel10.setForeground(new java.awt.Color(0, 0, 0));
         jLabel10.setText("fecha inicial:");
         jPanel1.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 150, -1, -1));
 
@@ -99,7 +109,7 @@ public class EditProduccion extends javax.swing.JDialog {
                 BoxestadoActionPerformed(evt);
             }
         });
-        jPanel1.add(Boxestado, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 190, -1));
+        jPanel1.add(Boxestado, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 100, 190, -1));
 
         txtinicio.setBackground(new java.awt.Color(255, 255, 255));
         txtinicio.setForeground(new java.awt.Color(255, 255, 255));
@@ -136,6 +146,22 @@ public class EditProduccion extends javax.swing.JDialog {
         });
         jPanel1.add(btnCancelar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(80, 230, 140, -1));
 
+        jLabel11.setBackground(new java.awt.Color(0, 0, 0));
+        jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
+        jLabel11.setForeground(new java.awt.Color(0, 0, 0));
+        jLabel11.setText("Nombre pedido:");
+        jPanel1.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+
+        BoxNombre.setForeground(new java.awt.Color(102, 102, 102));
+        BoxNombre.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccionar", "pendiente", "proceso", "finalizado" }));
+        BoxNombre.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        BoxNombre.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BoxNombreActionPerformed(evt);
+            }
+        });
+        jPanel1.add(BoxNombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 190, -1));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -144,9 +170,7 @@ public class EditProduccion extends javax.swing.JDialog {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 356, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 296, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
@@ -157,89 +181,104 @@ public class EditProduccion extends javax.swing.JDialog {
     }//GEN-LAST:event_BoxestadoActionPerformed
 
     private void btnGuardar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardar1ActionPerformed
-// 1. Mostrar diálogo de confirmación
-        alertaa confirmDialog = new alertaa(
-                (Frame) this.getParent(),
-                true,
-                "Confirmar",
-                "¿Desea guardar los datos?"
-        );
-        confirmDialog.setVisible(true);
-
-        // 2. Si el usuario no confirma, salir
-        if (!confirmDialog.opcionConfirmada) {
-            return;
-        }
-
-        // 3. Validación de campos
-        if (txtinicio.getDate() == null || txtfinal.getDate() == null
-                || Boxestado.getSelectedItem() == null || Boxestado.getSelectedIndex() == 0) {
-            new espacio_alerta((Frame) this.getParent(), true, "Error", "Todos los campos son obligatorios").setVisible(true);
+        // Validación básica de campos
+        if (txtinicio.getDate() == null
+                || Boxestado.getSelectedIndex() <= 0
+                || BoxNombre.getSelectedIndex() <= 0) {
+            new espacio_alerta((Frame) this.getParent(), true,
+                    "Error", "Todos los campos son obligatorios").setVisible(true);
             return;
         }
 
         try {
-            // 4. Obtener valores
+            // Obtener valores del formulario
             Date fechaInicio = new Date(txtinicio.getDate().getTime());
-            Date fechaFin = new Date(txtfinal.getDate().getTime());
+            Date fechaFin = txtfinal.getDate() != null ? new Date(txtfinal.getDate().getTime()) : null;
             String estado = Boxestado.getSelectedItem().toString();
 
-            // 5. Validar fechas
-            if (fechaFin.before(fechaInicio)) {
-                new Error_fecha((Frame) this.getParent(), true, "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+            // Obtener ID del detalle seleccionado
+            ItemDetallePedido selectedItem = (ItemDetallePedido) BoxNombre.getSelectedItem();
+            int idDetallePedido = selectedItem.getId();
+
+            // Validación de fechas
+            if (fechaFin != null && fechaFin.before(fechaInicio)) {
+                new Error_fecha((Frame) this.getParent(), true,
+                        "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
                 return;
             }
 
-            // 6. Conexión y operación en BD
-            try (Connection con = Conexion.getConnection()) {
-                if (idProduccionActual == 0) {
-                    // Insertar nuevo registro
-                    try (PreparedStatement ps = con.prepareStatement(
-                            "INSERT INTO produccion (fecha_inicio, fecha_fin, estado) VALUES (?, ?, ?)")) {
-                        ps.setDate(1, fechaInicio);
-                        ps.setDate(2, fechaFin);
-                        ps.setString(3, estado);
-                        ps.executeUpdate();
-                    }
-                } else {
-                    // Actualizar registro existente
-                    try (PreparedStatement ps = con.prepareStatement(
-                            "UPDATE produccion SET fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id_produccion = ?")) {
-                        ps.setDate(1, fechaInicio);
-                        ps.setDate(2, fechaFin);
-                        ps.setString(3, estado);
-                        ps.setInt(4, idProduccionActual);
-                        ps.executeUpdate();
-                    }
-                }
+            // Confirmación del usuario
+            alertaa confirmDialog = new alertaa(
+                    (Frame) this.getParent(),
+                    true,
+                    "Confirmar",
+                    "¿Desea guardar los datos?"
+            );
+            confirmDialog.setVisible(true);
 
-                // Marcar que los datos fueron modificados
-                this.datosModificados = true;
-
-                // 7. Mostrar mensaje de éxito
-                if (idProduccionActual == 0) {
-                    new Datos_guardados(
-                            (Frame) this.getParent(),
-                            true,
-                            "Éxito",
-                            "Datos guardados correctamente"
-                    ).setVisible(true);
-                } else {
-                    new DatosActualizados(
-                            (Frame) this.getParent(),
-                            true,
-                            "Éxito",
-                            "Datos actualizados correctamente"
-                    ).setVisible(true);
-                }
-
-                // 8. Cerrar el diálogo
-                this.dispose();
+            if (!confirmDialog.opcionConfirmada) {
+                return;
             }
-        } catch (SQLException e) {
-            new Error_guardar((Frame) this.getParent(), true, "Error",
-                    "Error al guardar: " + e.getMessage()).setVisible(true);
-            e.printStackTrace();
+
+            // Operación en base de datos
+            try (Connection con = Conexion.getConnection()) {
+                String sql;
+                if (idProduccionActual == 0) {
+                    // INSERT
+                    sql = "INSERT INTO produccion (fecha_inicio, fecha_fin, estado, detalle_pedido_iddetalle_pedido) "
+                            + "VALUES (?, ?, ?, ?)";
+                } else {
+                    // UPDATE
+                    sql = "UPDATE produccion SET fecha_inicio = ?, fecha_fin = ?, estado = ?, "
+                            + "detalle_pedido_iddetalle_pedido = ? WHERE id_produccion = ?";
+                }
+
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                    ps.setDate(1, fechaInicio);
+                    ps.setDate(2, fechaFin);
+                    ps.setString(3, estado);
+                    ps.setInt(4, idDetallePedido);
+
+                    if (idProduccionActual > 0) {
+                        ps.setInt(5, idProduccionActual);
+                    }
+
+                    int affectedRows = ps.executeUpdate();
+                    if (affectedRows > 0) {
+                        this.datosModificados = true;
+                        mostrarMensajeExito();
+                        this.dispose();
+                    } else {
+                        new Error_guardar((Frame) this.getParent(), true,
+                                "Error", "No se pudo guardar el registro").setVisible(true);
+                    }
+                }
+            } catch (SQLException e) {
+                new Error_guardar((Frame) this.getParent(), true,
+                        "Error", "Error al guardar: " + e.getMessage()).setVisible(true);
+                e.printStackTrace();
+            }
+        } catch (Exception e) {
+            new espacio_alerta((Frame) this.getParent(), true,
+                    "Error", "Error inesperado: " + e.getMessage()).setVisible(true);
+        }
+    }
+
+    private void mostrarMensajeExito() {
+        if (idProduccionActual == 0) {
+            new Datos_guardados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Éxito",
+                    "Datos guardados correctamente"
+            ).setVisible(true);
+        } else {
+            new DatosActualizados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Éxito",
+                    "Datos actualizados correctamente"
+            ).setVisible(true);
         }
 
     }//GEN-LAST:event_btnGuardar1ActionPerformed
@@ -247,6 +286,10 @@ public class EditProduccion extends javax.swing.JDialog {
     private void btnCancelar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelar1ActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelar1ActionPerformed
+
+    private void BoxNombreActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BoxNombreActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_BoxNombreActionPerformed
 
     /**
      * @param args the command line arguments
@@ -284,11 +327,13 @@ public class EditProduccion extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private RSMaterialComponent.RSComboBoxMaterial BoxNombre;
     private RSMaterialComponent.RSComboBoxMaterial Boxestado;
     private rojeru_san.RSButtonRiple btnCancelar1;
     private rojeru_san.RSButtonRiple btnGuardar1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
@@ -296,42 +341,42 @@ public class EditProduccion extends javax.swing.JDialog {
     private com.toedter.calendar.JDateChooser txtfinal;
     private com.toedter.calendar.JDateChooser txtinicio;
     // End of variables declaration//GEN-END:variables
-public void setDatos(int idProduccion, String nombre, String fechaInicio, 
-                   String fechaFin, String estado, int cantidad, String dimensiones) {
-    this.idProduccion = idProduccion;
-    this.idProduccionActual=idProduccion;
-    this.datosModificados = false; // Resetear el estado de modificaciones
-    
-    try {
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        
-        // Fecha inicio
-        if (fechaInicio != null && !fechaInicio.isEmpty()) {
-            txtinicio.setDate(sdf.parse(fechaInicio));
+public void setDatos(int idProduccion, String fechaInicio, String fechaFin, String estado, String estado1, int idDetallePedido, String dimensiones) {
+        this.idProduccion = idProduccion;
+        this.datosModificados = false;
+
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            // Fechas
+            if (fechaInicio != null && !fechaInicio.isEmpty() && fechaInicio.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                txtinicio.setDate(sdf.parse(fechaInicio));
+            }
+
+            if (fechaFin != null && !fechaFin.isEmpty() && fechaFin.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                txtfinal.setDate(sdf.parse(fechaFin));
+            }
+
+            // Estado
+            if (estado != null && !estado.isEmpty()) {
+                Boxestado.setSelectedItem(estado);
+            }
+
+            // Detalle pedido
+            if (idDetallePedido > 0) {
+                seleccionarItemEnCombo(BoxNombre, idDetallePedido);
+            }
+        } catch (ParseException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al parsear fechas: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-        // Fecha fin (puede ser "En proceso")
-        if (fechaFin != null && !fechaFin.isEmpty() && !fechaFin.equals("En proceso")) {
-            txtfinal.setDate(sdf.parse(fechaFin));
-        }
-        
-        // Estado
-        if (estado != null && !estado.isEmpty()) {
-            Boxestado.setSelectedItem(estado);
-        }
-        
-        
-    } catch (ParseException e) {
-        JOptionPane.showMessageDialog(this, 
-            "Error al parsear fechas: " + e.getMessage(), 
-            "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 
     private void cargarDatosProduccion(int idProduccion) {
         try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement(
-                "SELECT p.id_produccion, dp.descripcion, p.fecha_inicio, "
-                + "p.fecha_fin, p.estado, dp.cantidad, dp.dimension "
+                "SELECT p.id_produccion, p.fecha_inicio, p.fecha_fin, p.estado, "
+                + "p.detalle_pedido_iddetalle_pedido, dp.descripcion "
                 + "FROM produccion p "
                 + "JOIN detalle_pedido dp ON p.detalle_pedido_iddetalle_pedido = dp.iddetalle_pedido "
                 + "WHERE p.id_produccion = ?")) {
@@ -339,7 +384,20 @@ public void setDatos(int idProduccion, String nombre, String fechaInicio,
             ps.setInt(1, idProduccion);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    // ... procesar resultados ...
+                    // Fechas
+                    Date fechaInicio = rs.getDate("fecha_inicio");
+                    Date fechaFin = rs.getDate("fecha_fin");
+
+                    txtinicio.setDate(fechaInicio);
+                    txtfinal.setDate(fechaFin);
+
+                    // Estado
+                    String estado = rs.getString("estado");
+                    Boxestado.setSelectedItem(estado);
+
+                    // Detalle pedido
+                    int idDetalle = rs.getInt("detalle_pedido_iddetalle_pedido");
+                    seleccionarItemEnCombo(BoxNombre, idDetalle);
                 }
             }
         } catch (SQLException e) {
@@ -348,24 +406,80 @@ public void setDatos(int idProduccion, String nombre, String fechaInicio,
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-private boolean validarFechas(Date fechaInicio, Date fechaFin) {
-    if (fechaInicio == null || fechaFin == null) {
-        return false;
+
+// Método auxiliar para seleccionar item en combo
+    private void seleccionarItemEnCombo(RSMaterialComponent.RSComboBoxMaterial combo, int id) {
+        for (int i = 0; i < combo.getItemCount(); i++) {
+            ItemDetallePedido item = (ItemDetallePedido) combo.getItemAt(i);
+            if (item.getId() == id) {
+                combo.setSelectedIndex(i);
+                break;
+            }
+        }
     }
-    
-    // La fecha final no puede ser anterior a la inicial
-    if (fechaFin.before(fechaInicio)) {
-        new Error_fecha((Frame) this.getParent(), true, 
-            "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
-        return false;
+
+    private boolean validarFechas(Date fechaInicio, Date fechaFin) {
+        if (fechaInicio == null || fechaFin == null) {
+            return false;
+        }
+
+        // La fecha final no puede ser anterior a la inicial
+        if (fechaFin.before(fechaInicio)) {
+            new Error_fecha((Frame) this.getParent(), true,
+                    "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+            return false;
+        }
+
+        // Puedes agregar más validaciones según tus necesidades
+        return true;
     }
-    
-    // Puedes agregar más validaciones según tus necesidades
-    return true;
-}
+
     public boolean datosModificados() {
 
         return this.datosModificados;
     }
 
+    private void cargarDetallesPedido() {
+        try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement("SELECT iddetalle_pedido, descripcion FROM detalle_pedido"); ResultSet rs = ps.executeQuery()) {
+
+            // Limpiar el combo box
+            BoxNombre.removeAllItems();
+
+            // Añadir item por defecto
+            BoxNombre.addItem(new ItemDetallePedido(0, "Seleccionar"));
+
+            // Llenar con datos de la base de datos
+            while (rs.next()) {
+                int id = rs.getInt("iddetalle_pedido");
+                String descripcion = rs.getString("descripcion");
+                BoxNombre.addItem(new ItemDetallePedido(id, descripcion));
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar detalles de pedido: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            // Añadir opción vacía para evitar NullPointerException
+            BoxNombre.addItem(new ItemDetallePedido(0, "Error al cargar"));
+        }
+    }
+
+    public class ItemDetallePedido {
+
+        private int id;
+        private String descripcion;
+
+        public ItemDetallePedido(int id, String descripcion) {
+            this.id = id;
+            this.descripcion = descripcion;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        @Override
+        public String toString() {
+            return descripcion;
+        }
+    }
 }

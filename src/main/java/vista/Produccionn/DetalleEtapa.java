@@ -4,29 +4,83 @@
  */
 package vista.Produccionn;
 
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
+import modelo.Conexion;
+
 /**
  *
  * @author EQUIPO
  */
 public class DetalleEtapa extends javax.swing.JPanel {
 
+    private int idEtapa;
+
     /**
      * Creates new form DetalleEtapa
      */
-    public DetalleEtapa(int id, String nombre, String cantidad, String fechaInicio, 
-                   String fechaFin, String estado, String materiales, 
-                   String herramientas, String asignado) {
-    initComponents();
-    
-    // Asignar valores a los labels
-    this.nombre.setText(nombre);
-    this.cantidad.setText(cantidad);
-    this.fecha_ini.setText(fechaInicio);
-    this.fecha_fin.setText(fechaFin);
-    this.estado.setText(estado);
-    this.materiales.setText(materiales);
-    this.herramientas.setText(herramientas);
-    this.asignado.setText(asignado);
+    public DetalleEtapa(int id, String nombre, String cantidad, String fechaInicio, String fechaFin, String estado, String materiales, String herramientas, String asignado) {
+        this.idEtapa = id;
+        initComponents();
+
+        this.nombre.setText(nombre != null ? nombre : "No especificado");
+        this.fecha_ini.setText(fechaInicio != null ? fechaInicio : "No definida");
+        this.fecha_fin.setText(fechaFin != null ? fechaFin : "No definida");
+        this.estado.setText(estado != null ? estado : "Sin estado");
+        this.cantidad.setText(cantidad != null ? cantidad : "0");
+        this.materiales.setText(materiales != null ? materiales : "No especificado");
+        this.herramientas.setText(herramientas != null ? herramientas : "No especificado");
+        this.asignado.setText(asignado != null ? asignado : "No asignado");
+
+        cargarDatosEtapa();
+    }
+
+private void cargarDatosEtapa() {
+    try (Connection con = new Conexion().getConnection()) {
+        String sql = "SELECT ep.nombre_etapa, ep.estado, ep.fecha_inicio, ep.fecha_fin, " +
+                    "ep.cantidad, CONCAT(u.nombre, ' ', u.apellido) AS asignado, " +
+                    "GROUP_CONCAT(DISTINCT CASE WHEN i.tipo = 'material' THEN i.nombre END SEPARATOR ', ') AS materiales, " +
+                    "GROUP_CONCAT(DISTINCT CASE WHEN i.tipo = 'herramienta' THEN i.nombre END SEPARATOR ', ') AS herramientas " +
+                    "FROM etapa_produccion ep " +
+                    "LEFT JOIN usuario u ON ep.asignado_a = u.idusuarios " +
+                    "LEFT JOIN utilizado ut ON ep.idetapa_produccion = ut.etapa_produccion_idetapa_produccion " +
+                    "LEFT JOIN inventario i ON ie.utilizado = i.id_inventario " +
+                    "WHERE ep.idetapa_produccion = ? " +
+                    "GROUP BY ep.idetapa_produccion";
+        
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, this.idEtapa);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    
+                    nombre.setText(rs.getString("nombre_etapa"));
+                    cantidad.setText(String.valueOf(rs.getInt("cantidad")));
+                    
+                    Date fechaInicio = rs.getDate("fecha_inicio");
+                    Date fechaFin = rs.getDate("fecha_fin");
+                    fecha_ini.setText(fechaInicio != null ? sdf.format(fechaInicio) : "No definida");
+                    fecha_fin.setText(fechaFin != null ? sdf.format(fechaFin) : "No definida");
+                    
+                    estado.setText(rs.getString("estado"));
+                    asignado.setText(rs.getString("asignado") != null ? 
+                                   rs.getString("asignado") : "No asignado");
+                    
+                    materiales.setText(rs.getString("materiales") != null ? 
+                                    rs.getString("materiales") : "Sin materiales");
+                    herramientas.setText(rs.getString("herramientas") != null ? 
+                                       rs.getString("herramientas") : "Sin herramientas");
+                }
+            }
+        }
+    } catch (SQLException e) {
+        // Manejo de errores igual que antes
+    }
 }
 
     /**
