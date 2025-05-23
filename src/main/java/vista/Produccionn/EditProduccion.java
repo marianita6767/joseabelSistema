@@ -22,9 +22,7 @@ import java.text.ParseException;
  */
 public class EditProduccion extends javax.swing.JDialog {
 
-    private Produccion produccionPanel;
     private int idProduccionActual;
-    private int idProduccion;
     private boolean datosModificados = false;
 
     /**
@@ -33,7 +31,6 @@ public class EditProduccion extends javax.swing.JDialog {
     public EditProduccion(Frame parent, boolean modal, int idProduccion) {
         super(parent, modal);
         initComponents();
-        this.idProduccion = idProduccion;
         this.idProduccionActual = idProduccion;
         setLocationRelativeTo(parent);
 
@@ -342,7 +339,6 @@ public class EditProduccion extends javax.swing.JDialog {
     private com.toedter.calendar.JDateChooser txtinicio;
     // End of variables declaration//GEN-END:variables
 public void setDatos(int idProduccion, String fechaInicio, String fechaFin, String estado, String estado1, int idDetallePedido, String dimensiones) {
-        this.idProduccion = idProduccion;
         this.datosModificados = false;
 
         try {
@@ -418,21 +414,6 @@ public void setDatos(int idProduccion, String fechaInicio, String fechaFin, Stri
         }
     }
 
-    private boolean validarFechas(Date fechaInicio, Date fechaFin) {
-        if (fechaInicio == null || fechaFin == null) {
-            return false;
-        }
-
-        // La fecha final no puede ser anterior a la inicial
-        if (fechaFin.before(fechaInicio)) {
-            new Error_fecha((Frame) this.getParent(), true,
-                    "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
-            return false;
-        }
-
-        // Puedes agregar más validaciones según tus necesidades
-        return true;
-    }
 
     public boolean datosModificados() {
 
