@@ -49,23 +49,148 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Id", "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Asignado", "Detalles", "materiales", "herramientas"}
+                new String[]{"Id", "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Asignado", "Detalles", "Editar", "materiales", "herramientas"}
         ));
         // Oculta las columnas adicionales después de establecer el modelo
         Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(0)); // Oculta id
-        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta materiales
-        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta herramienta
-        Tabla1.setCellSelectionEnabled(false);
-        Tabla1.setRowSelectionAllowed(true);
-        Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(8)); // Oculta materiales
+        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(8)); // Oculta herramienta
 
         Tabla1.getColumnModel().getColumn(4).setCellRenderer(new EstadoTableCellRenderer());
 
         Tabla1.getColumnModel().getColumn(6).setCellRenderer(new VerTableCellRenderer());
 
+        Tabla1.getColumnModel().getColumn(7).setCellRenderer(new EditarTableCellRenderer());
+
+        Tabla1.setCellSelectionEnabled(false);
+        Tabla1.setRowSelectionAllowed(true);
+        Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
         cargarTablaEtapa();    // Carga Tabla1
     }
+private class EditarTableCellRenderer extends DefaultTableCellRenderer {
+    private final Color textColor = new Color(46, 49, 82);
+    private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+    private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value,
+            boolean isSelected, boolean hasFocus, int row, int column) {
+        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+
+        c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+        c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+        c.setFont(isSelected ? fontBold : fontNormal);
+
+        setHorizontalAlignment(CENTER);
+        setText("Editar");
+
+        setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+        Tabla1.setRowHeight(23);
+        return c;
+    }
+}
     // Renderizador para la columna de estado
+
+    private void mostrarDetalleEtapa(DefaultTableModel model, int modelRow, int idEtapa) {
+        try {
+
+            String nombre = model.getValueAt(modelRow, 1).toString();
+            String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
+            String fechaInicio = model.getValueAt(modelRow, 3).toString();
+            String fechaFin = model.getValueAt(modelRow, 4).toString();
+            String estado = model.getValueAt(modelRow, 5).toString();
+            String asignado = model.getValueAt(modelRow, 6) != null ? model.getValueAt(modelRow, 6).toString() : "No asignado";
+            String materiales = model.getColumnCount() > 8 && model.getValueAt(modelRow, 8) != null
+                    ? model.getValueAt(modelRow, 8).toString() : "No especificado";
+            String herramientas = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
+                    ? model.getValueAt(modelRow, 9).toString() : "No especificado";
+
+            // Debug: Verifica los valores
+            System.out.println("Datos a enviar:");
+            System.out.println("ID: " + idEtapa);
+            System.out.println("Nombre: " + nombre);
+            System.out.println("Cantidad: " + cantidad);
+            System.out.println("Fecha inicio: " + fechaInicio);
+            System.out.println("Fecha fin: " + fechaFin);
+            System.out.println("Estado: " + estado);
+            System.out.println("Asignado: " + asignado);
+            System.out.println("Materiales: " + materiales);
+            System.out.println("Herramientas: " + herramientas);
+
+            // Crear y mostrar el panel
+            DetalleEtapa detallePanel = new DetalleEtapa(
+                    idEtapa,
+                    nombre,
+                    cantidad,
+                    fechaInicio,
+                    fechaFin,
+                    estado,
+                    materiales,
+                    herramientas,
+                    asignado
+            );
+
+            removeAll();
+            setLayout(new BorderLayout());
+            add(detallePanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al mostrar detalle: " + e.getMessage(), e);
+        }
+    }
+
+    private void editarProduccion(DefaultTableModel model, int modelRow, int idEtapa) {
+        try {
+
+            String nombre = model.getValueAt(modelRow, 1).toString();
+            String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
+            String fechaInicio = model.getValueAt(modelRow, 3).toString();
+            String fechaFin = model.getValueAt(modelRow, 4).toString();
+            String estado = model.getValueAt(modelRow, 5).toString();
+            String asignado = model.getValueAt(modelRow, 6) != null ? model.getValueAt(modelRow, 6).toString() : "No asignado";
+            String materiales = model.getColumnCount() > 8 && model.getValueAt(modelRow, 8) != null
+                    ? model.getValueAt(modelRow, 8).toString() : "No especificado";
+            String herramientas = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
+                    ? model.getValueAt(modelRow, 9).toString() : "No especificado";
+
+            // Debug: Verifica los valores
+            System.out.println("Datos a enviar:");
+            System.out.println("ID: " + idEtapa);
+            System.out.println("Nombre: " + nombre);
+            System.out.println("Cantidad: " + cantidad);
+            System.out.println("Fecha inicio: " + fechaInicio);
+            System.out.println("Fecha fin: " + fechaFin);
+            System.out.println("Estado: " + estado);
+            System.out.println("Asignado: " + asignado);
+            System.out.println("Materiales: " + materiales);
+            System.out.println("Herramientas: " + herramientas);
+
+            // Crear y mostrar el panel
+            DetalleEtapa detallePanel = new DetalleEtapa(
+                    idEtapa,
+                    nombre,
+                    cantidad,
+                    fechaInicio,
+                    fechaFin,
+                    estado,
+                    materiales,
+                    herramientas,
+                    asignado
+            );
+
+            removeAll();
+            setLayout(new BorderLayout());
+            add(detallePanel, BorderLayout.CENTER);
+            revalidate();
+            repaint();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error al mostrar detalle: " + e.getMessage(), e);
+        }
+    }
 
     private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
 
@@ -159,7 +284,6 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     private void initComponents() {
 
         txtbuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
-        btnEditar = new RSMaterialComponent.RSButtonShape();
         btnNuevo = new RSMaterialComponent.RSButtonShape();
         btnElimi = new RSMaterialComponent.RSButtonShape();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -183,20 +307,6 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         });
         add(txtbuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(24, 22, 430, 40));
 
-        btnEditar.setBackground(new java.awt.Color(46, 49, 82));
-        btnEditar.setBorder(javax.swing.BorderFactory.createCompoundBorder());
-        btnEditar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/pencil (1).png"))); // NOI18N
-        btnEditar.setText("   Editar");
-        btnEditar.setBackgroundHover(new java.awt.Color(67, 150, 209));
-        btnEditar.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
-        btnEditar.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
-        btnEditar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditarActionPerformed(evt);
-            }
-        });
-        add(btnEditar, new org.netbeans.lib.awtextra.AbsoluteConstraints(894, 20, 120, 40));
-
         btnNuevo.setBackground(new java.awt.Color(46, 49, 82));
         btnNuevo.setBorder(javax.swing.BorderFactory.createCompoundBorder());
         btnNuevo.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus (1).png"))); // NOI18N
@@ -209,7 +319,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                 btnNuevoActionPerformed(evt);
             }
         });
-        add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(764, 20, 120, 40));
+        add(btnNuevo, new org.netbeans.lib.awtextra.AbsoluteConstraints(890, 20, 120, 40));
 
         btnElimi.setBackground(new java.awt.Color(46, 49, 82));
         btnElimi.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -280,31 +390,6 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
 
     }//GEN-LAST:event_txtbuscarActionPerformed
 
-    private void btnEditarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditarActionPerformed
-        int selectedRow = Tabla1.getSelectedRow();
-
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione una etapa para editar",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Obtener el ID de la fila seleccionada (columna 0 oculta)
-        int idEtapa = (int) Tabla1.getValueAt(selectedRow, 0);
-
-        EditEtapaProduccion dialog = new EditEtapaProduccion(
-                (JFrame) SwingUtilities.getWindowAncestor(this),
-                true,
-                idEtapa
-        );
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-        cargarTablaEtapa(); // Recargar la tabla después de editar
-
-    }//GEN-LAST:event_btnEditarActionPerformed
-
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
         FormuEtapaProduccion dialog = new FormuEtapaProduccion(
                 (JFrame) SwingUtilities.getWindowAncestor(this),
@@ -370,7 +455,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
     }//GEN-LAST:event_btnElimiActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
-        int column = Tabla1.columnAtPoint(evt.getPoint());
+        /* int column = Tabla1.columnAtPoint(evt.getPoint());
         int viewRow = Tabla1.rowAtPoint(evt.getPoint());
 
         // Verifica que sea la columna "Ver" (índice 6 de las columnas visibles)
@@ -425,13 +510,118 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         revalidate();
         repaint();
 
+         */
+
+        try {
+        int column = Tabla1.columnAtPoint(evt.getPoint());
+        int viewRow = Tabla1.rowAtPoint(evt.getPoint());
+
+        if (viewRow < 0 || column < 0) {
+            return;
+        }
+
+        int modelRow = Tabla1.convertRowIndexToModel(viewRow);
+        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+
+        int idEtapa = (int) model.getValueAt(modelRow, 0);
+        if (idEtapa <= 0) {
+            return;
+        }
+
+        switch (column) {
+            case 6: // Columna "Ver Detalle"
+                mostrarDetalleEtapa(model, modelRow, idEtapa);
+                break;
+                
+            case 7: // Columna "Editar"
+                editarEtapa(model, modelRow, idEtapa);
+                break;
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al procesar clic: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
 
     }//GEN-LAST:event_Tabla1MouseClicked
 
+    
+    
+    private void editarEtapa(DefaultTableModel model, int modelRow, int idEtapa) {
+    try {
+        // Obtener datos de la fila
+        String nombre = model.getValueAt(modelRow, 1).toString();
+        String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
+        String fechaInicio = model.getValueAt(modelRow, 3).toString();
+        String fechaFin = model.getValueAt(modelRow, 4).toString();
+        String estado = model.getValueAt(modelRow, 5).toString();
+        String asignado = model.getValueAt(modelRow, 6) != null ? 
+                         model.getValueAt(modelRow, 6).toString() : "No asignado";
+        String materiales = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null ?
+                          model.getValueAt(modelRow, 9).toString() : "No especificado";
+        String herramientas = model.getColumnCount() > 10 && model.getValueAt(modelRow, 10) != null ?
+                             model.getValueAt(modelRow, 10).toString() : "No especificado";
 
+        // Mostrar diálogo de edición
+        EditEtapaProduccion dialog = new EditEtapaProduccion(
+                (JFrame) SwingUtilities.getWindowAncestor(this),
+                true,
+                idEtapa
+        );
+        
+        // Pasar los datos al diálogo
+        dialog.setDatos(
+                idEtapa,
+                nombre,
+                cantidad,
+                fechaInicio,
+                fechaFin,
+                estado,
+                materiales,
+                herramientas,
+                asignado
+        );
+        
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+        
+        // Recargar la tabla si se hicieron cambios
+        if (dialog.datosModificados()) {
+            cargarTablaEtapa();
+        }
+
+    } catch (Exception e) {
+        JOptionPane.showMessageDialog(this,
+                "Error al preparar edición: " + e.getMessage(),
+                "Error", JOptionPane.ERROR_MESSAGE);
+        e.printStackTrace();
+    }
+}
+// Método auxiliar para obtener el ID de producción con validación
+    private int obtenerIdEtapa(DefaultTableModel model, int modelRow) {
+        try {
+            Object idObj = model.getValueAt(modelRow, 0);
+            int id = Integer.parseInt(idObj.toString());
+
+            if (id <= 0) {
+                JOptionPane.showMessageDialog(this,
+                        "ID de producción no válido",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return -1;
+            }
+            return id;
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Formato de ID inválido",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return -1;
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSTableMetroCustom Tabla1;
-    private RSMaterialComponent.RSButtonShape btnEditar;
     private RSMaterialComponent.RSButtonShape btnElimi;
     private RSMaterialComponent.RSButtonShape btnNuevo;
     private javax.swing.JScrollPane jScrollPane3;
@@ -478,6 +668,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
                             rs.getString("estado"), // Columna 5
                             rs.getString("trabajador_asignado"), // Columna 6
                             "Ver", // Columna 7 (botón)
+                            "Editar",
                             rs.getString("materiales"), // Columna 8 (oculta)
                             rs.getString("herramientas") // Columna 9 (oculta)
                         });
