@@ -49,10 +49,11 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Id", "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Asignado", "Detalles", "herramientas"}
+                new String[]{"Id", "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Asignado", "Detalles", "materiales", "herramientas"}
         ));
         // Oculta las columnas adicionales después de establecer el modelo
         Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(0)); // Oculta id
+        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta materiales
         Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta herramienta
         Tabla1.setCellSelectionEnabled(false);
         Tabla1.setRowSelectionAllowed(true);
@@ -387,7 +388,7 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
         String fechaInicio = model.getValueAt(modelRow, 3).toString();
         String fechaFin = model.getValueAt(modelRow, 4).toString();
         String estado = model.getValueAt(modelRow, 5).toString();
-        String asignado = model.getValueAt(modelRow, 7) != null ? model.getValueAt(modelRow, 7).toString() : "No asignado";
+        String asignado = model.getValueAt(modelRow, 6) != null ? model.getValueAt(modelRow, 6).toString() : "No asignado";
         String materiales = model.getColumnCount() > 8 && model.getValueAt(modelRow, 8) != null
                 ? model.getValueAt(modelRow, 8).toString() : "No especificado";
         String herramientas = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
