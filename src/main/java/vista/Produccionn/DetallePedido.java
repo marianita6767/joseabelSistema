@@ -4,12 +4,22 @@
  */
 package vista.Produccionn;
 
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
+import static javax.swing.SwingConstants.CENTER;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import modelo.Conexion;
 
 /**
@@ -20,68 +30,136 @@ public class DetallePedido extends javax.swing.JPanel {
 
     private int idProduccion;
 
-    public DetallePedido(int idProduccion) {
-        this.idProduccion = idProduccion;
-        initComponents();
-        cargarDatosPedido();
-    }
-
-    /**
-     * Creates new form DetallePedido
-     */
-    // Constructor corregido
+    // Constructor completo
     public DetallePedido(int idProduccion, String nombre, String fechaInicio,
             String fechaFin, String estado, String cantidad, String dimensiones) {
-        System.out.println("ID recibido en constructor: " + idProduccion); // Debug
         this.idProduccion = idProduccion;
         initComponents();
+
         // Asignar valores directamente
         this.nombre.setText(nombre != null ? nombre : "");
         this.fecha_ini.setText(fechaInicio != null ? fechaInicio : "");
         this.fecha_fin.setText(fechaFin != null ? fechaFin : "");
         this.estado.setText(estado != null ? estado : "");
         this.cantidad.setText(cantidad != null ? cantidad : "0");
-        this.cantidad1.setText(cantidad != null ? cantidad : "0");
         this.dimensiones.setText(dimensiones != null ? dimensiones : "");
+
+        // Configurar tabla
+        configurarTabla();
+        cargarTablaEtapa();
+        cargarDatosPedido();
+    }
+
+    // Constructor simple que carga los datos
+    public DetallePedido(int idProduccion) {
+        this.idProduccion = idProduccion;
+        initComponents();
+        configurarTabla();
+        cargarDatosPedido();  // Asegúrate que esta línea esté presente
+        cargarTablaEtapa();
+    }
+
+    private void configurarTabla() {
+        Tabla1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        DefaultTableModel model = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Asignado"}
+        );
+        Tabla1.setModel(model);
+        Tabla1.getColumnModel().getColumn(4).setCellRenderer(new EstadoTableCellRenderer());
+        Tabla1.setCellSelectionEnabled(false);
+        Tabla1.setRowSelectionAllowed(true);
+        Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
     }
 
     private void cargarDatosPedido() {
-
         try (Connection con = new Conexion().getConnection()) {
-            String sql = "SELECT p.fecha_inicio, p.fecha_fin, p.estado, "
-                    + "dp.cantidad, dp.dimension, dp.descripcion "
+            String sql = "SELECT dp.descripcion, p.fecha_inicio, p.fecha_fin, p.estado, "
+                    + "dp.cantidad, dp.dimension "
                     + "FROM produccion p "
                     + "JOIN detalle_pedido dp ON p.detalle_pedido_iddetalle_pedido = dp.iddetalle_pedido "
-                    + "JOIN pedido pe ON dp.pedido_id_pedido = pe.id_pedido "
                     + "WHERE p.id_produccion = ?";
 
             try (PreparedStatement ps = con.prepareStatement(sql)) {
                 ps.setInt(1, idProduccion);
                 try (ResultSet rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        // Formatear fechas si es necesario
                         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
-                        nombre.setText(rs.getString("descripcion") != null ? rs.getString("descripcion") : "No disponible");
-                        fecha_ini.setText(rs.getDate("fecha_inicio") != null ? sdf.format(rs.getDate("fecha_inicio")) : "No definida");
-                        fecha_fin.setText(rs.getDate("fecha_fin") != null ? sdf.format(rs.getDate("fecha_fin")) : "No definida");
-                        estado.setText(rs.getString("estado") != null ? rs.getString("estado") : "Sin estado");
-                        cantidad.setText(rs.getString("cantidad") != null ? rs.getString("cantidad") : "0");
-                        cantidad1.setText(rs.getString("cantidad") != null ? rs.getString("cantidad") : "0");
-
-                        dimensiones.setText(rs.getString("dimension") != null ? rs.getString("dimension") : "No especificadas");
-                    } else {
-                        // Si no hay datos, muestra un mensaje en un campo
-                        nombre.setText("No se encontraron datos para el pedido ID: " + idProduccion);
+                        // Asignar valores a los labels
+                        nombre.setText(rs.getString("descripcion"));
+                        fecha_ini.setText(rs.getDate("fecha_inicio") != null
+                                ? sdf.format(rs.getDate("fecha_inicio")) : "No definida");
+                        fecha_fin.setText(rs.getDate("fecha_fin") != null
+                                ? sdf.format(rs.getDate("fecha_fin")) : "No definida");
+                        estado.setText(rs.getString("estado"));
+                        cantidad.setText(String.valueOf(rs.getInt("cantidad")));
+                        dimensiones.setText(rs.getString("dimension"));
                     }
                 }
             }
         } catch (SQLException e) {
-            nombre.setText("Error al cargar datos");
             JOptionPane.showMessageDialog(this,
-                    "Error de conexión: " + e.getMessage(),
+                    "Error al cargar datos del pedido: " + e.getMessage(),
                     "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace(); // Para debug
         }
+    }
+
+    private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
+
+        private final Color textColor = new Color(46, 49, 82);
+        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
+
+        public EstadoTableCellRenderer() {
+            setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            // Llamar al método padre primero
+            JLabel label = (JLabel) super.getTableCellRendererComponent(
+                    table, value, isSelected, hasFocus, row, column);
+
+            label.setHorizontalAlignment(CENTER);
+            label.setText(value != null ? value.toString() : "");
+
+            if (isSelected) {
+                // Cuando está seleccionado, texto blanco y fondo de selección
+                label.setForeground(Color.WHITE);
+                label.setBackground(table.getSelectionBackground());
+                label.setFont(fontBold);
+            } else {
+                // Cuando no está seleccionado, mantener el color original del texto
+                label.setForeground(textColor);
+                label.setFont(fontNormal);
+
+                // Aplicar colores de fondo según el estado
+                String estado = value != null ? value.toString() : "";
+                switch (estado.toLowerCase()) {
+                    case "pendiente":
+                        label.setBackground(new Color(255, 204, 204)); // Rojo claro
+                        break;
+                    case "proceso":
+                        label.setBackground(new Color(255, 255, 153)); // Amarillo claro
+                        break;
+                    case "completado":
+                        label.setBackground(new Color(204, 255, 204)); // Verde claro
+                        break;
+                    default:
+                        label.setBackground(Color.WHITE);
+                        break;
+                }
+            }
+
+            // Borde igual al resto de la tabla
+            label.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+            Tabla1.setRowHeight(23); // Altura más delgada para las filas
+            return label;
+        }
+
     }
 
     /**
@@ -100,7 +178,6 @@ public class DetallePedido extends javax.swing.JPanel {
         cantidad = new javax.swing.JLabel();
         dimensiones = new javax.swing.JLabel();
         estado = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
         jLabel9 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
         nombre = new javax.swing.JLabel();
@@ -108,9 +185,9 @@ public class DetallePedido extends javax.swing.JPanel {
         jLabel12 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
-        jLabel14 = new javax.swing.JLabel();
-        cantidad1 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
 
         jPanel2.setBackground(new java.awt.Color(234, 234, 234));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -145,15 +222,10 @@ public class DetallePedido extends javax.swing.JPanel {
         estado.setText("estado");
         jPanel2.add(estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(640, 80, -1, -1));
 
-        jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel7.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel7.setText("Estado actual:");
-        jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 210, -1, -1));
-
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel9.setForeground(new java.awt.Color(0, 0, 0));
         jLabel9.setText("Etapas terminadas:");
-        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 300, -1, -1));
+        jPanel2.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, -1, -1));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -195,35 +267,70 @@ public class DetallePedido extends javax.swing.JPanel {
         jLabel13.setText("Estado:");
         jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 80, -1, -1));
 
-        jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel14.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel14.setText("Cantidad:");
-        jPanel2.add(jLabel14, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 260, -1, -1));
-
-        cantidad1.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        cantidad1.setForeground(new java.awt.Color(0, 0, 0));
-        cantidad1.setText("cantidad");
-        jPanel2.add(cantidad1, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 260, -1, -1));
-
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(0, 0, 0));
         jLabel15.setText("Fecha de inicio: ");
         jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
 
+        Tabla1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
+            },
+            new String [] {
+                "Nombre", "Cantidad", "Fecha inicio", "Fecha final", "Estado", "Material", "Herramienta", "Asignado"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.Object.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        Tabla1.setBackgoundHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        Tabla1.setColorBorderHead(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorBorderRows(new java.awt.Color(46, 49, 82));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setRowHeight(23);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
+        jScrollPane3.setViewportView(Tabla1);
+        Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
+
+        jPanel2.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 1100, 190));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 778, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 412, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private javax.swing.JLabel cantidad;
-    private javax.swing.JLabel cantidad1;
     private javax.swing.JLabel dimensiones;
     private javax.swing.JLabel estado;
     private javax.swing.JLabel fecha_fin;
@@ -232,13 +339,51 @@ public class DetallePedido extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
-    private javax.swing.JLabel jLabel14;
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JLabel nombre;
     // End of variables declaration//GEN-END:variables
+
+    public void cargarTablaEtapa() {
+        try (Connection con = Conexion.getConnection()) {
+            String sql = "SELECT ep.nombre_etapa, ep.cantidad, "
+                    + "ep.fecha_inicio, ep.fecha_fin, ep.estado, "
+                    + "u.nombre AS trabajador_asignado "
+                    + "FROM etapa_produccion ep "
+                    + "LEFT JOIN asignada a ON ep.idetapa_produccion = a.etapa_produccion_idetapa_produccion "
+                    + "LEFT JOIN usuario u ON a.usuario_id_usuario = u.id_usuario "
+                    + "WHERE ep.produccion_id_produccion = ? "
+                    + "AND ep.estado = 'completado' "
+                    + "ORDER BY ep.fecha_inicio";
+
+            DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+            model.setRowCount(0); // Limpiar tabla antes de cargar
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, this.idProduccion);
+                try (ResultSet rs = ps.executeQuery()) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+
+                    while (rs.next()) {
+                        model.addRow(new Object[]{
+                            rs.getString("nombre_etapa"),
+                            rs.getInt("cantidad"),
+                            sdf.format(rs.getDate("fecha_inicio")),
+                            rs.getDate("fecha_fin") != null ? sdf.format(rs.getDate("fecha_fin")) : "En proceso",
+                            rs.getString("estado"),
+                            rs.getString("trabajador_asignado")
+                        });
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar etapas: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
 }

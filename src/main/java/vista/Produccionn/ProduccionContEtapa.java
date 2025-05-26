@@ -68,58 +68,51 @@ public final class ProduccionContEtapa extends javax.swing.JPanel {
 
         cargarTablaEtapa();    // Carga Tabla1
     }
-private class EditarTableCellRenderer extends DefaultTableCellRenderer {
-    private final Color textColor = new Color(46, 49, 82);
-    private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
-    private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
 
-    @Override
-    public Component getTableCellRendererComponent(JTable table, Object value,
-            boolean isSelected, boolean hasFocus, int row, int column) {
-        Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+    private class EditarTableCellRenderer extends DefaultTableCellRenderer {
 
-        c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
-        c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
-        c.setFont(isSelected ? fontBold : fontNormal);
+        private final Color textColor = new Color(46, 49, 82);
+        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
+        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
 
-        setHorizontalAlignment(CENTER);
-        setText("Editar");
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
-        Tabla1.setRowHeight(23);
-        return c;
+            c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
+            c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
+            c.setFont(isSelected ? fontBold : fontNormal);
+
+            setHorizontalAlignment(CENTER);
+            setText("Editar");
+
+            setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
+            Tabla1.setRowHeight(23);
+            return c;
+        }
     }
-}
     // Renderizador para la columna de estado
 
     private void mostrarDetalleEtapa(DefaultTableModel model, int modelRow, int idEtapa) {
         try {
-
+            // Obtener datos de la fila seleccionada
             String nombre = model.getValueAt(modelRow, 1).toString();
             String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
             String fechaInicio = model.getValueAt(modelRow, 3).toString();
             String fechaFin = model.getValueAt(modelRow, 4).toString();
             String estado = model.getValueAt(modelRow, 5).toString();
-            String asignado = model.getValueAt(modelRow, 6) != null ? model.getValueAt(modelRow, 6).toString() : "No asignado";
+            String asignado = model.getValueAt(modelRow, 6) != null
+                    ? model.getValueAt(modelRow, 6).toString() : "No asignado";
             String materiales = model.getColumnCount() > 8 && model.getValueAt(modelRow, 8) != null
                     ? model.getValueAt(modelRow, 8).toString() : "No especificado";
             String herramientas = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
                     ? model.getValueAt(modelRow, 9).toString() : "No especificado";
 
-            // Debug: Verifica los valores
-            System.out.println("Datos a enviar:");
-            System.out.println("ID: " + idEtapa);
-            System.out.println("Nombre: " + nombre);
-            System.out.println("Cantidad: " + cantidad);
-            System.out.println("Fecha inicio: " + fechaInicio);
-            System.out.println("Fecha fin: " + fechaFin);
-            System.out.println("Estado: " + estado);
-            System.out.println("Asignado: " + asignado);
-            System.out.println("Materiales: " + materiales);
-            System.out.println("Herramientas: " + herramientas);
-
-            // Crear y mostrar el panel
-            DetalleEtapa detallePanel = new DetalleEtapa(
+            // Crear el diálogo
+            DetallleEtapa dialog = new DetallleEtapa(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    true,
                     idEtapa,
                     nombre,
                     cantidad,
@@ -131,14 +124,15 @@ private class EditarTableCellRenderer extends DefaultTableCellRenderer {
                     asignado
             );
 
-            removeAll();
-            setLayout(new BorderLayout());
-            add(detallePanel, BorderLayout.CENTER);
-            revalidate();
-            repaint();
+            // Centrar y mostrar el diálogo
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
 
         } catch (Exception e) {
-            throw new RuntimeException("Error al mostrar detalle: " + e.getMessage(), e);
+            JOptionPane.showMessageDialog(this,
+                    "Error al mostrar detalle: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }
 
@@ -169,8 +163,8 @@ private class EditarTableCellRenderer extends DefaultTableCellRenderer {
             System.out.println("Herramientas: " + herramientas);
 
             // Crear y mostrar el panel
-            DetalleEtapa detallePanel = new DetalleEtapa(
-                    idEtapa,
+            DetallleEtapa detallePanel = new DetallleEtapa(
+                    (JFrame) SwingUtilities.getWindowAncestor(this), true, idEtapa,
                     nombre,
                     cantidad,
                     fechaInicio,
@@ -402,204 +396,175 @@ private class EditarTableCellRenderer extends DefaultTableCellRenderer {
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnElimiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnElimiActionPerformed
-        int selectedRow = Tabla1.getSelectedRow();
-
-        if (selectedRow < 0) {
-            JOptionPane.showMessageDialog(this,
-                    "Seleccione una etapa para eliminar",
-                    "Advertencia",
-                    JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        // Obtener el ID de la fila seleccionada (columna 0 oculta)
-        int idEtapa = (int) Tabla1.getValueAt(selectedRow, 0);
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de eliminar esta etapa?",
-                "Confirmar eliminación",
-                JOptionPane.YES_NO_OPTION);
-
-        if (confirm != JOptionPane.YES_OPTION) {
-            return;
-        }
-
-        try (Connection con = Conexion.getConnection()) {
-            String sql = "DELETE FROM etapa_produccion WHERE idetapa_produccion = ?";
-
-            try (PreparedStatement ps = con.prepareStatement(sql)) {
+    int selectedRow = Tabla1.getSelectedRow();
+    
+    if (selectedRow < 0) {
+        JOptionPane.showMessageDialog(this,
+                "Seleccione una etapa para eliminar",
+                "Advertencia",
+                JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    
+    // Convertir índice de vista a modelo (importante si hay filtros)
+    int modelRow = Tabla1.convertRowIndexToModel(selectedRow);
+    int idEtapa = (int) Tabla1.getModel().getValueAt(modelRow, 0);
+    
+    // Verificar estado (opcional: no permitir eliminar etapas completadas)
+    String estado = Tabla1.getModel().getValueAt(modelRow, 5).toString();
+    if ("completado".equalsIgnoreCase(estado)) {
+        JOptionPane.showMessageDialog(this,
+                "No se puede eliminar una etapa completada",
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+        return;
+    }
+    
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro de eliminar esta etapa?",
+            "Confirmar eliminación",
+            JOptionPane.YES_NO_OPTION);
+    
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+    
+    try (Connection con = Conexion.getConnection()) {
+        con.setAutoCommit(false); // Iniciar transacción
+        
+        try {
+            // 1. Eliminar registros en 'utilizado'
+            String sqlUtilizado = "DELETE FROM utilizado WHERE etapa_produccion_idetapa_produccion = ?";
+            try (PreparedStatement ps = con.prepareStatement(sqlUtilizado)) {
+                ps.setInt(1, idEtapa);
+                ps.executeUpdate();
+            }
+            
+            // 2. Eliminar registros en 'asignada'
+            String sqlAsignada = "DELETE FROM asignada WHERE etapa_produccion_idetapa_produccion = ?";
+            try (PreparedStatement ps = con.prepareStatement(sqlAsignada)) {
+                ps.setInt(1, idEtapa);
+                ps.executeUpdate();
+            }
+            
+            // 3. Finalmente eliminar la etapa
+            String sqlEtapa = "DELETE FROM etapa_produccion WHERE idetapa_produccion = ?";
+            try (PreparedStatement ps = con.prepareStatement(sqlEtapa)) {
                 ps.setInt(1, idEtapa);
                 int filasAfectadas = ps.executeUpdate();
-
+                
                 if (filasAfectadas > 0) {
+                    con.commit(); // Confirmar cambios
                     JOptionPane.showMessageDialog(this,
                             "Etapa eliminada correctamente",
                             "Éxito",
                             JOptionPane.INFORMATION_MESSAGE);
-                    cargarTablaEtapa(); // Recargar la tabla
                 } else {
+                    con.rollback();
                     JOptionPane.showMessageDialog(this,
-                            "No se pudo eliminar la etapa",
+                            "No se encontró la etapa a eliminar",
                             "Error",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
         } catch (SQLException e) {
+            con.rollback(); // Revertir en caso de error
             JOptionPane.showMessageDialog(this,
                     "Error al eliminar etapa: " + e.getMessage(),
                     "Error",
                     JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
+        
+        cargarTablaEtapa(); // Refrescar la tabla
+        
+    } catch (SQLException e) {
+        JOptionPane.showMessageDialog(this,
+                "Error de conexión: " + e.getMessage(),
+                "Error",
+                JOptionPane.ERROR_MESSAGE);
+    }
 
     }//GEN-LAST:event_btnElimiActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
-        /* int column = Tabla1.columnAtPoint(evt.getPoint());
-        int viewRow = Tabla1.rowAtPoint(evt.getPoint());
+            try {
+            int column = Tabla1.columnAtPoint(evt.getPoint());
+            int viewRow = Tabla1.rowAtPoint(evt.getPoint());
 
-        // Verifica que sea la columna "Ver" (índice 6 de las columnas visibles)
-        if (viewRow < 0 || column < 0 || column != 6) {
-            return;
-        }
+            if (viewRow < 0 || column < 0) {
+                return;
+            }
 
-        int modelRow = Tabla1.convertRowIndexToModel(viewRow);
-        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+            int modelRow = Tabla1.convertRowIndexToModel(viewRow);
+            DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+            int idEtapa = (int) model.getValueAt(modelRow, 0);
 
-        // Obtener datos (usando los índices del modelo, no de la vista)
-        int idEtapa = (int) model.getValueAt(modelRow, 0); // Columna 0 (ID oculto)
-        String nombre = model.getValueAt(modelRow, 1).toString();
-        String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
-        String fechaInicio = model.getValueAt(modelRow, 3).toString();
-        String fechaFin = model.getValueAt(modelRow, 4).toString();
-        String estado = model.getValueAt(modelRow, 5).toString();
-        String asignado = model.getValueAt(modelRow, 6) != null ? model.getValueAt(modelRow, 6).toString() : "No asignado";
-        String materiales = model.getColumnCount() > 8 && model.getValueAt(modelRow, 8) != null
-                ? model.getValueAt(modelRow, 8).toString() : "No especificado";
-        String herramientas = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
-                ? model.getValueAt(modelRow, 9).toString() : "No especificado";
-
-        // Debug: Verifica los valores
-        System.out.println("Datos a enviar:");
-        System.out.println("ID: " + idEtapa);
-        System.out.println("Nombre: " + nombre);
-        System.out.println("Cantidad: " + cantidad);
-        System.out.println("Fecha inicio: " + fechaInicio);
-        System.out.println("Fecha fin: " + fechaFin);
-        System.out.println("Estado: " + estado);
-        System.out.println("Asignado: " + asignado);
-        System.out.println("Materiales: " + materiales);
-        System.out.println("Herramientas: " + herramientas);
-
-        // Crear y mostrar el panel
-        DetalleEtapa detallePanel = new DetalleEtapa(
-                idEtapa,
-                nombre,
-                cantidad,
-                fechaInicio,
-                fechaFin,
-                estado,
-                materiales,
-                herramientas,
-                asignado
-        );
-
-        removeAll();
-        setLayout(new BorderLayout());
-        add(detallePanel, BorderLayout.CENTER);
-        revalidate();
-        repaint();
-
-         */
-
-        try {
-        int column = Tabla1.columnAtPoint(evt.getPoint());
-        int viewRow = Tabla1.rowAtPoint(evt.getPoint());
-
-        if (viewRow < 0 || column < 0) {
-            return;
-        }
-
-        int modelRow = Tabla1.convertRowIndexToModel(viewRow);
-        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-
-        int idEtapa = (int) model.getValueAt(modelRow, 0);
-        if (idEtapa <= 0) {
-            return;
-        }
-
-        switch (column) {
-            case 6: // Columna "Ver Detalle"
+            if (column == 6) { // Columna "Ver"
                 mostrarDetalleEtapa(model, modelRow, idEtapa);
-                break;
-                
-            case 7: // Columna "Editar"
+            } else if (column == 7) { // Columna "Editar"
                 editarEtapa(model, modelRow, idEtapa);
-                break;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al procesar clic: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al procesar clic: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
-
     }//GEN-LAST:event_Tabla1MouseClicked
 
-    
-    
     private void editarEtapa(DefaultTableModel model, int modelRow, int idEtapa) {
-    try {
-        // Obtener datos de la fila
-        String nombre = model.getValueAt(modelRow, 1).toString();
-        String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
-        String fechaInicio = model.getValueAt(modelRow, 3).toString();
-        String fechaFin = model.getValueAt(modelRow, 4).toString();
-        String estado = model.getValueAt(modelRow, 5).toString();
-        String asignado = model.getValueAt(modelRow, 6) != null ? 
-                         model.getValueAt(modelRow, 6).toString() : "No asignado";
-        String materiales = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null ?
-                          model.getValueAt(modelRow, 9).toString() : "No especificado";
-        String herramientas = model.getColumnCount() > 10 && model.getValueAt(modelRow, 10) != null ?
-                             model.getValueAt(modelRow, 10).toString() : "No especificado";
+        try {
+            // Obtener datos de la fila
+            String nombre = model.getValueAt(modelRow, 1).toString();
+            String cantidad = String.valueOf(model.getValueAt(modelRow, 2));
+            String fechaInicio = model.getValueAt(modelRow, 3).toString();
+            String fechaFin = model.getValueAt(modelRow, 4).toString();
+            String estado = model.getValueAt(modelRow, 5).toString();
+            String asignado = model.getValueAt(modelRow, 6) != null
+                    ? model.getValueAt(modelRow, 6).toString() : "No asignado";
+            String materiales = model.getColumnCount() > 9 && model.getValueAt(modelRow, 9) != null
+                    ? model.getValueAt(modelRow, 9).toString() : "No especificado";
+            String herramientas = model.getColumnCount() > 10 && model.getValueAt(modelRow, 10) != null
+                    ? model.getValueAt(modelRow, 10).toString() : "No especificado";
 
-        // Mostrar diálogo de edición
-        EditEtapaProduccion dialog = new EditEtapaProduccion(
-                (JFrame) SwingUtilities.getWindowAncestor(this),
-                true,
-                idEtapa
-        );
-        
-        // Pasar los datos al diálogo
-        dialog.setDatos(
-                idEtapa,
-                nombre,
-                cantidad,
-                fechaInicio,
-                fechaFin,
-                estado,
-                materiales,
-                herramientas,
-                asignado
-        );
-        
-        dialog.setLocationRelativeTo(null);
-        dialog.setVisible(true);
-        
-        // Recargar la tabla si se hicieron cambios
-        if (dialog.datosModificados()) {
-            cargarTablaEtapa();
+            // Mostrar diálogo de edición
+            EditEtapaProduccion dialog = new EditEtapaProduccion(
+                    (JFrame) SwingUtilities.getWindowAncestor(this),
+                    true,
+                    idEtapa
+            );
+
+            // Pasar los datos al diálogo
+            dialog.setDatos(
+                    idEtapa,
+                    nombre,
+                    cantidad,
+                    fechaInicio,
+                    fechaFin,
+                    estado,
+                    materiales,
+                    herramientas,
+                    asignado
+            );
+
+            dialog.setLocationRelativeTo(null);
+            dialog.setVisible(true);
+
+            // Recargar la tabla si se hicieron cambios
+            if (dialog.datosModificados()) {
+                cargarTablaEtapa();
+            }
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al preparar edición: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al preparar edición: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
     }
-}
 // Método auxiliar para obtener el ID de producción con validación
+
     private int obtenerIdEtapa(DefaultTableModel model, int modelRow) {
         try {
             Object idObj = model.getValueAt(modelRow, 0);
