@@ -1,86 +1,40 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JPanel.java to edit this template
+ * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JDialog.java to edit this template
  */
 package vista.Produccionn;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import javax.swing.JOptionPane;
-import modelo.Conexion;
+import java.awt.Frame;
+import java.awt.image.BufferedImage;
+import javax.swing.JFrame;
 
 /**
  *
  * @author EQUIPO
  */
-public class DetalleEtapa extends javax.swing.JPanel {
-
-    private int idEtapa;
+public class DetallleEtapa extends javax.swing.JDialog {
 
     /**
-     * Creates new form DetalleEtapa
+     * Creates new form DetallleEtapa
      */
-    public DetalleEtapa(int id, String nombre, String cantidad, String fechaInicio, String fechaFin, String estado, String materiales, String herramientas, String asignado) {
-        this.idEtapa = id;
-        initComponents();
-
-        this.nombre.setText(nombre != null ? nombre : "No especificado");
-        this.fecha_ini.setText(fechaInicio != null ? fechaInicio : "No definida");
-        this.fecha_fin.setText(fechaFin != null ? fechaFin : "No definida");
-        this.estado.setText(estado != null ? estado : "Sin estado");
-        this.cantidad.setText(cantidad != null ? cantidad : "0");
-        this.materiales.setText(materiales != null ? materiales : "No especificado");
-        this.herramientas.setText(herramientas != null ? herramientas : "No especificado");
-        this.asignado.setText(asignado != null ? asignado : "No asignado");
-
-        cargarDatosEtapa();
-    }
-
-private void cargarDatosEtapa() {
-    try (Connection con = new Conexion().getConnection()) {
-        String sql = "SELECT ep.nombre_etapa, ep.estado, ep.fecha_inicio, ep.fecha_fin, " +
-                    "ep.cantidad, CONCAT(u.nombre, ' ', u.apellido) AS asignado, " +
-                    "GROUP_CONCAT(DISTINCT CASE WHEN i.tipo = 'material' THEN i.nombre END SEPARATOR ', ') AS materiales, " +
-                    "GROUP_CONCAT(DISTINCT CASE WHEN i.tipo = 'herramienta' THEN i.nombre END SEPARATOR ', ') AS herramientas " +
-                    "FROM etapa_produccion ep " +
-                    "LEFT JOIN usuario u ON ep.asignado_a = u.idusuarios " +
-                    "LEFT JOIN utilizado ut ON ep.idetapa_produccion = ut.etapa_produccion_idetapa_produccion " +
-                    "LEFT JOIN inventario i ON ie.utilizado = i.id_inventario " +
-                    "WHERE ep.idetapa_produccion = ? " +
-                    "GROUP BY ep.idetapa_produccion";
-        
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, this.idEtapa);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    
-                    nombre.setText(rs.getString("nombre_etapa"));
-                    cantidad.setText(String.valueOf(rs.getInt("cantidad")));
-                    
-                    Date fechaInicio = rs.getDate("fecha_inicio");
-                    Date fechaFin = rs.getDate("fecha_fin");
-                    fecha_ini.setText(fechaInicio != null ? sdf.format(fechaInicio) : "No definida");
-                    fecha_fin.setText(fechaFin != null ? sdf.format(fechaFin) : "No definida");
-                    
-                    estado.setText(rs.getString("estado"));
-                    asignado.setText(rs.getString("asignado") != null ? 
-                                   rs.getString("asignado") : "No asignado");
-                    
-                    materiales.setText(rs.getString("materiales") != null ? 
-                                    rs.getString("materiales") : "Sin materiales");
-                    herramientas.setText(rs.getString("herramientas") != null ? 
-                                       rs.getString("herramientas") : "Sin herramientas");
-                }
-            }
-        }
-    } catch (SQLException e) {
-        // Manejo de errores igual que antes
-    }
+    public DetallleEtapa(Frame parent, boolean modal, int idEtapa, String nombre1, String cantidad1, 
+                    String fechaInicio, String fechaFin, String estado1, 
+                    String materiales1, String herramientas1, String asignado1) {
+    super(parent, modal);
+    initComponents();
+    setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE));
+    // Asignar los valores a los componentes
+    nombre.setText(nombre1);
+    cantidad.setText(cantidad1);
+    fecha_ini.setText(fechaInicio);
+    fecha_fin.setText(fechaFin);
+    estado.setText(estado1);
+    materiales.setText(materiales1);
+    herramientas.setText(herramientas1);
+    asignado.setText(asignado1);
+    
+    // Centrar el diálogo
+    setLocationRelativeTo(parent);
 }
 
     /**
@@ -111,7 +65,7 @@ private void cargarDatosEtapa() {
         asignado = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
 
-        setBackground(new java.awt.Color(234, 234, 234));
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jPanel2.setBackground(new java.awt.Color(234, 234, 234));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -159,7 +113,7 @@ private void cargarDatosEtapa() {
             .addGap(0, 2, Short.MAX_VALUE)
         );
 
-        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, 700, 2));
+        jPanel2.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 300, -1, 2));
 
         nombre.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         nombre.setForeground(new java.awt.Color(0, 0, 0));
@@ -211,11 +165,11 @@ private void cargarDatosEtapa() {
         jLabel17.setText("Asignado:");
         jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 80, -1, -1));
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
-        this.setLayout(layout);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 777, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -223,8 +177,14 @@ private void cargarDatosEtapa() {
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
+
+        pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * @param args the command line arguments
+     */
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel asignado;

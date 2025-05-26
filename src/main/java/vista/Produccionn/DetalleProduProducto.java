@@ -5,7 +5,14 @@
 package vista.Produccionn;
 
 import java.awt.event.ActionListener;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import modelo.Conexion;
 
 /**
  *
@@ -161,10 +168,9 @@ public class DetalleProduProducto extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEtapaActionPerformed
 
     private void btndetalleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btndetalleActionPerformed
-        DetallePedido detalle = new DetallePedido(
-                this.idProduccion
-        );
-        mostrarPanelSecundario(detalle);
+    DetallePedido pedido = new DetallePedido(this.idProduccion);
+    mostrarPanelSecundario(pedido);
+
     }//GEN-LAST:event_btndetalleActionPerformed
     private void mostrarPanelSecundario(JPanel panel) {
         panel.setSize(1250, 690);

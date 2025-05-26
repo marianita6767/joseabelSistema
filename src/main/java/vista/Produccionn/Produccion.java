@@ -53,6 +53,7 @@ public final class Produccion extends javax.swing.JPanel {
                 new Object[][]{},
                 new String[]{"Codigo", "Nombre", "Fecha inicio", "Fecha Final", "Estado", "Detalle", "Editar", "Cantidad", "Dimensiones"}
         ) {
+            
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return String.class;
