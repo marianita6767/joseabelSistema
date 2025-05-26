@@ -484,16 +484,23 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
                 guardarAsignado(con, idEtapa, trabajador);
 
                 con.commit();
-                JOptionPane.showMessageDialog(this, "¡Datos guardados correctamente!", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                Datos_guardados exitoDialog = new Datos_guardados(
+                        (Frame) this.getParent(),
+                        true,
+                        "Éxito",
+                        "Datos guardados correctamente"
+                );
+                exitoDialog.setLocationRelativeTo(null);
+                exitoDialog.setVisible(true);
                 this.dispose();
             }
         } catch (SQLException | NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            new Error_guardar((Frame) this.getParent(), true, "Error",
+                    "Error al guardar: " + e.getMessage()).setVisible(true);
+            e.printStackTrace();
         }
 
     }
-
-
 
 // Método auxiliar para obtener ID de inventario
     private int obtenerIdInventario(Connection con, String nombre, String tipo) throws SQLException {
@@ -679,41 +686,42 @@ public class FormuEtapaProduccion extends javax.swing.JDialog {
 
         BoxAsignado.setModel(model);
     }
-private List<String> obtenerMaterialesUtilizados(int idEtapa) {
-    List<String> materiales = new ArrayList<>();
-    try (Connection con = Conexion.getConnection()) {
-        String sql = "SELECT i.nombre FROM utilizado u " +
-                    "JOIN inventario i ON u.inventario_id_inventario = i.id_inventario " +
-                    "WHERE u.etapa_produccion_idetapa_produccion = ? AND i.tipo = 'material'";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idEtapa);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                materiales.add(rs.getString("nombre"));
-            }
-        }
-    } catch (SQLException ex) {
-        Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return materiales;
-}
 
-private List<String> obtenerHerramientasUtilizadas(int idEtapa) {
-    List<String> herramientas = new ArrayList<>();
-    try (Connection con = Conexion.getConnection()) {
-        String sql = "SELECT i.nombre FROM utilizado u " +
-                    "JOIN inventario i ON u.inventario_id_inventario = i.id_inventario " +
-                    "WHERE u.etapa_produccion_idetapa_produccion = ? AND i.tipo = 'herramienta'";
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idEtapa);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                herramientas.add(rs.getString("nombre"));
+    private List<String> obtenerMaterialesUtilizados(int idEtapa) {
+        List<String> materiales = new ArrayList<>();
+        try (Connection con = Conexion.getConnection()) {
+            String sql = "SELECT i.nombre FROM utilizado u "
+                    + "JOIN inventario i ON u.inventario_id_inventario = i.id_inventario "
+                    + "WHERE u.etapa_produccion_idetapa_produccion = ? AND i.tipo = 'material'";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, idEtapa);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    materiales.add(rs.getString("nombre"));
+                }
             }
+        } catch (SQLException ex) {
+            Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } catch (SQLException ex) {
-        Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
+        return materiales;
     }
-    return herramientas;
-}
+
+    private List<String> obtenerHerramientasUtilizadas(int idEtapa) {
+        List<String> herramientas = new ArrayList<>();
+        try (Connection con = Conexion.getConnection()) {
+            String sql = "SELECT i.nombre FROM utilizado u "
+                    + "JOIN inventario i ON u.inventario_id_inventario = i.id_inventario "
+                    + "WHERE u.etapa_produccion_idetapa_produccion = ? AND i.tipo = 'herramienta'";
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, idEtapa);
+                ResultSet rs = ps.executeQuery();
+                while (rs.next()) {
+                    herramientas.add(rs.getString("nombre"));
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(FormuEtapaProduccion.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return herramientas;
+    }
 }

@@ -14,6 +14,7 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
 
 import vista.Cotizacion.cotizacion;
@@ -44,6 +45,7 @@ public class Principal extends javax.swing.JFrame {
     public Principal() {
 
         initComponents();
+    setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE));
 
         jPanel4.setVisible(true);
         jPanel5.setVisible(false);

@@ -35,14 +35,14 @@ public class EditEtapaProduccion extends javax.swing.JDialog {
      */
     public EditEtapaProduccion(Frame parent, boolean modal, int idEtapa) {
         super(parent, modal);
-    this.idEtapa = idEtapa;
-    initComponents();
-    setLocationRelativeTo(parent);
-    
-    // Configuración inicial
-    if (idEtapa > 0) {
-        cargarDatosEtapa(idEtapa);
-    }
+        this.idEtapa = idEtapa;
+        initComponents();
+        setLocationRelativeTo(parent);
+
+        // Configuración inicial
+        if (idEtapa > 0) {
+            cargarDatosEtapa(idEtapa);
+        }
 
     }
 
@@ -189,167 +189,93 @@ public class EditEtapaProduccion extends javax.swing.JDialog {
     }//GEN-LAST:event_btnCancelar1ActionPerformed
 
     private void btnGuardar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardar1ActionPerformed
-/*            int confirm = JOptionPane.showConfirmDialog(this,
-                "¿Está seguro de guardar los cambios?",
-                "Confirmar",
-                JOptionPane.YES_NO_OPTION);
+// 1. Validación de campos
+        if (txtetapa.getText().trim().isEmpty()
+                || txtFechainicio.getDate() == null
+                || Boxestado.getSelectedIndex() <= 0) {
 
-        if (confirm != JOptionPane.YES_OPTION) {
+            new espacio_alerta((Frame) this.getParent(), true,
+                    "Error", "Todos los campos son obligatorios").setVisible(true);
             return;
         }
-// Validación de campos
-        if (txtFechainicio.getDate() == null || txtfechafin.getDate() == null
-                || Boxestado.getSelectedItem() == null || Boxestado.getSelectedIndex() == 0) {
+// 2. Mostrar diálogo de confirmación
+        alertaa confirmDialog = new alertaa(
+                    (Frame) this.getParent(),
+                    true,
+                    "Confirmar",
+                    "¿Desea guardar los datos?"
+            );
+            confirmDialog.setVisible(true);
 
-            JOptionPane.showMessageDialog(this,
-                    "Todos los campos son obligatorios",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        try {
-            // Obtener valores
-            Date fechaInicio = new Date(txtFechainicio.getDate().getTime());
-            Date fechaFin = new Date(txtfechafin.getDate().getTime());
-            String estado = Boxestado.getSelectedItem().toString();
-
-            // Validar fechas
-            if (fechaFin.before(fechaInicio)) {
-                JOptionPane.showMessageDialog(this,
-                        "La fecha final no puede ser anterior a la fecha inicial",
-                        "Error",
-                        JOptionPane.ERROR_MESSAGE);
+            if (!confirmDialog.opcionConfirmada) {
                 return;
             }
 
-            Connection con = Conexion.getConnection();
+        try {
+            // 3. Obtener valores del formulario
+            String nombreEtapa = txtetapa.getText().trim();
+            Date fechaInicio = new Date(txtFechainicio.getDate().getTime());
+            Date fechaFin = txtfechafin.getDate() != null
+                    ? new Date(txtfechafin.getDate().getTime()) : null;
+            String estado = Boxestado.getSelectedItem().toString();
 
-            if (idProduccionActual == 0) {
-                // Insertar nuevo registro
-                try (PreparedStatement ps = con.prepareStatement(
-                        "INSERT INTO etapa_produccion (fecha_inicio, fecha_fin, estado) VALUES (?, ?, ?)")) {
+            // 4. Validar fechas
+            if (fechaFin != null && fechaFin.before(fechaInicio)) {
+                new Error_fecha((Frame) this.getParent(), true,
+                        "Error", "La fecha final no puede ser anterior a la inicial").setVisible(true);
+                return;
+            }
 
-                    ps.setDate(1, fechaInicio);
-                    ps.setDate(2, fechaFin);
-                    ps.setString(3, estado);
-
-                    ps.executeUpdate();
-
-                    JOptionPane.showMessageDialog(this,
-                            "Datos guardados correctamente",
-                            "Éxito",
-                            JOptionPane.INFORMATION_MESSAGE);
+            // 5. Operación en base de datos
+            try (Connection con = Conexion.getConnection()) {
+                String sql;
+                if (idEtapa == 0) {
+                    // Insertar nuevo registro
+                    sql = "INSERT INTO etapa_produccion (nombre_etapa, fecha_inicio, fecha_fin, estado) "
+                            + "VALUES (?, ?, ?, ?)";
+                } else {
+                    // Actualizar registro existente
+                    sql = "UPDATE etapa_produccion SET nombre_etapa = ?, fecha_inicio = ?, "
+                            + "fecha_fin = ?, estado = ? WHERE idetapa_produccion = ?";
                 }
-            } else {
-                // Actualizar registro existente
-                try (PreparedStatement ps = con.prepareStatement(
-                        "UPDATE etapa_produccion SET fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE idetapa_produccion = ?")) {
 
-                    ps.setDate(1, fechaInicio);
-                    ps.setDate(2, fechaFin);
-                    ps.setString(3, estado);
-                    ps.setInt(4, idProduccionActual);
+                try (PreparedStatement ps = con.prepareStatement(sql)) {
+                    ps.setString(1, nombreEtapa);
+                    ps.setDate(2, fechaInicio);
+                    ps.setDate(3, fechaFin);
+                    ps.setString(4, estado);
+
+                    if (idEtapa > 0) {
+                        ps.setInt(5, idEtapa);
+                    }
 
                     int affectedRows = ps.executeUpdate();
                     if (affectedRows > 0) {
-                        JOptionPane.showMessageDialog(this,
-                                "Datos actualizados correctamente",
-                                "Éxito",
-                                JOptionPane.INFORMATION_MESSAGE);
+                        this.datosModificados = true;
+                        if (idEtapa == 0) {
+            new Datos_guardados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Éxito",
+                    "Datos guardados correctamente"
+            ).setVisible(true);
+        } else {
+            new DatosActualizados(
+                    (Frame) this.getParent(),
+                    true,
+                    "Éxito",
+                    "Datos actualizados correctamente"
+            ).setVisible(true);
+        }
+                        this.dispose();
                     }
                 }
             }
-
-            con.close();
-            this.dispose();
-
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al guardar: " + e.getMessage(),
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-        }*/
-    // 1. Mostrar diálogo de confirmación
-    int confirm = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de guardar los cambios?",
-            "Confirmar",
-            JOptionPane.YES_NO_OPTION);
-
-    if (confirm != JOptionPane.YES_OPTION) {
-        return;
-    }
-
-    // 2. Validación de campos
-    if (txtetapa.getText().trim().isEmpty() || 
-        txtFechainicio.getDate() == null || 
-        Boxestado.getSelectedIndex() <= 0) {
-        
-        JOptionPane.showMessageDialog(this,
-                "Nombre, fecha inicio y estado son obligatorios",
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        return;
-    }
-
-    try {
-        // 3. Obtener valores del formulario
-        String nombreEtapa = txtetapa.getText().trim();
-        Date fechaInicio = new Date(txtFechainicio.getDate().getTime());
-        Date fechaFin = txtfechafin.getDate() != null ? 
-                       new Date(txtfechafin.getDate().getTime()) : null;
-        String estado = Boxestado.getSelectedItem().toString();
-
-        // 4. Validar fechas
-        if (fechaFin != null && fechaFin.before(fechaInicio)) {
-            JOptionPane.showMessageDialog(this,
-                    "La fecha final no puede ser anterior a la fecha inicial",
-                    "Error",
-                    JOptionPane.ERROR_MESSAGE);
-            return;
+            new Error_guardar((Frame) this.getParent(), true,
+                        "Error", "Error al guardar: " + e.getMessage()).setVisible(true);
+                e.printStackTrace();
         }
-
-        // 5. Operación en base de datos
-        try (Connection con = Conexion.getConnection()) {
-            String sql;
-            if (idEtapa == 0) {
-                // Insertar nuevo registro
-                sql = "INSERT INTO etapa_produccion (nombre_etapa, fecha_inicio, fecha_fin, estado) " +
-                      "VALUES (?, ?, ?, ?)";
-            } else {
-                // Actualizar registro existente
-                sql = "UPDATE etapa_produccion SET nombre_etapa = ?, fecha_inicio = ?, " +
-                      "fecha_fin = ?, estado = ? WHERE idetapa_produccion = ?";
-            }
-
-            try (PreparedStatement ps = con.prepareStatement(sql)) {
-                ps.setString(1, nombreEtapa);
-                ps.setDate(2, fechaInicio);
-                ps.setDate(3, fechaFin);
-                ps.setString(4, estado);
-                
-                if (idEtapa > 0) {
-                    ps.setInt(5, idEtapa);
-                }
-
-                int affectedRows = ps.executeUpdate();
-                if (affectedRows > 0) {
-                    this.datosModificados = true;
-                    JOptionPane.showMessageDialog(this,
-                            idEtapa == 0 ? "Etapa creada correctamente" : "Cambios guardados correctamente",
-                            "Éxito",
-                            JOptionPane.INFORMATION_MESSAGE);
-                    this.dispose();
-                }
-            }
-        }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al guardar: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-    }
 
     }//GEN-LAST:event_btnGuardar1ActionPerformed
 
@@ -408,66 +334,68 @@ public class EditEtapaProduccion extends javax.swing.JDialog {
     private com.toedter.calendar.JDateChooser txtfechafin;
     // End of variables declaration//GEN-END:variables
 
-public void setDatos(int idEtapa, String nombre, String cantidad, String fechaInicio,String fechaFin, String estado, String materiales,String herramientas, String asignado) {
-    this.idEtapa = idEtapa;
-    this.datosModificados = false; // Resetear estado de modificaciones
-    
-    try {
-        // Establecer valores en los campos del formulario
-        txtetapa.setText(nombre != null ? nombre : "");
-        
-        // Establecer estado
-        if (estado != null && !estado.isEmpty()) {
-            Boxestado.setSelectedItem(estado);
-        }
-        
-        // Parsear y establecer fechas
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        
-        if (fechaInicio != null && !fechaInicio.isEmpty() && fechaInicio.matches("\\d{4}-\\d{2}-\\d{2}")) {
+    public void setDatos(int idEtapa, String nombre, String cantidad, String fechaInicio, String fechaFin, String estado, String materiales, String herramientas, String asignado) {
+        this.idEtapa = idEtapa;
+        this.datosModificados = false; // Resetear estado de modificaciones
+
+        try {
+            // Establecer valores en los campos del formulario
+            txtetapa.setText(nombre != null ? nombre : "");
+
+            // Establecer estado
+            if (estado != null && !estado.isEmpty()) {
+                Boxestado.setSelectedItem(estado);
+            }
+
+            // Parsear y establecer fechas
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+            if (fechaInicio != null && !fechaInicio.isEmpty() && fechaInicio.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 txtFechainicio.setDate(sdf.parse(fechaInicio));
             }
 
             if (fechaFin != null && !fechaFin.isEmpty() && fechaFin.matches("\\d{4}-\\d{2}-\\d{2}")) {
                 txtfechafin.setDate(sdf.parse(fechaFin));
             }
-        
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al cargar datos: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar datos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
-}
-public boolean datosModificados() {
-    return this.datosModificados;
-}
-private void cargarDatosEtapa(int idEtapa) {
-    try (Connection con = Conexion.getConnection()) {
-        String sql = "SELECT nombre_etapa, fecha_inicio, fecha_fin, estado " +
-                     "FROM etapa_produccion WHERE idetapa_produccion = ?";
-        
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setInt(1, idEtapa);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    
-                    txtetapa.setText(rs.getString("nombre_etapa"));
-                    Boxestado.setSelectedItem(rs.getString("estado"));
-                    
-                    // Fechas
-                    txtFechainicio.setDate(rs.getDate("fecha_inicio"));
-                    Date fechaFin = rs.getDate("fecha_fin");
-                    if (fechaFin != null) {
-                        txtfechafin.setDate(fechaFin);
+
+    public boolean datosModificados() {
+        return this.datosModificados;
+    }
+
+    private void cargarDatosEtapa(int idEtapa) {
+        try (Connection con = Conexion.getConnection()) {
+            String sql = "SELECT nombre_etapa, fecha_inicio, fecha_fin, estado "
+                    + "FROM etapa_produccion WHERE idetapa_produccion = ?";
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+                ps.setInt(1, idEtapa);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                        txtetapa.setText(rs.getString("nombre_etapa"));
+                        Boxestado.setSelectedItem(rs.getString("estado"));
+
+                        // Fechas
+                        txtFechainicio.setDate(rs.getDate("fecha_inicio"));
+                        Date fechaFin = rs.getDate("fecha_fin");
+                        if (fechaFin != null) {
+                            txtfechafin.setDate(fechaFin);
+                        }
                     }
                 }
             }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al cargar datos: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (SQLException e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al cargar datos: " + e.getMessage(),
-                "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
 }
