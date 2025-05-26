@@ -17,25 +17,25 @@ public class DetallleEtapa extends javax.swing.JDialog {
     /**
      * Creates new form DetallleEtapa
      */
-    public DetallleEtapa(Frame parent, boolean modal, int idEtapa, String nombre1, String cantidad1, 
-                    String fechaInicio, String fechaFin, String estado1, 
-                    String materiales1, String herramientas1, String asignado1) {
-    super(parent, modal);
-    initComponents();
-    setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE));
-    // Asignar los valores a los componentes
-    nombre.setText(nombre1);
-    cantidad.setText(cantidad1);
-    fecha_ini.setText(fechaInicio);
-    fecha_fin.setText(fechaFin);
-    estado.setText(estado1);
-    materiales.setText(materiales1);
-    herramientas.setText(herramientas1);
-    asignado.setText(asignado1);
-    
-    // Centrar el diálogo
-    setLocationRelativeTo(parent);
-}
+    public DetallleEtapa(Frame parent, boolean modal, int idEtapa, String nombre1, String cantidad1,
+            String fechaInicio, String fechaFin, String estado1,
+            String materiales1, String herramientas1, String asignado1) {
+        super(parent, modal);
+        initComponents();
+        setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE));
+        // Asignar los valores a los componentes
+        nombre.setText(nombre1);
+        cantidad.setText(cantidad1);
+        fecha_ini.setText(fechaInicio);
+        fecha_fin.setText(fechaFin);
+        estado.setText(estado1);
+        materiales.setText(materiales1);
+        herramientas.setText(herramientas1);
+        asignado.setText(asignado1);
+
+        // Centrar el diálogo
+        setLocationRelativeTo(parent);
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -64,41 +64,45 @@ public class DetallleEtapa extends javax.swing.JDialog {
         jLabel16 = new javax.swing.JLabel();
         asignado = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        btnGuardar1 = new rojeru_san.RSButtonRiple();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setUndecorated(true);
 
-        jPanel2.setBackground(new java.awt.Color(234, 234, 234));
+        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(0, 0, 0));
         jLabel1.setText("Nombre:");
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 30, -1, -1));
+        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 70, -1, -1));
 
         fecha_ini.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         fecha_ini.setForeground(new java.awt.Color(0, 0, 0));
         fecha_ini.setText("fecha_ini");
-        jPanel2.add(fecha_ini, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 80, -1, -1));
+        jPanel2.add(fecha_ini, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 120, -1, -1));
 
         fecha_fin.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         fecha_fin.setForeground(new java.awt.Color(0, 0, 0));
         fecha_fin.setText("fecha_fin");
-        jPanel2.add(fecha_fin, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 130, -1, -1));
+        jPanel2.add(fecha_fin, new org.netbeans.lib.awtextra.AbsoluteConstraints(170, 160, -1, -1));
 
         cantidad.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         cantidad.setForeground(new java.awt.Color(0, 0, 0));
         cantidad.setText("cantidad");
-        jPanel2.add(cantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(410, 80, -1, -1));
+        jPanel2.add(cantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 120, -1, -1));
 
         materiales.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         materiales.setForeground(new java.awt.Color(0, 0, 0));
         materiales.setText("materiales");
-        jPanel2.add(materiales, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 180, -1, -1));
+        jPanel2.add(materiales, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 240, -1, -1));
 
         estado.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         estado.setForeground(new java.awt.Color(0, 0, 0));
         estado.setText("estado");
-        jPanel2.add(estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(390, 130, -1, -1));
+        jPanel2.add(estado, new org.netbeans.lib.awtextra.AbsoluteConstraints(350, 160, -1, -1));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -118,76 +122,103 @@ public class DetallleEtapa extends javax.swing.JDialog {
         nombre.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         nombre.setForeground(new java.awt.Color(0, 0, 0));
         nombre.setText("Nombre");
-        jPanel2.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 30, -1, -1));
+        jPanel2.add(nombre, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 70, -1, -1));
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel11.setForeground(new java.awt.Color(0, 0, 0));
-        jLabel11.setText("Fecha de fin:");
-        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 130, -1, -1));
+        jLabel11.setText("Fecha de final:");
+        jPanel2.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 160, -1, -1));
 
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel12.setForeground(new java.awt.Color(0, 0, 0));
         jLabel12.setText("Material:");
-        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 180, -1, -1));
+        jPanel2.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 240, -1, -1));
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(0, 0, 0));
         jLabel5.setText("Cantidad:");
-        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 80, -1, -1));
+        jPanel2.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 120, -1, -1));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel13.setForeground(new java.awt.Color(0, 0, 0));
         jLabel13.setText("Estado:");
-        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 130, -1, -1));
+        jPanel2.add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(280, 160, -1, -1));
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel15.setForeground(new java.awt.Color(0, 0, 0));
         jLabel15.setText("Fecha de inicio: ");
-        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 80, -1, -1));
+        jPanel2.add(jLabel15, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 120, -1, -1));
 
         herramientas.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         herramientas.setForeground(new java.awt.Color(0, 0, 0));
         herramientas.setText("herramientas");
-        jPanel2.add(herramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 180, -1, -1));
+        jPanel2.add(herramientas, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 200, -1, -1));
 
         jLabel16.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel16.setForeground(new java.awt.Color(0, 0, 0));
         jLabel16.setText("Herramientas:");
-        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 180, -1, -1));
+        jPanel2.add(jLabel16, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 200, -1, -1));
 
         asignado.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         asignado.setForeground(new java.awt.Color(0, 0, 0));
         asignado.setText("asignado");
-        jPanel2.add(asignado, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 80, -1, -1));
+        jPanel2.add(asignado, new org.netbeans.lib.awtextra.AbsoluteConstraints(560, 120, -1, -1));
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         jLabel17.setForeground(new java.awt.Color(0, 0, 0));
         jLabel17.setText("Asignado:");
-        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(510, 80, -1, -1));
+        jPanel2.add(jLabel17, new org.netbeans.lib.awtextra.AbsoluteConstraints(470, 120, -1, -1));
+
+        jPanel4.setBackground(new java.awt.Color(46, 49, 82));
+        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
+        jLabel2.setFont(new java.awt.Font("Century751 BT", 1, 24)); // NOI18N
+        jLabel2.setForeground(new java.awt.Color(255, 255, 255));
+        jLabel2.setText("Etapa Produccion");
+        jPanel4.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 10, -1, -1));
+
+        btnGuardar1.setBackground(new java.awt.Color(46, 49, 82));
+        btnGuardar1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/x.png"))); // NOI18N
+        btnGuardar1.setColorHover(new java.awt.Color(204, 0, 0));
+        btnGuardar1.setFont(new java.awt.Font("Humnst777 BlkCn BT", 1, 18)); // NOI18N
+        btnGuardar1.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        btnGuardar1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnGuardar1ActionPerformed(evt);
+            }
+        });
+        jPanel4.add(btnGuardar1, new org.netbeans.lib.awtextra.AbsoluteConstraints(720, 0, 30, 30));
+
+        jPanel2.add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 750, 50));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 742, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 412, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 324, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnGuardar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardar1ActionPerformed
+        this.dispose();
+
+    }//GEN-LAST:event_btnGuardar1ActionPerformed
+
     /**
      * @param args the command line arguments
+     * 
+     * 
      */
-    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel asignado;
+    private rojeru_san.RSButtonRiple btnGuardar1;
     private javax.swing.JLabel cantidad;
     private javax.swing.JLabel estado;
     private javax.swing.JLabel fecha_fin;
@@ -200,9 +231,11 @@ public class DetallleEtapa extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel15;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JLabel materiales;
     private javax.swing.JLabel nombre;
     // End of variables declaration//GEN-END:variables
