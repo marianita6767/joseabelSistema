@@ -5,8 +5,10 @@ import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +24,26 @@ public class GeneradorCotizacionPDF {
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
                 System.out.println("ContentStream creado");
+
+                // Agregar imagen fija en la parte superior derecha
+                try {
+                    // Ruta de la imagen (reemplaza con la ruta de tu imagen)
+                    String imagePath = "C:\\Users\\Brashan\\Documents\\NetBeansProjects\\joseabelSistema\\src\\main\\resources\\logo azul.png"; // Cambia esto por la ruta real
+                    PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, document);
+                    // Escalar la imagen a 100x100 puntos (ajusta según necesites)
+                    float imageWidth = 100;
+                    float imageHeight = 100;
+                    // Posición en la esquina superior derecha (A4: 595 puntos de ancho, 842 de alto)
+                    float xPosition = 595 - imageWidth - 30; // 30 puntos de margen desde el borde derecho
+                    float yPositionImage = 842 - imageHeight - 30; // 30 puntos de margen desde el borde superior
+                    contentStream.drawImage(pdImage, xPosition, yPositionImage, imageWidth, imageHeight);
+                    System.out.println("Imagen añadida en la posición: (" + xPosition + ", " + yPositionImage + ")");
+                } catch (IOException e) {
+                    System.out.println("Error al cargar la imagen: " + e.getMessage());
+                    e.printStackTrace();
+                }
+
+                // Título "Cotización"
                 contentStream.setFont(PDType1Font.HELVETICA_BOLD, 16);
                 contentStream.beginText();
                 contentStream.newLineAtOffset(50, 750);
@@ -119,13 +141,6 @@ public class GeneradorCotizacionPDF {
                 contentStream.beginText();
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("Total: " + total);
-                contentStream.endText();
-
-                // Firma
-                yPosition -= 40;
-                contentStream.beginText();
-                contentStream.newLineAtOffset(50, yPosition);
-                contentStream.showText("Cancelación y firma: _____________________________");
                 contentStream.endText();
 
                 // Mensaje
