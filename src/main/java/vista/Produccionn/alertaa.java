@@ -11,8 +11,8 @@ import java.awt.Frame;
  * @author EQUIPO
  */
 public class alertaa extends javax.swing.JDialog {
-
-    boolean opcionConfirmada = false;
+public static boolean opcionConfirmada;
+   
 
     /**
      * Creates new form alertaa
