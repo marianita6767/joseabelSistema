@@ -278,7 +278,7 @@ public class Login1121 extends javax.swing.JFrame {
 
                 // Redirigir según el rol
                 if ("Trabajador".equals(usuario.getRol())) {
-                    PrincipalUsu principalUsuario = new PrincipalUsu(); // Ventana para trabajador
+                    PrincipalTrap principalUsuario = new PrincipalTrap(); // Ventana para trabajador
                     principalUsuario.setVisible(true);
 
                 } else {
