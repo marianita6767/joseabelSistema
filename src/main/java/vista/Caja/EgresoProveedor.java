@@ -4,6 +4,13 @@
  */
 package vista.Caja;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import javax.swing.JOptionPane;
+import modelo.Conexion;
+import vista.Inventario0.nuevoMateriales;
 import vista.proveedor.proveedornuevo;
 
 /**
@@ -15,9 +22,13 @@ public class EgresoProveedor extends javax.swing.JDialog {
     /**
      * Creates new form EgresoProveedor
      */
-    public EgresoProveedor(java.awt.Frame parent, boolean modal) {
+    private Egresos ingresoPanel;
+    
+   public EgresoProveedor(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
+        cargarProveedores(); // Cargar proveedores en cmbStock1
+        cargarProductos();  // Cargar productos en cmbStock2
     }
 
     /**
@@ -43,12 +54,12 @@ public class EgresoProveedor extends javax.swing.JDialog {
         cmbStock = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel3 = new javax.swing.JLabel();
         jPanel3 = new javax.swing.JPanel();
-        cmbStock1 = new RSMaterialComponent.RSComboBoxMaterial();
+        cmbProveedor = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         txtCantidadnuevo1 = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel6 = new javax.swing.JLabel();
-        cmbStock2 = new RSMaterialComponent.RSComboBoxMaterial();
+        cmbStock1 = new RSMaterialComponent.RSComboBoxMaterial();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
 
@@ -157,20 +168,20 @@ public class EgresoProveedor extends javax.swing.JDialog {
 
         jPanel1.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 250, 520, 2));
 
-        cmbStock1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione un Proveedor:", "Item 1", "Item 2", "Item 3" }));
-        cmbStock1.setColorMaterial(new java.awt.Color(0, 0, 0));
-        cmbStock1.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
-        cmbStock1.addMouseListener(new java.awt.event.MouseAdapter() {
+        cmbProveedor.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione un Proveedor:", "Item 1", "Item 2", "Item 3" }));
+        cmbProveedor.setColorMaterial(new java.awt.Color(0, 0, 0));
+        cmbProveedor.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        cmbProveedor.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cmbStock1MouseClicked(evt);
+                cmbProveedorMouseClicked(evt);
             }
         });
-        cmbStock1.addActionListener(new java.awt.event.ActionListener() {
+        cmbProveedor.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbStock1ActionPerformed(evt);
+                cmbProveedorActionPerformed(evt);
             }
         });
-        jPanel1.add(cmbStock1, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 220, 30));
+        jPanel1.add(cmbProveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 310, 220, 30));
 
         jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 16)); // NOI18N
         jLabel4.setText("Proveedor:");
@@ -193,23 +204,28 @@ public class EgresoProveedor extends javax.swing.JDialog {
         jLabel6.setText("Producto:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 270, 80, -1));
 
-        cmbStock2.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Producto:", "Item 1", "Item 2", "Item 3", "Item 4" }));
-        cmbStock2.setColorMaterial(new java.awt.Color(0, 0, 0));
-        cmbStock2.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
-        cmbStock2.addMouseListener(new java.awt.event.MouseAdapter() {
+        cmbStock1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione Producto:", "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbStock1.setColorMaterial(new java.awt.Color(0, 0, 0));
+        cmbStock1.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
+        cmbStock1.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                cmbStock2MouseClicked(evt);
+                cmbStock1MouseClicked(evt);
             }
         });
-        cmbStock2.addActionListener(new java.awt.event.ActionListener() {
+        cmbStock1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cmbStock2ActionPerformed(evt);
+                cmbStock1ActionPerformed(evt);
             }
         });
-        jPanel1.add(cmbStock2, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 310, 230, 30));
+        jPanel1.add(cmbStock1, new org.netbeans.lib.awtextra.AbsoluteConstraints(310, 310, 230, 30));
 
         jButton2.setBackground(new java.awt.Color(46, 49, 82));
         jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/plus-pequeno.png"))); // NOI18N
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jPanel1.add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 270, 20, 20));
 
         jButton3.setBackground(new java.awt.Color(46, 49, 82));
@@ -236,8 +252,106 @@ public class EgresoProveedor extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
+try {
+            // Validar campos
+            if (txtPago.getDate() == null) {
+                mostrarError("Seleccione una fecha de pago");
+                return;
+            }
+            if (txtDetallenuevo.getText().trim().isEmpty()) {
+                mostrarError("Ingrese una descripción");
+                return;
+            }
+            if (txtCantidadnuevo.getText().trim().isEmpty()) {
+                mostrarError("Ingrese el monto del egreso");
+                return;
+            }
+            if (cmbStock.getSelectedIndex() == 0) {
+                mostrarError("Seleccione una categoría");
+                return;
+            }
+            if (cmbProveedor.getSelectedIndex() == 0) {
+                mostrarError("Seleccione un proveedor");
+                return;
+            }
+            if (cmbStock1.getSelectedIndex() == 0) {
+                mostrarError("Seleccione un producto");
+                return;
+            }
+            if (txtCantidadnuevo1.getText().trim().isEmpty()) {
+                mostrarError("Ingrese la cantidad del producto");
+                return;
+            }
 
-        
+            // Obtener valores
+            java.sql.Date fecha = new java.sql.Date(txtPago.getDate().getTime());
+            String descripcion = txtDetallenuevo.getText().trim();
+            Double monto = Double.parseDouble(txtCantidadnuevo.getText().trim());
+            String categoria = (String) cmbStock.getSelectedItem();
+            String nombreProveedor = (String) cmbProveedor.getSelectedItem();
+            String nombreProducto = (String) cmbStock1.getSelectedItem();
+            int cantidad = Integer.parseInt(txtCantidadnuevo1.getText().trim());
+
+            // Validar cantidad positiva
+            if (cantidad <= 0) {
+                mostrarError("La cantidad debe ser mayor que cero");
+                return;
+            }
+
+            // IDs
+            String idProveedor = obtenerIdProveedor(nombreProveedor);
+            int idProducto = obtenerIdProducto(nombreProducto);
+            if (idProveedor == null) {
+                mostrarError("No se encontró el proveedor en la base de datos");
+                return;
+            }
+            if (idProducto == -1) {
+                mostrarError("No se encontró el producto en la base de datos");
+                return;
+            }
+
+            // paso de datos
+            try (Connection con = Conexion.getConnection()) {
+                con.setAutoCommit(false); // Desactivar autocommit para transacción
+
+                // Insertar egreso en tabla caja
+                if (!insertarEtapa(fecha, descripcion, monto, categoria)) {
+                    con.rollback();
+                    return;
+                }
+
+                // Actualizar stock en inventario
+                if (!actualizarStock(idProducto, cantidad)) {
+                    con.rollback();
+                    mostrarError("Error al actualizar el stock");
+                    return;
+                }
+
+                // Insertar relación en suministra
+                if (!insertarSuministra(idProveedor, idProducto)) {
+                    con.rollback();
+                    mostrarError("Error al registrar la relación proveedor-producto");
+                    return;
+                }
+
+                // Confirmar transacción
+                con.commit();
+                mostrarMensaje("Registro guardado, stock actualizado y relación proveedor-producto registrada correctamente");
+                this.dispose();
+
+                if (ingresoPanel != null) {
+                    // Aquí puedes actualizar la tabla de ingresoPanel si es necesario
+                }
+            } catch (SQLException e) {
+                mostrarError("Error al guardar: " + e.getMessage());
+                e.printStackTrace();
+            }
+        } catch (NumberFormatException e) {
+            mostrarError("Monto o cantidad inválidos: " + e.getMessage());
+        } catch (Exception e) {
+            mostrarError("Error inesperado: " + e.getMessage());
+            e.printStackTrace();
+        }
         
     }//GEN-LAST:event_btnGuardarActionPerformed
 
@@ -261,6 +375,18 @@ public class EgresoProveedor extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbStockActionPerformed
 
+    private void cmbProveedorMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbProveedorMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbProveedorMouseClicked
+
+    private void cmbProveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbProveedorActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbProveedorActionPerformed
+
+    private void txtCantidadnuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadnuevo1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_txtCantidadnuevo1ActionPerformed
+
     private void cmbStock1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbStock1MouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbStock1MouseClicked
@@ -269,27 +395,127 @@ public class EgresoProveedor extends javax.swing.JDialog {
         // TODO add your handling code here:
     }//GEN-LAST:event_cmbStock1ActionPerformed
 
-    private void txtCantidadnuevo1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadnuevo1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtCantidadnuevo1ActionPerformed
-
-    private void cmbStock2MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cmbStock2MouseClicked
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbStock2MouseClicked
-
-    private void cmbStock2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbStock2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cmbStock2ActionPerformed
-
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         proveedornuevo dialog = new proveedornuevo(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
-        
-
 
     }//GEN-LAST:event_jButton3ActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        nuevoMateriales dialog = new nuevoMateriales(new javax.swing.JFrame(), true);
+        dialog.setLocationRelativeTo(null);
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jButton2ActionPerformed
+ 
+    private void cargarProveedores() {
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT nombre FROM proveedor");
+             ResultSet rs = ps.executeQuery()) {
+
+            // Limpiar ComboBox
+            cmbProveedor.removeAllItems();
+            cmbProveedor.addItem("Seleccione un Proveedor:");
+
+            // Agregar proveedores
+            while (rs.next()) {
+                cmbProveedor.addItem(rs.getString("nombre"));
+            }
+        } catch (SQLException e) {
+            mostrarError("Error al cargar proveedores: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    
+    private void cargarProductos() {
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement("SELECT nombre FROM inventario WHERE tipo = 'material'");
+             ResultSet rs = ps.executeQuery()) {
+
+            // Limpiar ComboBox
+            cmbStock1.removeAllItems();
+            cmbStock1.addItem("Seleccione Producto:");
+
+            // Agregar productos
+            while (rs.next()) {
+                cmbStock1.addItem(rs.getString("nombre"));
+            }
+        } catch (SQLException e) {
+            mostrarError("Error al cargar productos: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    
+    private String obtenerIdProveedor(String nombreProveedor) {
+        String sql = "SELECT id_proveedor FROM proveedor WHERE nombre = ?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreProveedor);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getString("id_proveedor");
+                }
+            }
+        } catch (SQLException e) {
+            mostrarError("Error al obtener ID del proveedor: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    
+    private int obtenerIdProducto(String nombreProducto) {
+        String sql = "SELECT id_inventario FROM inventario WHERE nombre = ? AND tipo = 'material'";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, nombreProducto);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("id_inventario");
+                }
+            }
+        } catch (SQLException e) {
+            mostrarError("Error al obtener ID del producto: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+    
+    
+    private boolean actualizarStock(int idProducto, int cantidad) {
+        String sql = "UPDATE inventario SET cantidad = cantidad + ? WHERE id_inventario = ?";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, cantidad);
+            ps.setInt(2, idProducto);
+            int resultado = ps.executeUpdate();
+            return resultado > 0;
+        } catch (SQLException e) {
+            mostrarError("Error al actualizar stock: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
+    private boolean insertarSuministra(String idProveedor, int idProducto) {
+        String sql = "INSERT INTO suministra (inventario_id_inventario, proveedor_id_proveedor) VALUES (?, ?)";
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, idProducto);
+            ps.setString(2, idProveedor); // id_proveedor es varchar
+            int resultado = ps.executeUpdate();
+            return resultado > 0;
+        } catch (SQLException e) {
+            mostrarError("Error al registrar suministra: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
+    }
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -335,9 +561,9 @@ public class EgresoProveedor extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private rojeru_san.RSButtonRiple btnCancelar;
     private rojeru_san.RSButtonRiple btnGuardar;
+    private RSMaterialComponent.RSComboBoxMaterial cmbProveedor;
     private RSMaterialComponent.RSComboBoxMaterial cmbStock;
     private RSMaterialComponent.RSComboBoxMaterial cmbStock1;
-    private RSMaterialComponent.RSComboBoxMaterial cmbStock2;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
@@ -356,4 +582,36 @@ public class EgresoProveedor extends javax.swing.JDialog {
     private RSMaterialComponent.RSTextFieldMaterial txtDetallenuevo;
     private com.toedter.calendar.JDateChooser txtPago;
     // End of variables declaration//GEN-END:variables
+private boolean insertarEtapa(java.util.Date fecha, String descripcion, Double monto, String categoria) throws SQLException {
+        String sql = "INSERT INTO caja (fecha, descripcion, monto, movimiento, categoria) VALUES (?, ?, ?, 'egreso', ?)";
+
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
+
+            // Convertir java.util.Date a java.sql.Date
+            ps.setDate(1, new java.sql.Date(fecha.getTime()));
+            ps.setString(2, descripcion);
+            ps.setDouble(3, monto);
+            ps.setString(4, categoria);
+
+            int resultado = ps.executeUpdate();
+            if (resultado > 0) {
+                mostrarMensaje("Registro guardado correctamente");
+                return true;
+            }
+        } catch (SQLException e) {
+            mostrarError("Error de base de datos: " + e.getMessage());
+            throw e; // Relanzar la excepción para manejo superior
+        }
+        return false;
+    }
+
+    private void mostrarError(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void mostrarMensaje(String mensaje) {
+        JOptionPane.showMessageDialog(this, mensaje, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 }
