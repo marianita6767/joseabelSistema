@@ -332,11 +332,11 @@ public class pedido extends javax.swing.JPanel {
     }//GEN-LAST:event_txtBuscarActionPerformed
 
     private void btnNuevoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoActionPerformed
-        while (true) {
+        
             pedidoNuevo dialog = new pedidoNuevo(new javax.swing.JFrame(), true, this);
             dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
-        }
+        
     }//GEN-LAST:event_btnNuevoActionPerformed
 
     private void btnEliminar1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminar1ActionPerformed

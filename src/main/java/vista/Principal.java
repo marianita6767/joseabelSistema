@@ -1374,6 +1374,7 @@ public class Principal extends javax.swing.JFrame {
         this.ocho.setSelected(false);
         this.nueve.setSelected(false);
         this.siete1.setSelected(false);
+        this.Diez.setSelected(false);
     }
 
 }

@@ -4,17 +4,77 @@
  */
 package vista;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Desktop;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.file.Files;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import javax.accessibility.Accessible;
+import javax.swing.AbstractAction;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.ListModel;
+import javax.swing.SwingUtilities;
+import javax.swing.plaf.basic.ComboPopup;
+import modelo.Conexion;
+import vista.Produccionn.Error_guardar;
+
 /**
  *
  * @author buitr
  */
 public class config extends javax.swing.JPanel {
 
+    private CheckedComboBox<CheckableItem> cmbtablas;
+
     /**
      * Creates new form config
      */
     public config() {
+
         initComponents();
+
+        cmbtablas = new CheckedComboBox<>(makeProductModel());
+        cmbtablas.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        jPanel1.add(cmbtablas, new org.netbeans.lib.awtextra.AbsoluteConstraints(25, 100, 200, 40));
+        cargarArchivosRespaldo();
     }
 
     /**
@@ -28,14 +88,16 @@ public class config extends javax.swing.JPanel {
 
         jPanel1 = new javax.swing.JPanel();
         btnAñadir5 = new RSMaterialComponent.RSButtonShape();
-        btnAñadir6 = new RSMaterialComponent.RSButtonShape();
+        btnRestaurar = new RSMaterialComponent.RSButtonShape();
+        guardar = new RSMaterialComponent.RSButtonShape();
         btnAñadir7 = new RSMaterialComponent.RSButtonShape();
+        cmbRestaurar = new RSMaterialComponent.RSComboBoxMaterial();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
 
         btnAñadir5.setBackground(new java.awt.Color(46, 49, 82));
         btnAñadir5.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -48,25 +110,38 @@ public class config extends javax.swing.JPanel {
                 btnAñadir5ActionPerformed(evt);
             }
         });
-        add(btnAñadir5, new org.netbeans.lib.awtextra.AbsoluteConstraints(250, 270, 310, 70));
+        jPanel1.add(btnAñadir5, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 260, 310, 70));
 
-        btnAñadir6.setBackground(new java.awt.Color(46, 49, 82));
-        btnAñadir6.setBorder(javax.swing.BorderFactory.createCompoundBorder());
-        btnAñadir6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/llave 24px.png"))); // NOI18N
-        btnAñadir6.setText("Cambiar Contraseña");
-        btnAñadir6.setBackgroundHover(new java.awt.Color(0, 153, 0));
-        btnAñadir6.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
-        btnAñadir6.addActionListener(new java.awt.event.ActionListener() {
+        btnRestaurar.setBackground(new java.awt.Color(46, 49, 82));
+        btnRestaurar.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        btnRestaurar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/llave 24px.png"))); // NOI18N
+        btnRestaurar.setText("Restaurar");
+        btnRestaurar.setBackgroundHover(new java.awt.Color(0, 153, 0));
+        btnRestaurar.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnRestaurar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAñadir6ActionPerformed(evt);
+                btnRestaurarActionPerformed(evt);
             }
         });
-        add(btnAñadir6, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 120, 180, 70));
+        jPanel1.add(btnRestaurar, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 150, 170, 40));
+
+        guardar.setBackground(new java.awt.Color(46, 49, 82));
+        guardar.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        guardar.setIcon(new javax.swing.ImageIcon(getClass().getResource("/disco 24px.png"))); // NOI18N
+        guardar.setText("Copia de Seguridad");
+        guardar.setBackgroundHover(new java.awt.Color(0, 153, 0));
+        guardar.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        guardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                guardarActionPerformed(evt);
+            }
+        });
+        jPanel1.add(guardar, new org.netbeans.lib.awtextra.AbsoluteConstraints(260, 100, 170, 40));
 
         btnAñadir7.setBackground(new java.awt.Color(46, 49, 82));
         btnAñadir7.setBorder(javax.swing.BorderFactory.createCompoundBorder());
-        btnAñadir7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/disco 24px.png"))); // NOI18N
-        btnAñadir7.setText("Copia de Seguridad");
+        btnAñadir7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/llave 24px.png"))); // NOI18N
+        btnAñadir7.setText("Cambiar Contraseña");
         btnAñadir7.setBackgroundHover(new java.awt.Color(0, 153, 0));
         btnAñadir7.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
         btnAñadir7.addActionListener(new java.awt.event.ActionListener() {
@@ -74,31 +149,516 @@ public class config extends javax.swing.JPanel {
                 btnAñadir7ActionPerformed(evt);
             }
         });
-        add(btnAñadir7, new org.netbeans.lib.awtextra.AbsoluteConstraints(490, 120, 180, 70));
+        jPanel1.add(btnAñadir7, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 350, 180, 70));
+        jPanel1.add(cmbRestaurar, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 150, 240, -1));
+
+        add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 920, 520));
     }// </editor-fold>//GEN-END:initComponents
 
+    private DefaultComboBoxModel<CheckableItem> makeProductModel() {
+        DefaultComboBoxModel<CheckableItem> model = new DefaultComboBoxModel<>();
+        try {
+            Connection con = new Conexion().getConnection();
+            model.addElement(new CheckableItem("Seleccionar Todo", false));
+
+            // Consulta para obtener todas las tablas de la base de datos
+            String sql = "SHOW TABLES";
+            PreparedStatement ps = con.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
+
+            while (rs.next()) {
+                // La primera columna contiene el nombre de la tabla
+                String tableName = rs.getString(1);
+                model.addElement(new CheckableItem(tableName, false));
+            }
+            con.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+
+            // Mostrar mensaje de error al usuario
+            Error_guardar errorDialog = new Error_guardar(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "No se pudieron cargar las tablas: " + ex.getMessage()
+            );
+            errorDialog.setLocationRelativeTo(null);
+            errorDialog.setVisible(true);
+        }
+        return model;
+    }
+
+    class CheckableItem {
+
+        private final String text;
+        private boolean selected;
+
+        protected CheckableItem(String text, boolean selected) {
+            this.text = text;
+            this.selected = selected;
+        }
+
+        public boolean isSelected() {
+            return selected;
+        }
+
+        public void setSelected(boolean selected) {
+            this.selected = selected;
+        }
+
+        @Override
+        public String toString() {
+            return text;
+        }
+    }
+
+    class CheckedComboBox<E extends CheckableItem> extends JComboBox<E> {
+
+        protected boolean keepOpen;
+        private final JPanel panel = new JPanel(new BorderLayout());
+
+        protected CheckedComboBox(ComboBoxModel<E> model) {
+            super(model);
+            setBackground(new Color(255, 255, 255));
+            setForeground(Color.DARK_GRAY);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(20, 10);
+        }
+
+        @Override
+        public void updateUI() {
+            setRenderer(null);
+            super.updateUI();
+
+            Accessible a = getAccessibleContext().getAccessibleChild(0);
+            if (a instanceof ComboPopup) {
+                ((ComboPopup) a).getList().addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e) {
+                        JList<?> list = (JList<?>) e.getComponent();
+                        int index = list.locationToIndex(e.getPoint());
+                        if (SwingUtilities.isLeftMouseButton(e)) {
+                            keepOpen = true;
+                            updateItem(index);
+                        }
+                    }
+                });
+            }
+
+            DefaultListCellRenderer renderer = new DefaultListCellRenderer() {
+                @Override
+                public Component getListCellRendererComponent(JList<?> list, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                    Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                    if (index >= 0) {
+                        c.setBackground(isSelected ? new Color(0, 120, 215, 50) : new Color(255, 255, 255));
+                        c.setForeground(Color.DARK_GRAY);
+                    } else {
+                        c.setBackground(new Color(0, 0, 0, 0));
+                    }
+                    return c;
+                }
+            };
+            JCheckBox check = new JCheckBox();
+            check.setOpaque(false);
+            check.setForeground(new Color(0, 120, 215));
+            setRenderer((list, value, index, isSelected, cellHasFocus) -> {
+                panel.removeAll();
+                Component c = renderer.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                if (index < 0) {
+                    String txt = getCheckedItemString(list.getModel());
+                    JLabel l = (JLabel) c;
+                    l.setText(txt.isEmpty() ? " " : txt);
+                    l.setForeground(Color.DARK_GRAY);
+                    l.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                    panel.setOpaque(false);
+                    panel.setBackground(new Color(0, 0, 0, 0));
+                } else {
+                    check.setSelected(value.isSelected());
+                    panel.add(check, BorderLayout.WEST);
+                    panel.setBackground(isSelected ? new Color(0, 120, 215, 50) : new Color(255, 255, 255));
+                }
+                panel.add(c, BorderLayout.CENTER);
+                return panel;
+            });
+            initActionMap();
+        }
+
+        protected void initActionMap() {
+            KeyStroke ks = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0);
+            getInputMap(JComponent.WHEN_FOCUSED).put(ks, "checkbox-select");
+            getActionMap().put("checkbox-select", new AbstractAction() {
+                public void actionPerformed(ActionEvent e) {
+                    Accessible a = getAccessibleContext().getAccessibleChild(0);
+                    if (a instanceof ComboPopup) {
+                        updateItem(((ComboPopup) a).getList().getSelectedIndex());
+                    }
+                }
+            });
+        }
+
+        protected void updateItem(int index) {
+            if (isPopupVisible() && index >= 0) {
+                E item = getItemAt(index);
+                if (index == 0 && "Seleccionar Todo".equals(item.toString())) {
+                    // Si se selecciona/des selecciona "Seleccionar Todo", actualizar todos los elementos
+                    boolean newState = !item.isSelected();
+                    item.setSelected(newState);
+                    for (int i = 1; i < getModel().getSize(); i++) {
+                        ((CheckableItem) getModel().getElementAt(i)).setSelected(newState);
+                    }
+                } else {
+                    // Actualizar solo el elemento seleccionado
+                    item.setSelected(!item.isSelected());
+                    // Verificar si todos los demás están seleccionados/des seleccionados para actualizar "Seleccionar Todo"
+                    boolean allSelected = true;
+                    for (int i = 1; i < getModel().getSize(); i++) {
+                        if (!((CheckableItem) getModel().getElementAt(i)).isSelected()) {
+                            allSelected = false;
+                            break;
+                        }
+                    }
+                    ((CheckableItem) getModel().getElementAt(0)).setSelected(allSelected);
+                }
+                setSelectedIndex(-1);
+                setSelectedItem(item);
+            }
+        }
+
+        @Override
+        public void setPopupVisible(boolean v) {
+            if (keepOpen) {
+                keepOpen = false;
+            } else {
+                super.setPopupVisible(v);
+            }
+        }
+
+        protected static <E extends CheckableItem> String getCheckedItemString(ListModel<E> model) {
+            return IntStream.range(0, model.getSize())
+                    .mapToObj(model::getElementAt)
+                    .filter(CheckableItem::isSelected)
+                    .map(Objects::toString)
+                    .filter(s -> !s.equals("Seleccionar Todo")) // Excluir "Seleccionar Todo" del texto mostrado
+                    .sorted()
+                    .collect(Collectors.joining(", "));
+        }
+    }
     private void btnAñadir5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadir5ActionPerformed
-        
+
     }//GEN-LAST:event_btnAñadir5ActionPerformed
 
-    private void btnAñadir6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadir6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnAñadir6ActionPerformed
+    private void btnRestaurarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRestaurarActionPerformed
+    String selectedFile = cmbRestaurar.getSelectedItem().toString();
+    if (selectedFile.equals("Seleccionar archivo de respaldo")) {
+        JOptionPane.showMessageDialog(this, "Por favor, selecciona un archivo de respaldo válido.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+
+    int confirm = JOptionPane.showConfirmDialog(this,
+            "¿Estás seguro de que deseas restaurar la base de datos? Esto sobrescribirá los datos actuales.",
+            "Confirmar Restauración",
+            JOptionPane.YES_NO_OPTION);
+    if (confirm != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    // Deshabilitar botón durante la restauración
+    btnRestaurar.setEnabled(false);
+    JOptionPane.showMessageDialog(this, "Restauración en progreso...", "Procesando", JOptionPane.INFORMATION_MESSAGE);
+
+    // Ejecutar en un hilo separado
+    new Thread(() -> {
+        try {
+            // Configuración
+            String mysqlPath = "C:\\Program Files\\MySQL\\MySQL Server 8.0\\bin\\mysql.exe";
+            String username = "root";
+            String password = ""; // Reemplaza con tu contraseña correcta
+            String dbName = "carpinteriasistema";
+            String backupPath = new File("backups/" + selectedFile).getAbsolutePath().replace("\\", "/");
+
+            // Paso 1: Conectar a la base de datos y eliminar las tablas existentes
+            Connection con = new Conexion().getConnection();
+            Statement stmt = con.createStatement();
+            ResultSet rs = stmt.executeQuery("SHOW TABLES");
+            List<String> tablesToDrop = new ArrayList<>();
+            while (rs.next()) {
+                tablesToDrop.add(rs.getString(1));
+            }
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 0"); // Desactivar claves foráneas
+            for (String table : tablesToDrop) {
+                stmt.execute("DROP TABLE IF EXISTS " + table); // Eliminar tablas
+            }
+            stmt.execute("SET FOREIGN_KEY_CHECKS = 1"); // Reactivar claves foráneas
+            rs.close();
+            stmt.close();
+            con.close();
+
+            // Paso 2: Construir el comando para restaurar
+            String[] command = {
+                mysqlPath,
+                "-u" + username,
+                dbName,
+                "-e",
+                "source " + backupPath
+            };
+
+            // Ejecutar el proceso con la contraseña en una variable de entorno
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.environment().put("MYSQL_PWD", password); // Usar variable de entorno para la contraseña
+            pb.redirectErrorStream(true);
+            Process process = pb.start();
+
+            // Leer la salida del proceso
+            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+            StringBuilder output = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                output.append(line).append("\n");
+            }
+
+            int exitCode = process.waitFor();
+
+            // Actualizar la interfaz en el EDT
+            SwingUtilities.invokeLater(() -> {
+                btnRestaurar.setEnabled(true);
+                if (exitCode == 0) {
+                    JOptionPane.showMessageDialog(this,
+                            "Restauración completada exitosamente.",
+                            "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(this,
+                            "Error al restaurar. Código: " + exitCode + "\nSalida: " + output.toString(),
+                            "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+
+        } catch (SQLException | IOException | InterruptedException ex) {
+            SwingUtilities.invokeLater(() -> {
+                btnRestaurar.setEnabled(true);
+                JOptionPane.showMessageDialog(this,
+                        "Error durante la restauración: " + ex.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            });
+            Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }).start();
+
+    }//GEN-LAST:event_btnRestaurarActionPerformed
+
+    private void guardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_guardarActionPerformed
+/*
+        try {
+            // Obtener las tablas seleccionadas
+            StringBuilder sqlBackup = new StringBuilder();
+            ListModel<CheckableItem> model = cmbtablas.getModel();
+            List<String> selectedTables = new ArrayList<>();
+
+            // Recolectar las tablas seleccionadas (excluyendo "Seleccionar Todo")
+            for (int i = 0; i < model.getSize(); i++) {
+                CheckableItem item = model.getElementAt(i);
+                if (item.isSelected() && !item.toString().equals("Seleccionar Todo")) {
+                    selectedTables.add(item.toString());
+                }
+            }
+
+            if (selectedTables.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos una tabla para respaldar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            // Conexión a la base de datos
+            Connection con = new Conexion().getConnection();
+
+            // Generar el script SQL para cada tabla seleccionada
+            for (String table : selectedTables) {
+                // 1. Obtener la estructura de la tabla (CREATE TABLE)
+                String createTableSql = getCreateTableStatement(con, table);
+                sqlBackup.append(createTableSql).append(";\n\n");
+
+                // 2. Obtener los datos de la tabla (INSERT INTO)
+                String insertDataSql = getInsertStatements(con, table);
+                sqlBackup.append(insertDataSql).append("\n\n");
+            }
+
+            con.close();
+
+            // Guardar el script SQL en un archivo
+            saveBackupToFile(sqlBackup.toString());
+            cargarArchivosRespaldo();
+            JOptionPane.showMessageDialog(this, "Copia de seguridad guardada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+        } catch (SQLException ex) {
+            Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+            Error_guardar errorDialog = new Error_guardar(
+                    (Frame) this.getParent(),
+                    true,
+                    "Error",
+                    "No se pudo generar la copia de seguridad: " + ex.getMessage()
+            );
+            errorDialog.setLocationRelativeTo(null);
+            errorDialog.setVisible(true);
+        } catch (IOException ex) {
+            Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+*/
+    try {
+        StringBuilder sqlBackup = new StringBuilder();
+        ListModel<CheckableItem> model = cmbtablas.getModel();
+        List<String> selectedTables = new ArrayList<>();
+
+        for (int i = 0; i < model.getSize(); i++) {
+            CheckableItem item = model.getElementAt(i);
+            if (item.isSelected() && !item.toString().equals("Seleccionar Todo")) {
+                selectedTables.add(item.toString());
+            }
+        }
+
+        if (selectedTables.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor, selecciona al menos una tabla para respaldar.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        Connection con = new Conexion().getConnection();
+        sqlBackup.append("SET FOREIGN_KEY_CHECKS = 0;\n\n");
+
+        for (String table : selectedTables) {
+            sqlBackup.append("DROP TABLE IF EXISTS ").append(table).append(";\n");
+            String createTableSql = getCreateTableStatement(con, table);
+            sqlBackup.append(createTableSql).append(";\n\n");
+            String insertDataSql = getInsertStatements(con, table);
+            sqlBackup.append(insertDataSql).append("\n\n");
+        }
+
+        sqlBackup.append("SET FOREIGN_KEY_CHECKS = 1;\n");
+        con.close();
+
+        saveBackupToFile(sqlBackup.toString());
+        cargarArchivosRespaldo();
+        JOptionPane.showMessageDialog(this, "Copia de seguridad guardada exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+    } catch (SQLException ex) {
+        Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+        Error_guardar errorDialog = new Error_guardar(
+                (Frame) this.getParent(),
+                true,
+                "Error",
+                "No se pudo generar la copia de seguridad: " + ex.getMessage()
+        );
+        errorDialog.setLocationRelativeTo(null);
+        errorDialog.setVisible(true);
+    } catch (IOException ex) {
+        Logger.getLogger(config.class.getName()).log(Level.SEVERE, null, ex);
+        JOptionPane.showMessageDialog(this, "Error al guardar el archivo: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    }//GEN-LAST:event_guardarActionPerformed
 
     private void btnAñadir7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadir7ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnAñadir7ActionPerformed
 
+    private String getCreateTableStatement(Connection con, String tableName) throws SQLException {
+        StringBuilder createTableSql = new StringBuilder();
+        PreparedStatement ps = con.prepareStatement("SHOW CREATE TABLE " + tableName);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            createTableSql.append(rs.getString(2)); // La columna 2 contiene el statement CREATE TABLE
+        }
+        rs.close();
+        ps.close();
+        return createTableSql.toString();
+    }
+
+    private String getInsertStatements(Connection con, String tableName) throws SQLException {
+        StringBuilder insertSql = new StringBuilder();
+        // Obtener todos los datos de la tabla
+        PreparedStatement ps = con.prepareStatement("SELECT * FROM " + tableName);
+        ResultSet rs = ps.executeQuery();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+
+        while (rs.next()) {
+            insertSql.append("INSERT INTO ").append(tableName).append(" (");
+            // Nombres de las columnas
+            for (int i = 1; i <= columnCount; i++) {
+                insertSql.append(metaData.getColumnName(i));
+                if (i < columnCount) {
+                    insertSql.append(", ");
+                }
+            }
+            insertSql.append(") VALUES (");
+            // Valores
+            for (int i = 1; i <= columnCount; i++) {
+                Object value = rs.getObject(i);
+                if (value == null) {
+                    insertSql.append("NULL");
+                } else if (value instanceof String) {
+                    insertSql.append("'").append(value.toString().replace("'", "''")).append("'");
+                } else if (value instanceof java.sql.Date || value instanceof java.sql.Timestamp) {
+                    insertSql.append("'").append(value).append("'");
+                } else {
+                    insertSql.append(value);
+                }
+                if (i < columnCount) {
+                    insertSql.append(", ");
+                }
+            }
+            insertSql.append(");\n");
+        }
+        rs.close();
+        ps.close();
+        return insertSql.toString();
+    }
+
+    private void saveBackupToFile(String sqlBackup) throws IOException {
+        // Crear directorio "backups" si no existe
+        File backupDir = new File("backups");
+        if (!backupDir.exists()) {
+            backupDir.mkdirs();
+        }
+
+        // Obtener la fecha y hora actual
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = now.format(formatter);
+        String fileName = "backups/copia_" + timestamp + ".sql";
+        File file = new File(fileName);
+
+        try (FileWriter writer = new FileWriter(file)) {
+            writer.write("USE carpinteriasistema;\n\n"); // Agregar USE al inicio
+
+            writer.write(sqlBackup);
+        }
+    }
+
+    private void cargarArchivosRespaldo() {
+        DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
+        model.addElement("Seleccionar archivo de respaldo");
+
+        File directorio = new File("backups");
+        File[] archivos = directorio.listFiles((dir, name) -> name.startsWith("copia_") && name.endsWith(".sql"));
+
+        if (archivos != null) {
+            for (File archivo : archivos) {
+                model.addElement(archivo.getName());
+            }
+        }
+
+        cmbRestaurar.setModel(model);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSButtonShape btnAñadir;
-    private RSMaterialComponent.RSButtonShape btnAñadir1;
-    private RSMaterialComponent.RSButtonShape btnAñadir2;
-    private RSMaterialComponent.RSButtonShape btnAñadir3;
-    private RSMaterialComponent.RSButtonShape btnAñadir4;
     private RSMaterialComponent.RSButtonShape btnAñadir5;
-    private RSMaterialComponent.RSButtonShape btnAñadir6;
     private RSMaterialComponent.RSButtonShape btnAñadir7;
+    private RSMaterialComponent.RSButtonShape btnRestaurar;
+    private RSMaterialComponent.RSComboBoxMaterial cmbRestaurar;
+    private RSMaterialComponent.RSButtonShape guardar;
     private javax.swing.JPanel jPanel1;
     // End of variables declaration//GEN-END:variables
 }
