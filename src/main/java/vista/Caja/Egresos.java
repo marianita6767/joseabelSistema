@@ -211,7 +211,7 @@ public final class Egresos extends javax.swing.JPanel {
     }//GEN-LAST:event_txtbuscarActionPerformed
 
     private void btnNuevoProducActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnNuevoProducActionPerformed
-        formuEgresos dialog = new formuEgresos(new javax.swing.JFrame(), true);
+        formuEgresos1 dialog = new formuEgresos1(new javax.swing.JFrame(), true);
         dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         cargarTablaEgresos();
