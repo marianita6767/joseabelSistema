@@ -962,7 +962,7 @@ public class Principal extends javax.swing.JFrame {
             deseleccionar();
             this.ocho.setSelected(true);
 
-            Cliente cliente = new Cliente();
+            Cliente cliente = new Cliente(new javax.swing.JFrame(), true);
             cliente.setSize(1290, 730);
             cliente.setLocation(0, 0);
 
@@ -1059,7 +1059,7 @@ public class Principal extends javax.swing.JFrame {
             deseleccionar();
             this.tres.setSelected(true);
 
-            proveedores pr = new proveedores();
+            proveedores pr = new proveedores(new javax.swing.JFrame(), true);
             pr.setSize(1290, 730);
             pr.setLocation(0, 0);
 

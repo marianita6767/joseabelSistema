@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
@@ -28,7 +29,7 @@ private DefaultTableModel modeloTabla;
     /**
      * Creates new form proveedores
      */
-    public proveedores() {
+    public proveedores(JFrame jFrame, boolean par) {
         initComponents();
         
       TablaP.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));

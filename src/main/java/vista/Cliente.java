@@ -12,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
@@ -29,7 +30,7 @@ public class Cliente extends javax.swing.JPanel {
     /**
      * Creates new form movimientos
      */
-    public Cliente() {
+    public Cliente(JFrame jFrame, boolean par) {
         controlador = new Ctrl_Cliente();
         initComponents();
         
