@@ -5,16 +5,16 @@
 package vista.Caja;
 
 import controlador.Ctrl_CajaEgresos;
-import java.awt.Color;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
+import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
+import modelo.Caja;
 
 /**
  *
@@ -30,14 +30,16 @@ public final class Egresos extends javax.swing.JPanel {
 
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Codigo", "Fecha Pago", "Monto", "Descripcion", "Categoria", "Detalle"}
+                new String[]{"Codigo", "Fecha Pago", "Monto", "Descripcion", "Categoria", "Detalle", "Editar", "proveedor", "productos"}
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         });
-        
+        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta proveedor
+        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta productos
+
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         Tabla1.setRowSelectionAllowed(true);
         Tabla1.setFocusable(false);
@@ -45,24 +47,38 @@ public final class Egresos extends javax.swing.JPanel {
     }
 
     public void cargarTablaEgresos() {
-        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
-        model.setRowCount(0);
+    DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+    model.setRowCount(0); // Limpiar tabla
 
-        Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
-        for (modelo.Caja caja : ctrl.obtenerEgresos()) {
+    Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
+    List<Caja> egresos = ctrl.obtenerEgresos();
 
-            model.addRow(new Object[]{
-                caja.getId_codigo(),
-                caja.getFecha(),
-                caja.getMonto(),
-                caja.getDescripcion(),
-                caja.getCategoria(),
-                "Ver"
-
-            });
-        }
+    if (egresos.isEmpty()) {
+        System.out.println("No se encontraron egresos en la base de datos");
+        return;
     }
 
+    for (Caja caja : egresos) {
+        model.addRow(new Object[]{
+            caja.getId_codigo(),
+            caja.getFecha(),
+            caja.getMonto(),
+            caja.getDescripcion(),
+            caja.getCategoria(),
+            "Ver",
+            "editar",
+            caja.getProveedor() != null ? caja.getProveedor() : "",
+            caja.getProductos() != null ? String.join(", ", caja.getProductos()) : ""
+        });
+    }
+    
+    // Ajustar ancho de columnas
+    Tabla1.getColumnModel().getColumn(0).setPreferredWidth(50);  // ID
+    Tabla1.getColumnModel().getColumn(1).setPreferredWidth(100); // Fecha
+    Tabla1.getColumnModel().getColumn(2).setPreferredWidth(80);  // Monto
+    Tabla1.getColumnModel().getColumn(3).setPreferredWidth(200); // Descripción
+    Tabla1.getColumnModel().getColumn(4).setPreferredWidth(150); // Categoría
+}
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -262,18 +278,26 @@ public final class Egresos extends javax.swing.JPanel {
     }//GEN-LAST:event_btnEliminarActionPerformed
 
     private void Tabla1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_Tabla1MouseClicked
-        if (evt.getClickCount() == 1) {
-            int columna = Tabla1.columnAtPoint(evt.getPoint());
-            int fila = Tabla1.rowAtPoint(evt.getPoint());
+        try {
+            int column = Tabla1.columnAtPoint(evt.getPoint());
+            int viewRow = Tabla1.rowAtPoint(evt.getPoint());
 
-            System.out.println("Clic detectado - Fila: " + fila + ", Columna: " + columna);
-
-            if (fila >= 0 && columna == 5) { // Columna "Ver" (índice 5)
-                System.out.println("Llamando a editarFila para la fila: " + fila);
-                editarFila(fila);
-            } else {
-                System.out.println("Columna no coincide con 'Ver' (índice 5)");
+            if (viewRow < 0 || column < 0) {
+                return;
             }
+
+            int modelRow = Tabla1.convertRowIndexToModel(viewRow);
+            DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+            int idEgreso = (int) model.getValueAt(modelRow, 0);
+
+            if (column == 5) { // Columna "Ver"
+                mostrarDetalleEgreso(model, modelRow, idEgreso);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al procesar clic: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
     }//GEN-LAST:event_Tabla1MouseClicked
 
@@ -319,38 +343,31 @@ public final class Egresos extends javax.swing.JPanel {
     private RSMaterialComponent.RSTextFieldMaterialIcon txtbuscar;
     // End of variables declaration//GEN-END:variables
 
-   private void editarFila(int fila) {
-    // Obtener los datos de la fila seleccionada
-    int codigo = (int) Tabla1.getValueAt(fila, 0);
-    String fechaStr = (String) Tabla1.getValueAt(fila, 1); // La fecha viene como String desde la tabla
-    double monto = ((Number) Tabla1.getValueAt(fila, 2)).doubleValue(); // Convertir a double
-    String descripcion = (String) Tabla1.getValueAt(fila, 3);
-    String categoria = (String) Tabla1.getValueAt(fila, 4);
+    private void mostrarDetalleEgreso(DefaultTableModel model, int modelRow, int idEgreso) {
+        try {
+            Ctrl_CajaEgresos ctrl = new Ctrl_CajaEgresos();
+            Caja caja = ctrl.obtenerEgresoPorId(idEgreso);
 
-    // Convertir el String de fecha a java.sql.Date
-    java.sql.Date fecha = null;
-    try {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // Ajusta el formato según cómo se muestra la fecha en la tabla
-        java.util.Date parsedDate = sdf.parse(fechaStr);
-        fecha = new java.sql.Date(parsedDate.getTime());
-    } catch (ParseException e) {
-        JOptionPane.showMessageDialog(this,
-                "Error al parsear la fecha: " + e.getMessage(),
-                "Error",
-                JOptionPane.ERROR_MESSAGE);
-        e.printStackTrace();
-        return; // Salir si hay un error al parsear la fecha
+            if (caja != null) {
+                DetalleEgreso dialog = new DetalleEgreso(
+                        (JFrame) SwingUtilities.getWindowAncestor(this),
+                        true,
+                        caja.getId_codigo(),
+                        caja.getFecha(),
+                        caja.getDescripcion(),
+                        caja.getCategoria(),
+                        String.valueOf(caja.getMonto()),
+                        caja.getProveedor(),
+                        String.join("\n", caja.getProductos())
+                );
+                dialog.setLocationRelativeTo(null);
+                dialog.setVisible(true);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this,
+                    "Error al mostrar detalle: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }
-
-    System.out.println("Editando fila - Código: " + codigo + ", Fecha: " + fecha + 
-                       ", Monto: " + monto + ", Descripción: " + descripcion + 
-                       ", Categoría: " + categoria);
-
-    // Abrir el formulario de edición y pasar los datos
-    EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
-    dialog.cargarDatosEgreso(codigo, fecha, monto, descripcion, categoria);
-    dialog.setLocationRelativeTo(null);
-    dialog.setVisible(true);
-    cargarTablaEgresos();
-}
 }

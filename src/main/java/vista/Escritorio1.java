@@ -347,11 +347,6 @@ public class Escritorio1 extends javax.swing.JPanel {
         actualizarIdMaximousuario();
     }//GEN-LAST:event_usuarioActionPerformed
 
-    private void clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clienteActionPerformed
-        // TODO add your handling code here:
-        actualizarIdMaximocliente();
-    }//GEN-LAST:event_clienteActionPerformed
-
     private void proveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveedorActionPerformed
         // TODO add your handling code here:
         actualizarIdMaximoProveedor();
@@ -360,6 +355,11 @@ public class Escritorio1 extends javax.swing.JPanel {
     private void jLabel1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jLabel1FocusLost
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel1FocusLost
+
+    private void clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clienteActionPerformed
+        // TODO add your handling code here:
+        actualizarIdMaximocliente();
+    }//GEN-LAST:event_clienteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
