@@ -4,6 +4,7 @@
  */
 package vista;
 
+import java.awt.BorderLayout;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,6 +16,13 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 import javax.swing.JButton;
+import javax.swing.JPanel;
+import vista.Caja.Egresos;
+import vista.Caja.Ingresos;
+import vista.Caja.formuEgresos1;
+import vista.Produccionn.Produccion;
+import vista.Ventas.pedido;
+import vista.proveedor.proveedores;
 
 /**
  *
@@ -22,21 +30,17 @@ import javax.swing.JButton;
  */
 public class Escritorio1 extends javax.swing.JPanel {
 
-   public Escritorio1() {
+    public Escritorio1() {
         initComponents();
+
         actualizarIdMaximoProveedor();
         actualizarIdMaximocliente();
         actualizarIdMaximousuario();
         actualizarIdMaximoproduccion();
         actualizarIdMaximopedido();
-        // Forzar repintado
-        proveedor.repaint();
-        usuario.repaint();
-        pedidos.repaint();
-        cliente.repaint();
-        stock.repaint();
-        produccion.repaint();
+
     }
+    
 
     private void actualizarIdMaximoProveedor() {
         if (jLabel1 == null) {
@@ -122,81 +126,71 @@ public class Escritorio1 extends javax.swing.JPanel {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
         jPanel4 = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        usuario = new RSMaterialComponent.RSButtonMaterialTwo();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         rSComboBoxMaterial1 = new RSMaterialComponent.RSComboBoxMaterial();
-        jPanel2 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        proveedor = new RSMaterialComponent.RSButtonMaterialTwo();
+        btnproveedores = new RSMaterialComponent.RSButtonShape();
         jLabel6 = new javax.swing.JLabel();
-        jPanel5 = new javax.swing.JPanel();
-        pedidos = new RSMaterialComponent.RSButtonMaterialTwo();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel12 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
-        cliente = new RSMaterialComponent.RSButtonMaterialTwo();
-        jLabel2 = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        btnproveedores1 = new RSMaterialComponent.RSButtonShape();
+        btnCliente = new RSMaterialComponent.RSButtonShape();
         jLabel7 = new javax.swing.JLabel();
-        jPanel7 = new javax.swing.JPanel();
-        stock = new RSMaterialComponent.RSButtonMaterialTwo();
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jPanel8 = new javax.swing.JPanel();
-        produccion = new RSMaterialComponent.RSButtonMaterialTwo();
+        jLabel2 = new javax.swing.JLabel();
+        btnCliente1 = new RSMaterialComponent.RSButtonShape();
+        btnUsuario = new RSMaterialComponent.RSButtonShape();
+        jLabel8 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        btnUsuario1 = new RSMaterialComponent.RSButtonShape();
+        btnproduccion = new RSMaterialComponent.RSButtonShape();
+        jLabel4 = new javax.swing.JLabel();
+        rSPanelImage1 = new rojerusan.RSPanelImage();
+        btnproduccion1 = new RSMaterialComponent.RSButtonShape();
+        btnprodu = new RSMaterialComponent.RSButtonShape();
         jLabel5 = new javax.swing.JLabel();
         jLabel11 = new javax.swing.JLabel();
+        btnprodu1 = new RSMaterialComponent.RSButtonShape();
+        rSCalendar1 = new rojeru_san.rsdate.RSCalendar();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1290, 730));
-        setPreferredSize(new java.awt.Dimension(890, 690));
-        setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        setPreferredSize(new java.awt.Dimension(1290, 730));
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel4.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        jPanel4.setPreferredSize(new java.awt.Dimension(1290, 730));
 
-        jPanel1.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-        jPanel4.add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, -1));
-
-        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel3.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        usuario.setBackground(new java.awt.Color(46, 49, 82));
-        usuario.setText("Usuarios Totales");
-        usuario.setBackgroundHover(new java.awt.Color(255, 204, 153));
-        usuario.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        usuario.setForegroundHover(new java.awt.Color(0, 0, 0));
-        usuario.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usuarioActionPerformed(evt);
-            }
-        });
-        jPanel3.add(usuario, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 180, 50));
-
-        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel3.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 70, 50));
-
-        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/agregar-usuario.png"))); // NOI18N
-        jPanel3.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 40, 40));
-
-        jPanel4.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 250, 160, 130));
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
 
         rSComboBoxMaterial1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Notificaciones", " " }));
         rSComboBoxMaterial1.setFont(new java.awt.Font("Roboto Bold", 0, 18)); // NOI18N
-        jPanel4.add(rSComboBoxMaterial1, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 30, 600, 60));
 
-        jPanel2.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel2.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+        btnproveedores.setBackground(new java.awt.Color(46, 49, 82));
+        btnproveedores.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 1));
+        btnproveedores.setText("   Total de Proveedores");
+        btnproveedores.setAutoscrolls(true);
+        btnproveedores.setBackgroundHover(new java.awt.Color(255, 102, 102));
+        btnproveedores.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        btnproveedores.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnproveedores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnproveedoresActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proveedor (6).png"))); // NOI18N
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -205,156 +199,389 @@ public class Escritorio1 extends javax.swing.JPanel {
                 jLabel1FocusLost(evt);
             }
         });
-        jPanel2.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 70, 50));
 
-        proveedor.setBackground(new java.awt.Color(46, 49, 82));
-        proveedor.setText("Total de Proveedores");
-        proveedor.setBackgroundHover(new java.awt.Color(255, 102, 102));
-        proveedor.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        proveedor.setForegroundHover(new java.awt.Color(0, 0, 0));
-        proveedor.addActionListener(new java.awt.event.ActionListener() {
+        btnproveedores1.setBackground(new java.awt.Color(204, 204, 204));
+        btnproveedores1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnproveedores1.setBackgroundHover(new java.awt.Color(204, 204, 204));
+        btnproveedores1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
+        btnproveedores1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnproveedores1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                proveedorActionPerformed(evt);
+                btnproveedores1ActionPerformed(evt);
             }
         });
-        jPanel2.add(proveedor, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 190, 50));
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proveedor-alternativo (1).png"))); // NOI18N
-        jPanel2.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 60, 40, 50));
-
-        jPanel4.add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 250, 170, 130));
-
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel5.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        pedidos.setBackground(new java.awt.Color(46, 49, 82));
-        pedidos.setText("Pedidos Actuales");
-        pedidos.setBackgroundHover(new java.awt.Color(153, 255, 255));
-        pedidos.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        pedidos.setForegroundHover(new java.awt.Color(0, 0, 0));
-        pedidos.addActionListener(new java.awt.event.ActionListener() {
+        btnCliente.setBackground(new java.awt.Color(46, 49, 82));
+        btnCliente.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnCliente.setText("         Total de Clientes");
+        btnCliente.setBackgroundHover(new java.awt.Color(153, 153, 255));
+        btnCliente.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        btnCliente.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnCliente.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                pedidosActionPerformed(evt);
+                btnClienteActionPerformed(evt);
             }
         });
-        jPanel5.add(pedidos, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 190, 50));
 
-        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel5.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 60, 50));
-
-        jLabel12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/historial-de-pedidos.png"))); // NOI18N
-        jPanel5.add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(120, 60, 40, 60));
-
-        jPanel4.add(jPanel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 420, 170, 130));
-
-        jPanel6.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel6.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        cliente.setBackground(new java.awt.Color(46, 49, 82));
-        cliente.setText("Total de Clientes");
-        cliente.setBackgroundHover(new java.awt.Color(153, 255, 153));
-        cliente.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        cliente.setForegroundHover(new java.awt.Color(0, 0, 0));
-        cliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clienteActionPerformed(evt);
-            }
-        });
-        jPanel6.add(cliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 190, 50));
+        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/cliente (1).png"))); // NOI18N
 
         jLabel2.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel6.add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 70, 50));
 
-        jLabel7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/atencion-al-cliente.png"))); // NOI18N
-        jPanel6.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 50, 50));
-
-        jPanel4.add(jPanel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 250, 170, 130));
-
-        jPanel7.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel7.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel7.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        stock.setBackground(new java.awt.Color(46, 49, 82));
-        stock.setText("Stock Actual");
-        stock.setBackgroundHover(new java.awt.Color(204, 204, 204));
-        stock.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        stock.setForegroundHover(new java.awt.Color(0, 0, 0));
-        stock.addActionListener(new java.awt.event.ActionListener() {
+        btnCliente1.setBackground(new java.awt.Color(204, 204, 204));
+        btnCliente1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnCliente1.setBackgroundHover(new java.awt.Color(204, 204, 204));
+        btnCliente1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
+        btnCliente1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnCliente1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stockActionPerformed(evt);
+                btnCliente1ActionPerformed(evt);
             }
         });
-        jPanel7.add(stock, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 180, 50));
 
-        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
-        jLabel9.setText("10");
-        jLabel9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel7.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 50, 50, 50));
-
-        jLabel10.setIcon(new javax.swing.ImageIcon(getClass().getResource("/alt-de-inventario.png"))); // NOI18N
-        jPanel7.add(jLabel10, new org.netbeans.lib.awtextra.AbsoluteConstraints(90, 50, 60, 50));
-
-        jPanel4.add(jPanel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(680, 420, 160, 130));
-
-        jPanel8.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel8.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-        jPanel8.setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
-
-        produccion.setBackground(new java.awt.Color(46, 49, 82));
-        produccion.setText("Produccion");
-        produccion.setBackgroundHover(new java.awt.Color(255, 102, 255));
-        produccion.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
-        produccion.setForegroundHover(new java.awt.Color(0, 0, 0));
-        produccion.addActionListener(new java.awt.event.ActionListener() {
+        btnUsuario.setBackground(new java.awt.Color(46, 49, 82));
+        btnUsuario.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnUsuario.setText("       Usuarios Totales");
+        btnUsuario.setBackgroundHover(new java.awt.Color(0, 204, 0));
+        btnUsuario.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        btnUsuario.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnUsuario.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                produccionActionPerformed(evt);
+                btnUsuarioActionPerformed(evt);
             }
         });
-        jPanel8.add(produccion, new org.netbeans.lib.awtextra.AbsoluteConstraints(-10, -3, 190, 50));
+
+        jLabel8.setIcon(new javax.swing.ImageIcon(getClass().getResource("/usu (1).png"))); // NOI18N
+
+        jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        btnUsuario1.setBackground(new java.awt.Color(204, 204, 204));
+        btnUsuario1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnUsuario1.setBackgroundHover(new java.awt.Color(204, 204, 204));
+        btnUsuario1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
+        btnUsuario1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnUsuario1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUsuario1ActionPerformed(evt);
+            }
+        });
+
+        btnproduccion.setBackground(new java.awt.Color(46, 49, 82));
+        btnproduccion.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnproduccion.setText("         Pedidos Actuales");
+        btnproduccion.setBackgroundHover(new java.awt.Color(255, 102, 255));
+        btnproduccion.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        btnproduccion.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnproduccion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnproduccionActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        jLabel4.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+
+        rSPanelImage1.setImagen(new javax.swing.ImageIcon(getClass().getResource("/carrito-removebg-preview.png"))); // NOI18N
+
+        btnproduccion1.setBackground(new java.awt.Color(204, 204, 204));
+        btnproduccion1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnproduccion1.setBackgroundHover(new java.awt.Color(204, 204, 204));
+        btnproduccion1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
+        btnproduccion1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnproduccion1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnproduccion1ActionPerformed(evt);
+            }
+        });
+
+        btnprodu.setBackground(new java.awt.Color(46, 49, 82));
+        btnprodu.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnprodu.setText("            Produccion");
+        btnprodu.setBackgroundHover(new java.awt.Color(153, 204, 255));
+        btnprodu.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        btnprodu.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnprodu.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnproduActionPerformed(evt);
+            }
+        });
 
         jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
         jLabel5.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jPanel8.add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 60, 70, 50));
 
-        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/paquete.png"))); // NOI18N
-        jPanel8.add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(110, 60, 50, 50));
+        jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/proceso (1).png"))); // NOI18N
 
-        jPanel4.add(jPanel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(400, 420, 170, 130));
+        btnprodu1.setBackground(new java.awt.Color(204, 204, 204));
+        btnprodu1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnprodu1.setBackgroundHover(new java.awt.Color(204, 204, 204));
+        btnprodu1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
+        btnprodu1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnprodu1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnprodu1ActionPerformed(evt);
+            }
+        });
 
-        add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1000, 600));
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(100, 100, 100)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnproveedores, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(130, 130, 130)
+                                .addComponent(jLabel6))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnproveedores1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(140, 140, 140)
+                                .addComponent(jLabel7))
+                            .addComponent(btnCliente1, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(60, 60, 60)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel8))
+                            .addComponent(btnUsuario1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(30, 30, 30)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnproduccion, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(70, 70, 70)
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(110, 110, 110)
+                                .addComponent(rSPanelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnproduccion1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(20, 20, 20)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnprodu, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(50, 50, 50)
+                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnprodu1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(130, 130, 130)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(rSComboBoxMaterial1, javax.swing.GroupLayout.PREFERRED_SIZE, 550, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(90, 90, 90)
+                        .addComponent(rSCalendar1, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(40, 40, 40)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnproveedores, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnproveedores1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnCliente, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnCliente1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnUsuario, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel4Layout.createSequentialGroup()
+                                .addGap(10, 10, 10)
+                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(btnUsuario1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnproduccion, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(10, 10, 10)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(30, 30, 30)
+                        .addComponent(rSPanelImage1, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnproduccion1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnprodu, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnprodu1, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(50, 50, 50)
+                        .addComponent(jLabel11)))
+                .addGap(50, 50, 50)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(rSComboBoxMaterial1, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(20, 20, 20)
+                        .addComponent(rSCalendar1, javax.swing.GroupLayout.PREFERRED_SIZE, 400, javax.swing.GroupLayout.PREFERRED_SIZE))))
+        );
+
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
+        this.setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 1491, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 840, javax.swing.GroupLayout.PREFERRED_SIZE)
+        );
     }// </editor-fold>//GEN-END:initComponents
-
-    private void pedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pedidosActionPerformed
-        // TODO add your handling code here:
-        actualizarIdMaximopedido();
-    }//GEN-LAST:event_pedidosActionPerformed
-
-    private void produccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_produccionActionPerformed
-        // TODO add your handling code here:
-        actualizarIdMaximoproduccion();
-    }//GEN-LAST:event_produccionActionPerformed
-
-    private void stockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stockActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_stockActionPerformed
-
-    private void usuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usuarioActionPerformed
-        // TODO add your handling code here:
-        actualizarIdMaximousuario();
-    }//GEN-LAST:event_usuarioActionPerformed
-
-    private void proveedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_proveedorActionPerformed
-        // TODO add your handling code here:
-        actualizarIdMaximoProveedor();
-    }//GEN-LAST:event_proveedorActionPerformed
 
     private void jLabel1FocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_jLabel1FocusLost
         // TODO add your handling code here:
     }//GEN-LAST:event_jLabel1FocusLost
+
+    private void btnproveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproveedoresActionPerformed
+
+        if (!this.btnproveedores.isSelected()) { 
+            this.btnproveedores.setSelected(true);
+
+            proveedores pr = new proveedores(new javax.swing.JFrame(), true);
+            pr.setSize(1290, 730);
+            pr.setLocation(0, 0);
+
+
+            jPanel4.removeAll();
+            jPanel4.add(pr);
+            jPanel4.revalidate();
+            jPanel4.repaint();
+        }
+    }//GEN-LAST:event_btnproveedoresActionPerformed
+
+    private void btnproveedores1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproveedores1ActionPerformed
+
+        proveedores pr = new proveedores(new javax.swing.JFrame(), true);
+        pr.setSize(1260, 730);
+        pr.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(pr);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+
+    }//GEN-LAST:event_btnproveedores1ActionPerformed
+
+    private void btnClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteActionPerformed
+
+        // TODO add your handling code here:
+        Cliente cl = new Cliente(new javax.swing.JFrame(), true);
+        cl.setSize(1260, 730);
+        cl.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(cl);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+
+    }//GEN-LAST:event_btnClienteActionPerformed
+
+    private void btnCliente1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCliente1ActionPerformed
+        // TODO add your handling code here:
+        Cliente cl = new Cliente(new javax.swing.JFrame(), true);
+        cl.setSize(1260, 730);
+        cl.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(cl);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+
+    }//GEN-LAST:event_btnCliente1ActionPerformed
+
+    private void btnUsuarioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuarioActionPerformed
+
+        Usuario usu = new Usuario(new javax.swing.JFrame(), true);
+        usu.setSize(1260, 730);
+        usu.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(usu);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+
+    }//GEN-LAST:event_btnUsuarioActionPerformed
+
+    private void btnUsuario1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUsuario1ActionPerformed
+
+        Usuario usu = new Usuario(new javax.swing.JFrame(), true);
+        usu.setSize(1260, 730);
+        usu.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(usu);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+     }//GEN-LAST:event_btnUsuario1ActionPerformed
+
+    private void btnproduccionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproduccionActionPerformed
+        vista.Ventas.pedido pedidos = new vista.Ventas.pedido(jPanel4);
+        pedidos.setSize(1290, 730);
+        pedidos.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(pedidos);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+    }//GEN-LAST:event_btnproduccionActionPerformed
+
+    private void btnproduccion1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproduccion1ActionPerformed
+        vista.Ventas.pedido pedidos = new vista.Ventas.pedido(jPanel4);
+        pedidos.setSize(1290, 730);
+        pedidos.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(pedidos);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+    }//GEN-LAST:event_btnproduccion1ActionPerformed
+
+    private void btnproduActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproduActionPerformed
+
+        Produccion pro = new Produccion(new javax.swing.JFrame(), true);
+        pro.setSize(1260, 730);
+        pro.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(pro);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+    }//GEN-LAST:event_btnproduActionPerformed
+
+    private void btnprodu1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnprodu1ActionPerformed
+
+        Produccion pro = new Produccion(new javax.swing.JFrame(), true);
+        pro.setSize(1260, 730);
+        pro.setLocation(0, 0);
+
+        jPanel4.removeAll();
+        jPanel4.add(pro);
+        jPanel4.revalidate();
+        jPanel4.repaint();
+    }//GEN-LAST:event_btnprodu1ActionPerformed
 
     private void clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clienteActionPerformed
         // TODO add your handling code here:
@@ -363,11 +590,18 @@ public class Escritorio1 extends javax.swing.JPanel {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private RSMaterialComponent.RSButtonMaterialTwo cliente;
+    private RSMaterialComponent.RSButtonShape btnCliente;
+    private RSMaterialComponent.RSButtonShape btnCliente1;
+    private RSMaterialComponent.RSButtonShape btnUsuario;
+    private RSMaterialComponent.RSButtonShape btnUsuario1;
+    private RSMaterialComponent.RSButtonShape btnprodu;
+    private RSMaterialComponent.RSButtonShape btnprodu1;
+    private RSMaterialComponent.RSButtonShape btnproduccion;
+    private RSMaterialComponent.RSButtonShape btnproduccion1;
+    private RSMaterialComponent.RSButtonShape btnproveedores;
+    private RSMaterialComponent.RSButtonShape btnproveedores1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
-    private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
@@ -375,21 +609,11 @@ public class Escritorio1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private RSMaterialComponent.RSButtonMaterialTwo pedidos;
-    private RSMaterialComponent.RSButtonMaterialTwo produccion;
-    private RSMaterialComponent.RSButtonMaterialTwo proveedor;
+    private rojeru_san.rsdate.RSCalendar rSCalendar1;
     private RSMaterialComponent.RSComboBoxMaterial rSComboBoxMaterial1;
-    private RSMaterialComponent.RSButtonMaterialTwo stock;
-    private RSMaterialComponent.RSButtonMaterialTwo usuario;
+    private rojerusan.RSPanelImage rSPanelImage1;
     // End of variables declaration//GEN-END:variables
 
 }
