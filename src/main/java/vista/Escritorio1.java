@@ -464,6 +464,7 @@ public class Escritorio1 extends javax.swing.JPanel {
             pr.setSize(1290, 730);
             pr.setLocation(0, 0);
 
+
             jPanel4.removeAll();
             jPanel4.add(pr);
             jPanel4.revalidate();
@@ -485,6 +486,7 @@ public class Escritorio1 extends javax.swing.JPanel {
     }//GEN-LAST:event_btnproveedores1ActionPerformed
 
     private void btnClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClienteActionPerformed
+
         // TODO add your handling code here:
         Cliente cl = new Cliente(new javax.swing.JFrame(), true);
         cl.setSize(1260, 730);
@@ -580,6 +582,11 @@ public class Escritorio1 extends javax.swing.JPanel {
         jPanel4.revalidate();
         jPanel4.repaint();
     }//GEN-LAST:event_btnprodu1ActionPerformed
+
+    private void clienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clienteActionPerformed
+        // TODO add your handling code here:
+        actualizarIdMaximocliente();
+    }//GEN-LAST:event_clienteActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

@@ -6,6 +6,7 @@ package vista.Caja;
 
 import controlador.Ctrl_CajaEgresos;
 import java.awt.Color;
+import java.awt.Frame;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,8 +28,9 @@ public class EditEgresos extends javax.swing.JDialog {
      * Creates new form EditEgresos
      */
     private Ctrl_CajaEgresos controladorEgresos;
+    private boolean datosModificados;
 
-    public EditEgresos(java.awt.Frame parent, boolean modal) {
+    public EditEgresos(Frame parent, boolean modal, int idEtapa) {
         super(parent, modal);
         initComponents();
 
@@ -160,8 +162,7 @@ public class EditEgresos extends javax.swing.JDialog {
             txtDetalleEdit.setEditable(true);
             comboCategoria.setEnabled(true);
             btnGuardar.setText("Guardar");
-            jPanel2.setBackground(new java.awt.Color(36, 174, 255));
-            jLabel1.setForeground(new java.awt.Color(46, 49, 82));
+            
 
         } else {
             int confirm = JOptionPane.showConfirmDialog(this,
@@ -296,7 +297,8 @@ public class EditEgresos extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true);
+                int idEgreso = 0;
+                EditEgresos dialog = new EditEgresos(new javax.swing.JFrame(), true, idEgreso);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -339,5 +341,12 @@ public void cargarDatosEgreso(int id, java.sql.Date fecha, double monto, String 
                 break;
             }
         }
+    }
+public boolean datosModificados() {
+        return this.datosModificados;
+    }
+
+    void setDatos(int idEgreso, String fechaInicio, String Detalle, String categoria, String cantidad) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 }

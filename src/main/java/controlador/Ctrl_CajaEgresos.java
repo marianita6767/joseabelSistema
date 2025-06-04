@@ -7,7 +7,9 @@ package controlador;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import javax.swing.JOptionPane;
 import modelo.Caja;
@@ -18,13 +20,12 @@ import modelo.Conexion;
  * @author ADSO
  */
 public class Ctrl_CajaEgresos {
-        
+
     private final String movimiento = "egreso";
 
     public boolean insertar(Caja caja) {
         String sql = "INSERT INTO caja (fecha, descripcion, monto, movimiento, categoria) VALUES (?,?,?,?,?)";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, caja.getFecha());
             stmt.setString(2, caja.getDescripcion());
             stmt.setDouble(3, caja.getMonto());
@@ -33,69 +34,100 @@ public class Ctrl_CajaEgresos {
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Error de conexión: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return false; 
+            return false;
         }
     }
 
    public List<Caja> obtenerEgresos() {
-    List<Caja> lista = new ArrayList<>();
-    String sql = "SELECT id_codigo, fecha, descripcion, monto, categoria  FROM caja WHERE movimiento = ? ";
-    
+    List<Caja> listaEgresos = new ArrayList<>();
+    String sql = "SELECT c.id_codigo, c.fecha, c.monto, c.descripcion, c.categoria, " +
+                 "p.nombre as proveedor, GROUP_CONCAT(i.nombre SEPARATOR ', ') as productos " +
+                 "FROM caja c " +
+                 "LEFT JOIN suministra s ON c.suministra_idSuministra = s.idSuministra " +
+                 "LEFT JOIN proveedor p ON s.proveedor_id_proveedor = p.id_proveedor " +
+                 "LEFT JOIN inventario i ON s.inventario_id_inventario = i.id_inventario " +
+                 "WHERE c.movimiento = 'egreso' " +
+                 "GROUP BY c.id_codigo";
+
     try (Connection con = Conexion.getConnection();
-         PreparedStatement stmt = con.prepareStatement(sql)) {
-        
-        stmt.setString(1, movimiento);
-        try (ResultSet rs = stmt.executeQuery()) {
-            while (rs.next()) {
-                lista.add(new Caja(
-                    rs.getInt("id_codigo"),
-                    rs.getString("fecha"),
-                    rs.getString("descripcion"),
-                    rs.getDouble("monto"),
-                    rs.getString("categoria")
-                ));
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+
+        while (rs.next()) {
+            Caja caja = new Caja();
+            caja.setId_codigo(rs.getInt("id_codigo"));
+            caja.setFecha(rs.getDate("fecha") != null ? rs.getDate("fecha").toString() : "");
+            caja.setMonto(rs.getDouble("monto"));
+            caja.setDescripcion(rs.getString("descripcion"));
+            caja.setCategoria(rs.getString("categoria"));
+            caja.setProveedor(rs.getString("proveedor"));
+            
+            // Manejo de productos
+            String productosStr = rs.getString("productos");
+            List<String> productos = new ArrayList<>();
+            if (productosStr != null) {
+                productos = Arrays.asList(productosStr.split(", "));
             }
+            caja.setProductos(productos);
+            
+            listaEgresos.add(caja);
         }
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error al obtener egresos: " + e.getMessage(), 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
+    } catch (SQLException e) {
+        System.err.println("Error al obtener egresos: " + e.getMessage());
+        e.printStackTrace();
     }
-    return lista;
+    return listaEgresos;
 }
 
+    private List<String> obtenerProductosPorEgreso(int idEgreso) {
+        List<String> productos = new ArrayList<>();
+        String sql = "SELECT i.nombre FROM egreso_productos ep "
+                + "JOIN inventario i ON ep.id_producto = i.id_inventario "
+                + "WHERE ep.id_egreso = ?";
+
+        try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idEgreso);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    productos.add(rs.getString("nombre"));
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return productos;
+    }
 // Mejora el método actualizar con mensajes más descriptivos
-public boolean actualizar(Caja caja) {
-    String sql = "UPDATE caja SET fecha = ?, descripcion = ?, monto = ?, categoria = ? WHERE id_codigo = ? AND movimiento = ?";
-    
-    try (Connection conn = Conexion.getConnection();
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-        
-        stmt.setString(1, caja.getFecha());
-        stmt.setString(2, caja.getDescripcion());
-        stmt.setDouble(3, caja.getMonto());
-        stmt.setString(4,caja.getCategoria());
-        stmt.setInt(5, caja.getId_codigo());
-        stmt.setString(6, movimiento);
-        
-        
-        int result = stmt.executeUpdate();
-        if (result == 0) {
-            JOptionPane.showMessageDialog(null, "No se encontró el egreso o no es de tipo 'egreso'", 
-                                        "Advertencia", JOptionPane.WARNING_MESSAGE);
-        }
-        return result > 0;
-    } catch (Exception e) {
-        JOptionPane.showMessageDialog(null, "Error al actualizar egreso: " + e.getMessage(), 
-                                    "Error", JOptionPane.ERROR_MESSAGE);
-        return false;
-    }
-}
 
+    public boolean actualizar(Caja caja) {
+        String sql = "UPDATE caja SET fecha = ?, descripcion = ?, monto = ?, categoria = ? WHERE id_codigo = ? AND movimiento = ?";
+
+        try (Connection conn = Conexion.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, caja.getFecha());
+            stmt.setString(2, caja.getDescripcion());
+            stmt.setDouble(3, caja.getMonto());
+            stmt.setString(4, caja.getCategoria());
+            stmt.setInt(5, caja.getId_codigo());
+            stmt.setString(6, movimiento);
+
+            int result = stmt.executeUpdate();
+            if (result == 0) {
+                JOptionPane.showMessageDialog(null, "No se encontró el egreso o no es de tipo 'egreso'",
+                        "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+            return result > 0;
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al actualizar egreso: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+    }
 
     public boolean eliminar(int id_codigo) {
         String sql = "DELETE FROM caja WHERE id_codigo = ? AND movimiento = ?";
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, id_codigo);
             stmt.setString(2, movimiento);  // 👈 Solo si es 'egreso'
             return stmt.executeUpdate() > 0;
@@ -104,4 +136,33 @@ public boolean actualizar(Caja caja) {
             return false;
         }
     }
+
+    public Caja obtenerEgresoPorId(int idEgreso) {
+        String sql = "SELECT c.*, p.nombre as proveedor FROM caja c "
+                + "LEFT JOIN proveedor p ON c.id_proveedor = p.id_proveedor "
+                + "WHERE c.id_codigo = ? AND c.movimiento = 'egreso'";
+
+        try (Connection con = Conexion.getConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, idEgreso);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Caja caja = new Caja();
+                    caja.setId_codigo(rs.getInt("id_codigo"));
+                    caja.setFecha(rs.getString("fecha"));
+                    caja.setDescripcion(rs.getString("descripcion"));
+                    caja.setMonto(rs.getDouble("monto"));
+                    caja.setCategoria(rs.getString("categoria"));
+                    caja.setMovimiento(rs.getString("movimiento"));
+                    caja.setProveedor(rs.getString("proveedor"));
+                    caja.setProductos(obtenerProductosPorEgreso(idEgreso));
+                    return caja;
+                }
+            }
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
 }
