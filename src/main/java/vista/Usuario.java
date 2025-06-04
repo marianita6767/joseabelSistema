@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowFilter;
@@ -29,7 +30,7 @@ public class Usuario extends javax.swing.JPanel {
     /**
      * Creates new form Usuario
      */
-    public Usuario() {
+    public Usuario(JFrame jFrame, boolean par) {
         initComponents();
     TablaU.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         TablaU.setModel(new javax.swing.table.DefaultTableModel(
