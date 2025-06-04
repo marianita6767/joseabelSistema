@@ -48,7 +48,6 @@ public class Principal extends javax.swing.JFrame {
     setIconImage(new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE));
 
         jPanel4.setVisible(true);
-        jPanel5.setVisible(false);
         jPanel3.setVisible(false);
 
 
@@ -236,7 +235,6 @@ public class Principal extends javax.swing.JFrame {
             Animacion.Animacion.mover_izquierda(258, +111, 2, 2, contenedor);
 
             jPanel4.setVisible(true);
-            jPanel5.setVisible(false);
             jPanel3.setVisible(false);
         }
     }
@@ -250,16 +248,12 @@ public class Principal extends javax.swing.JFrame {
 
             jPanel3.setVisible(true);
             jPanel4.setVisible(false);
-            jPanel5.setVisible(true);
-            jPanel5.setOpaque(false);
         } else {
             Animacion.Animacion.mover_derecha(-258, 0, 2, 2, jPanel3);
             Animacion.Animacion.mover_derecha(-2, +258, 2, 2, contenedor);
 
             jPanel3.setVisible(true);
             jPanel4.setVisible(false);
-            jPanel5.setVisible(true);
-            jPanel5.setOpaque(false);
         }
 
     }
@@ -323,7 +317,6 @@ public class Principal extends javax.swing.JFrame {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
         contenedor = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -360,29 +353,6 @@ public class Principal extends javax.swing.JFrame {
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
         jPanel1.setForeground(new java.awt.Color(255, 255, 255));
-
-        jPanel5.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel5.setMinimumSize(new java.awt.Dimension(1290, 730));
-        jPanel5.setPreferredSize(new java.awt.Dimension(1290, 730));
-        jPanel5.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                jPanel5MouseEntered(evt);
-            }
-            public void mouseExited(java.awt.event.MouseEvent evt) {
-                jPanel5MouseExited(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
-        );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 810, Short.MAX_VALUE)
-        );
 
         contenedor.setBackground(new java.awt.Color(255, 255, 255));
         contenedor.setMinimumSize(new java.awt.Dimension(1290, 730));
@@ -920,22 +890,16 @@ public class Principal extends javax.swing.JFrame {
                 .addGap(0, 6, Short.MAX_VALUE))
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 250, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, 1316, Short.MAX_VALUE))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jPanel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(5, 5, 5)
-                        .addComponent(contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 840, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(68, 68, 68)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, 810, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, 63, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(5, 5, 5)
+                .addComponent(contenedor, javax.swing.GroupLayout.PREFERRED_SIZE, 840, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
 
@@ -1038,7 +1002,7 @@ public class Principal extends javax.swing.JFrame {
             deseleccionar();
             this.cuatro.setSelected(true);
 
-            Produccion pr = new Produccion(new javax.swing.JFrame());
+            Produccion pr = new Produccion(new javax.swing.JFrame(), true);
             pr.setSize(1290, 730);
             pr.setLocation(0, 0);
 
@@ -1072,25 +1036,6 @@ public class Principal extends javax.swing.JFrame {
         animacion();
 
     }//GEN-LAST:event_tresActionPerformed
-
-    private void unoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unoActionPerformed
-        ocultarSubmenus();
-        if (!this.uno.isSelected()) {
-            deseleccionar();
-            this.uno.setSelected(true);
-
-            Escritorio1 es = new Escritorio1();
-            es.setSize(1090, 690);
-            es.setLocation(0, 0);
-
-            contenedor.removeAll();
-            contenedor.add(es);
-            contenedor.revalidate();
-            contenedor.repaint();
-
-        }
-        animacion();
-    }//GEN-LAST:event_unoActionPerformed
 
     private void dosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dosActionPerformed
         if (!this.dos.isSelected()) {
@@ -1137,7 +1082,7 @@ public class Principal extends javax.swing.JFrame {
             deseleccionar();
             this.siete1.setSelected(true);
             // Crear y mostrar el panel de inventario
-            Usuario usu = new Usuario();
+            Usuario usu = new Usuario(new javax.swing.JFrame(), true);
             usu.setSize(1290, 730);
             usu.setLocation(0, 0);
 
@@ -1214,18 +1159,9 @@ public class Principal extends javax.swing.JFrame {
         animation_salir();
     }//GEN-LAST:event_ocho1MouseEntered
 
-    private void jPanel5MouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MouseExited
-
-    }//GEN-LAST:event_jPanel5MouseExited
-
     private void menuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuActionPerformed
-        animacion();
-
+        animation_salir();
     }//GEN-LAST:event_menuActionPerformed
-
-    private void jPanel5MouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel5MouseEntered
-        animacion();
-    }//GEN-LAST:event_jPanel5MouseEntered
 
     private void nueveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nueveActionPerformed
         if (!this.nueve.isSelected()) {
@@ -1292,6 +1228,26 @@ public class Principal extends javax.swing.JFrame {
 
     }//GEN-LAST:event_dosMouseEntered
 
+    private void unoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_unoActionPerformed
+        ocultarSubmenus();
+        if (!this.uno.isSelected()) {
+            deseleccionar();
+            this.uno.setSelected(true);
+
+            Escritorio1 es = new Escritorio1();
+            es.setSize(1090, 690);
+            es.setLocation(0, 0);
+
+            contenedor.removeAll();
+            contenedor.add(es);
+            contenedor.revalidate();
+            contenedor.repaint();
+
+        }
+        animacion();
+
+    }//GEN-LAST:event_unoActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1346,7 +1302,6 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
     private rojeru_san.RSButton menu;
     private rojeru_san.RSButton noti;
     private rojeru_san.RSButton nueve;
