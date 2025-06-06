@@ -183,7 +183,7 @@ public class PrincipalTrap extends javax.swing.JFrame {
             }
 
         });
-
+/*
         // ActionListener para "Cotización"
         item4.addActionListener(new ActionListener() {
             @Override
@@ -203,7 +203,7 @@ public class PrincipalTrap extends javax.swing.JFrame {
                 animacion();
             }
         });
-
+*/
         submenuVentas.add(item3);
         submenuVentas.add(item4);
 //submenu ventas------------------

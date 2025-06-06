@@ -198,12 +198,11 @@ public class Principal extends javax.swing.JFrame {
                 cinco.setSelected(true); // Mantener "Ventas" resaltado
 
                 // Cargar la vista de Cotización (temporalmente un mensaje)
-                cotizacion co = new cotizacion();
-                co.setSize(1290, 730); // Ajustar tamaño dinámicamente
-                co.setLocation(0, 0);
-
+                vista.Cotizacion.cotizacion pedidos = new vista.Cotizacion.cotizacion(contenedor);
+                pedidos.setSize(1290, 730);
+                pedidos.setLocation(0, 0);
                 contenedor.removeAll();
-                contenedor.add(co);
+                contenedor.add(pedidos);
                 contenedor.revalidate();
                 contenedor.repaint();
                 animacion();
@@ -1235,7 +1234,7 @@ public class Principal extends javax.swing.JFrame {
             this.uno.setSelected(true);
 
             Escritorio1 es = new Escritorio1();
-            es.setSize(1090, 690);
+            es.setSize(1290, 730);
             es.setLocation(0, 0);
 
             contenedor.removeAll();

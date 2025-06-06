@@ -442,7 +442,7 @@ public class formuEgresos1 extends javax.swing.JDialog {
         });
         jPanel1.add(txtcantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(10, 420, 160, 30));
 
-        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 510));
+        getContentPane().add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, -1, 530));
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
