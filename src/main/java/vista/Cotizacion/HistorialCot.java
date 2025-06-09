@@ -18,6 +18,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
@@ -26,6 +30,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -34,13 +39,12 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import modelo.Conexion;
+import modelo.Cotizacion;
+import modelo.CotizacionDAO;
 import rojeru_san.RSButtonRiple;
 import vista.Ventas.DetallesPedido; // Si decides mover DetallesPedido a vista.Ventas
 
-/**
- *
- * @author ZenBook
- */
 public class HistorialCot extends javax.swing.JPanel {
 
     private JPanel contenedor;
@@ -65,7 +69,7 @@ public class HistorialCot extends javax.swing.JPanel {
     private void configurarTabla() {
         DefaultTableModel modelo = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Código", "Nombre Pedido", "Estado", "Cliente", "Fecha Inicio", "Fecha Fin", "Detalles"}
+                new String[]{"Código", "Nombre Pedido","Cliente", "Fecha Inicio", "Fecha Fin", "Detalles"}
         ) {
             Class[] types = new Class[]{
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
@@ -88,10 +92,7 @@ public class HistorialCot extends javax.swing.JPanel {
         TableColumn detallesColumn = tablaM.getColumnModel().getColumn(6);
         detallesColumn.setCellRenderer(new ButtonRenderer());
 
-        // Configurar renderizador para la columna "Estado"
-        TableColumn estadoColumn = tablaM.getColumnModel().getColumn(2);
-        estadoColumn.setCellRenderer(new EstadoTableCellRenderer());
-
+       
         // Ajustar anchos de columnas
         tablaM.getColumnModel().getColumn(0).setPreferredWidth(80);
         tablaM.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -117,8 +118,6 @@ public class HistorialCot extends javax.swing.JPanel {
         });
     }
 
-    
-
 // Método para agregar una nueva fila a la tabla
     public void agregarFilaATabla(Object[] fila) {
         DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
@@ -127,33 +126,45 @@ public class HistorialCot extends javax.swing.JPanel {
 
     // Cargar datos desde la base de datos
     public void cargarDatosIniciales() {
-        DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
+ DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
         model.setRowCount(0);
 
-        List<Ctrl_Pedido.MaterialConDetalles> pedidos = controlador.obtenerMateriales();
-        for (Ctrl_Pedido.MaterialConDetalles pedido : pedidos) {
-            model.addRow(new Object[]{
-                pedido.getPedido().getId_pedido(),
-                pedido.getPedido().getNombre(),
-                pedido.getPedido().getEstado(),
-                pedido.getNombreCliente(),
-                new java.text.SimpleDateFormat("yyyy-MM-dd").format(pedido.getPedido().getFecha_inicio()),
-                new java.text.SimpleDateFormat("yyyy-MM-dd").format(pedido.getPedido().getFecha_fin()),
-                "Ver"
-            });
+            List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
+            for (Cotizacion cot : cotizaciones) {
+                String clienteNombre = cot.getClienteCodigo() != null ? obtenerNombreCliente(cot.getClienteCodigo()) : "Sin cliente";
+                model.addRow(new Object[]{
+                    cot.getIdCotizacion(),
+                    clienteNombre,
+                    String.format("$%.2f", cot.getTotal()),
+                    "Ver"
+                });
+            }
+    }
+    
+     private String obtenerNombreCliente(Integer clienteCodigo) {
+        try (Connection con = Conexion.getConnection();
+             PreparedStatement pstmt = con.prepareStatement("SELECT CONCAT(nombre, ' ', apellido) AS nombre_completo FROM cliente WHERE codigo = ?")) {
+            pstmt.setInt(1, clienteCodigo);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("nombre_completo");
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al obtener nombre del cliente: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
+        return "Sin cliente";
+    }
+    
+    private void mostrarDetallesCotizacion(String id) {
+        JOptionPane.showMessageDialog(this, "Mostrar detalles de la cotización con ID: " + id, "Detalles", JOptionPane.INFORMATION_MESSAGE);
     }
 
     int setHeight(int i) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
-    
-
-// Renderizador para la columna "Ver"
     private class ButtonRenderer extends DefaultTableCellRenderer {
-
-        private final Color textColor = new Color(46, 49, 82); // Color de texto normal
+        private final Color textColor = new Color(46, 49, 82);
         private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
         private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
 
@@ -161,20 +172,20 @@ public class HistorialCot extends javax.swing.JPanel {
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
             Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-
             c.setForeground(isSelected ? Color.WHITE : Color.BLACK);
             c.setBackground(isSelected ? table.getSelectionBackground() : Color.WHITE);
             c.setFont(isSelected ? fontBold : fontNormal);
-
             setHorizontalAlignment(CENTER);
             setText("Ver");
-
-            // Bordes iguales al resto
             setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
-            tablaM.setRowHeight(23); // Altura más delgada para las filas
+            tablaM.setRowHeight(23);
             return c;
         }
     }
+     
+     
+
+
 
     private class ButtonEditor extends DefaultCellEditor {
 
@@ -220,65 +231,9 @@ public class HistorialCot extends javax.swing.JPanel {
         }
     }
 
-    // Renderizador para la columna de estado
-    private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
-
-        private final Color textColor = new Color(46, 49, 82);
-        private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
-        private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
-
-        public EstadoTableCellRenderer() {
-            setHorizontalAlignment(JLabel.CENTER); // Centrar el texto
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
-
-            // Llamar al método padre primero
-            JLabel label = (JLabel) super.getTableCellRendererComponent(
-                    table, value, isSelected, hasFocus, row, column);
-
-            label.setHorizontalAlignment(CENTER);
-            label.setText(value != null ? value.toString() : "");
-
-            if (isSelected) {
-                // Cuando está seleccionado, texto blanco y fondo de selección
-                label.setForeground(Color.WHITE);
-                label.setBackground(table.getSelectionBackground());
-                label.setFont(fontBold);
-            } else {
-                // Cuando no está seleccionado, mantener el color original del texto
-                label.setForeground(textColor);
-                label.setFont(fontNormal);
-
-                // Aplicar colores de fondo según el estado
-                String estado = value != null ? value.toString() : "";
-                switch (estado.toLowerCase()) {
-                    case "pendiente":
-                        label.setBackground(new Color(255, 204, 204)); // Rojo claro
-                        break;
-                    case "proceso":
-                        label.setBackground(new Color(255, 255, 153)); // Amarillo claro
-                        break;
-                    case "finalizado":
-                        label.setBackground(new Color(204, 255, 204)); // Verde claro
-                        break;
-                    default:
-                        label.setBackground(Color.WHITE);
-                        break;
-                }
-            }
-
-            // Borde igual al resto de la tabla
-            label.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
-            tablaM.setRowHeight(23); // Altura más delgada para las filas
-            return label;
-        }
-    }
 
     private void mostrarDetallesPedido(String id) {
-        DetallesPedido detalles = new DetallesPedido(id, contenedor);
+        DetallesCot detalles = new DetallesCot(id, contenedor);
         detalles.setSize(1290, 730);
         detalles.setLocation(0, 0);
         contenedor.removeAll();

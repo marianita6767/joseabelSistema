@@ -31,33 +31,7 @@ public class Ctrl_Pedido {
         this.cotizacionDAO = new CotizacionDAO();
     }
 
-    public void guardarCotizacion(String cliente, String nombrePedido, DefaultTableModel modelo, String totalStr) {
-        try {
-            double total = Double.parseDouble(totalStr.replace("$", "").replace(",", ""));
-            Integer clienteCodigo = cotizacionDAO.buscarClienteCodigo(cliente);
-            List<Cotizacion> cotizaciones = new ArrayList<>();
 
-            for (int i = 0; i < modelo.getRowCount(); i++) {
-                String detalle = modelo.getValueAt(i, 0).toString();
-                String unidad = modelo.getValueAt(i, 1).toString();
-                int cantidad = Integer.parseInt(modelo.getValueAt(i, 2).toString());
-                double valorUnitario = Double.parseDouble(modelo.getValueAt(i, 3).toString().replace("$", "").replace(",", ""));
-                double subTotal = Double.parseDouble(modelo.getValueAt(i, 4).toString().replace("$", "").replace(",", ""));
-
-                Cotizacion cot = new Cotizacion(detalle, unidad, cantidad, valorUnitario, subTotal, total, 1, clienteCodigo);
-                cotizaciones.add(cot);
-            }
-
-            cotizacionDAO.guardarCotizaciones(cotizaciones);
-            JOptionPane.showMessageDialog(null, "Cotización guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al guardar cotización: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(null, "Error en los datos numéricos de la cotización", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
 
     // Clase para combinar pedido y nombre del cliente
     public static class MaterialConDetalles {

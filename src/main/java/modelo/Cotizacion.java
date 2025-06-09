@@ -6,7 +6,7 @@ public class Cotizacion {
     private String detalle;
     private String unidad;
     private int cantidad;
-    private double valorUnitario;
+    private int valorUnitario;
     private double subTotal;
     private double total;
     private int usuarioIdUsuario;
@@ -15,7 +15,7 @@ public class Cotizacion {
     public Cotizacion() {
     }
 
-    public Cotizacion(String detalle, String unidad, int cantidad, double valorUnitario, double subTotal, double total, int usuarioIdUsuario, Integer clienteCodigo) {
+    public Cotizacion(String detalle, String unidad, int cantidad, int valorUnitario, double subTotal, double total, int usuarioIdUsuario, Integer clienteCodigo) {
         this.detalle = detalle;
         this.unidad = unidad;
         this.cantidad = cantidad;
@@ -63,7 +63,7 @@ public class Cotizacion {
         return valorUnitario;
     }
 
-    public void setValorUnitario(double valorUnitario) {
+    public void setValorUnitario(int valorUnitario) {
         this.valorUnitario = valorUnitario;
     }
 

@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CotizacionDAO {
 
-    public void guardarCotizaciones(List<Cotizacion> cotizaciones) throws SQLException {
+    public void guardarCotizaciones(List<Cotizacion> cotizaciones) {
         Connection conn = Conexion.getConnection();
         PreparedStatement pstmt = null;
 
@@ -35,18 +35,19 @@ public class CotizacionDAO {
                 pstmt.addBatch();
             }
             pstmt.executeBatch();
+
+        } catch (SQLException e) {
+            System.out.println("Error al guardar cotizaciones: " + e.getMessage());
         } finally {
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
-                }
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
             }
         }
     }
 
-    public Integer buscarClienteCodigo(String nombreCliente) throws SQLException {
+    public Integer buscarClienteCodigo(String nombreCliente) {
         Connection conn = Conexion.getConnection();
         PreparedStatement pstmt = null;
         ResultSet rs = null;
@@ -56,29 +57,29 @@ public class CotizacionDAO {
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, nombreCliente);
             rs = pstmt.executeQuery();
+
             if (rs.next()) {
                 return rs.getInt("codigo");
             }
-            return null;
+
+        } catch (SQLException e) {
+            System.out.println("Error al buscar cliente: " + e.getMessage());
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar ResultSet: " + e.getMessage());
-                }
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar ResultSet: " + e.getMessage());
             }
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
-                }
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
             }
         }
+        return null;
     }
 
-    public List<Cotizacion> obtenerCotizaciones() throws SQLException {
+    public static List<Cotizacion> obtenerCotizaciones() {
         List<Cotizacion> cotizaciones = new ArrayList<>();
         Connection conn = Conexion.getConnection();
         PreparedStatement pstmt = null;
@@ -97,27 +98,26 @@ public class CotizacionDAO {
                 cot.setDetalle(rs.getString("detalle"));
                 cot.setUnidad(rs.getString("unidad"));
                 cot.setCantidad(rs.getInt("cantidad"));
-                cot.setValorUnitario(rs.getDouble("valor_unitario"));
+                cot.setValorUnitario((int) rs.getDouble("valor_unitario"));
                 cot.setSubTotal(rs.getDouble("sub_total"));
                 cot.setTotal(rs.getDouble("total"));
                 cot.setUsuarioIdUsuario(rs.getInt("usuario_id_usuario"));
                 cot.setClienteCodigo(rs.getInt("cliente_codigo") != 0 ? rs.getInt("cliente_codigo") : null);
                 cotizaciones.add(cot);
             }
+
+        } catch (SQLException e) {
+            System.out.println("Error al obtener cotizaciones: " + e.getMessage());
         } finally {
-            if (rs != null) {
-                try {
-                    rs.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar ResultSet: " + e.getMessage());
-                }
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar ResultSet: " + e.getMessage());
             }
-            if (pstmt != null) {
-                try {
-                    pstmt.close();
-                } catch (SQLException e) {
-                    System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
-                }
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
             }
         }
         return cotizaciones;
