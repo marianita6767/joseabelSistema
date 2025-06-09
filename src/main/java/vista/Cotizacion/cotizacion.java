@@ -19,10 +19,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.File;
 import java.awt.Desktop;
+import java.sql.SQLException;
+import java.util.List;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import modelo.Conexion;
+import modelo.Cotizacion;
+import modelo.CotizacionDAO;
 import vista.Caja.Caja;
 import vista.Caja.formuEgresos1;
 import vista.Crearcliente1;
@@ -87,8 +91,10 @@ public class cotizacion extends javax.swing.JPanel {
         Tabla1.getColumnModel().getColumn(6).setPreferredWidth(60);  // Eliminar
     }
 
+    
+    
     private void guardarCotizacion() {
-        if (Tabla1.getRowCount() == 0) {
+       /* if (Tabla1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -108,7 +114,7 @@ public class cotizacion extends javax.swing.JPanel {
         } catch (Exception e) {
             JOptionPane.showMessageDialog(this, "Error al guardar cotización: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
-        }
+        }*/
     }
 
     @SuppressWarnings("unchecked")

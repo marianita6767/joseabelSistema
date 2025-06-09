@@ -276,6 +276,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabla1 = new rojerusan.RSTableMetro1();
         jLabel9 = new javax.swing.JLabel();
+        rSLabelImage1 = new rojeru_san.rslabel.RSLabelImage();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1290, 730));
@@ -507,6 +508,9 @@ public class Escritorio1 extends javax.swing.JPanel {
         jLabel9.setText("Pedidos Proximos");
         jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 230, -1, -1));
 
+        rSLabelImage1.setText("rSLabelImage1");
+        jPanel4.add(rSLabelImage1, new org.netbeans.lib.awtextra.AbsoluteConstraints(980, 150, -1, -1));
+
         add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1491, 840));
     }// </editor-fold>//GEN-END:initComponents
 
@@ -671,6 +675,7 @@ public class Escritorio1 extends javax.swing.JPanel {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private RSMaterialComponent.RSComboBoxMaterial rSComboBoxMaterial1;
+    private rojeru_san.rslabel.RSLabelImage rSLabelImage1;
     private rojerusan.RSPanelImage rSPanelImage1;
     private rojerusan.RSPanelImage rSPanelImage2;
     // End of variables declaration//GEN-END:variables
