@@ -99,8 +99,8 @@ public class pedido extends javax.swing.JPanel {
                 pedido.getPedido().getNombre(),
                 pedido.getPedido().getEstado(),
                 pedido.getNombreCliente(),
-                new java.text.SimpleDateFormat("yyyy-MM-dd").format(pedido.getPedido().getFecha_inicio()),
-                new java.text.SimpleDateFormat("yyyy-MM-dd").format(pedido.getPedido().getFecha_fin()),
+                new java.text.SimpleDateFormat("dd-MM-yyyy").format(pedido.getPedido().getFecha_inicio()),
+                new java.text.SimpleDateFormat("dd-MM-yyyy").format(pedido.getPedido().getFecha_fin()),
                 "Ver"
             });
         }

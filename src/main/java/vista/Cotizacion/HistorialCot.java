@@ -16,12 +16,15 @@ import java.awt.Font;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -49,15 +52,74 @@ public class HistorialCot extends javax.swing.JPanel {
     /**
      * Creates new form pedido
      */
-    public HistorialCot(String codigo, JPanel contenedor) {
+    public HistorialCot(JPanel contenedor) {
         this.contenedor = contenedor;
-
+        this.contenedor = contenedor;
+        this.controlador = new Ctrl_Pedido();
         initComponents();
-
+        configurarTabla();
+        cargarDatosIniciales();
 
     }
 
-    // Método para agregar una nueva fila a la tabla
+    private void configurarTabla() {
+        DefaultTableModel modelo = new DefaultTableModel(
+                new Object[][]{},
+                new String[]{"Código", "Nombre Pedido", "Estado", "Cliente", "Fecha Inicio", "Fecha Fin", "Detalles"}
+        ) {
+            Class[] types = new Class[]{
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
+            };
+            boolean[] canEdit = new boolean[]{
+                false, false, false, false, false, false, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types[columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit[columnIndex];
+            }
+        };
+        tablaM.setModel(modelo);
+
+        // Configurar renderizador para la columna "Detalles"
+        TableColumn detallesColumn = tablaM.getColumnModel().getColumn(6);
+        detallesColumn.setCellRenderer(new ButtonRenderer());
+
+        // Configurar renderizador para la columna "Estado"
+        TableColumn estadoColumn = tablaM.getColumnModel().getColumn(2);
+        estadoColumn.setCellRenderer(new EstadoTableCellRenderer());
+
+        // Ajustar anchos de columnas
+        tablaM.getColumnModel().getColumn(0).setPreferredWidth(80);
+        tablaM.getColumnModel().getColumn(1).setPreferredWidth(150);
+        tablaM.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tablaM.getColumnModel().getColumn(3).setPreferredWidth(150);
+        tablaM.getColumnModel().getColumn(4).setPreferredWidth(100);
+        tablaM.getColumnModel().getColumn(5).setPreferredWidth(100);
+        tablaM.getColumnModel().getColumn(6).setPreferredWidth(80);
+
+        // Agregar MouseListener para manejar clics en la columna "Detalles"
+        tablaM.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent evt) {
+                int column = tablaM.getColumnModel().getColumnIndexAtX(evt.getX());
+                int row = evt.getY() / tablaM.getRowHeight();
+                if (row < tablaM.getRowCount() && row >= 0 && column < tablaM.getColumnCount() && column >= 0) {
+                    if (column == 6) { // Columna "Detalles"
+                        String id = tablaM.getValueAt(row, 0).toString();
+                        mostrarDetallesPedido(id);
+                    }
+                }
+            }
+        });
+    }
+
+    
+
+// Método para agregar una nueva fila a la tabla
     public void agregarFilaATabla(Object[] fila) {
         DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
         model.addRow(fila);
@@ -82,6 +144,12 @@ public class HistorialCot extends javax.swing.JPanel {
         }
     }
 
+    int setHeight(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    
+
 // Renderizador para la columna "Ver"
     private class ButtonRenderer extends DefaultTableCellRenderer {
 
@@ -105,6 +173,50 @@ public class HistorialCot extends javax.swing.JPanel {
             setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
             tablaM.setRowHeight(23); // Altura más delgada para las filas
             return c;
+        }
+    }
+
+    private class ButtonEditor extends DefaultCellEditor {
+
+        private String label;
+        private boolean isPushed;
+        private int selectedRow;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            label = (value == null) ? "Ver" : value.toString();
+            selectedRow = row;
+            JButton button = new JButton(label);
+            button.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    fireEditingStopped();
+                    String id = table.getValueAt(selectedRow, 0).toString();
+                    mostrarDetallesPedido(id);
+                }
+            });
+            return button;
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return label;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            isPushed = true;
+            return super.stopCellEditing();
+        }
+
+        @Override
+        protected void fireEditingStopped() {
+            super.fireEditingStopped();
         }
     }
 
@@ -189,6 +301,7 @@ public class HistorialCot extends javax.swing.JPanel {
         txtBuscar = new RSMaterialComponent.RSTextFieldMaterialIcon();
         jScrollPane3 = new javax.swing.JScrollPane();
         tablaM = new RSMaterialComponent.RSTableMetroCustom();
+        btnVolver = new RSMaterialComponent.RSButtonShape();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
@@ -201,7 +314,7 @@ public class HistorialCot extends javax.swing.JPanel {
         cmbCategoria.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione una categoria:" }));
         cmbCategoria.setColorMaterial(new java.awt.Color(153, 153, 153));
         cmbCategoria.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jPanel1.add(cmbCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 40, 280, 30));
+        jPanel1.add(cmbCategoria, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 60, 290, 40));
 
         txtBuscar.setForeground(new java.awt.Color(0, 0, 0));
         txtBuscar.setColorIcon(new java.awt.Color(0, 0, 0));
@@ -214,23 +327,23 @@ public class HistorialCot extends javax.swing.JPanel {
                 txtBuscarActionPerformed(evt);
             }
         });
-        jPanel1.add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 40, 410, 30));
+        jPanel1.add(txtBuscar, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 60, 410, 40));
 
         tablaM.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null},
-                {null, null, null, null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Codigo", "Nombre", "Estado", "Cliente", "Fecha Inicio", "Fecha Final", "Detalle"
+                "Codigo", "Fecha", "Cliente", "Aceptar", "Detalles"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true, true, true
+                false, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -265,7 +378,22 @@ public class HistorialCot extends javax.swing.JPanel {
         jScrollPane3.setViewportView(tablaM);
         tablaM.getColumnModel().getColumn(0).setPreferredWidth(10);
 
-        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 100, 1210, 500));
+        jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 120, 1210, 500));
+
+        btnVolver.setBackground(new java.awt.Color(46, 49, 82));
+        btnVolver.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        btnVolver.setIcon(new javax.swing.ImageIcon(getClass().getResource("/volver (1).png"))); // NOI18N
+        btnVolver.setText(" Volver cotización");
+        btnVolver.setBackgroundHover(new java.awt.Color(67, 150, 209));
+        btnVolver.setFont(new java.awt.Font("Roboto Bold", 1, 17)); // NOI18N
+        btnVolver.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnVolver.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        btnVolver.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVolverActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnVolver, new org.netbeans.lib.awtextra.AbsoluteConstraints(40, 20, 190, 30));
 
         add(jPanel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1304, 742));
     }// </editor-fold>//GEN-END:initComponents
@@ -278,8 +406,21 @@ public class HistorialCot extends javax.swing.JPanel {
 
     }//GEN-LAST:event_tablaMMouseClicked
 
+    private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
+        // Crear una nueva instancia de pedido pasando el contenedor
+        cotizacion c = new cotizacion(contenedor);
+        c.setSize(1290, 730);
+        c.setLocation(0, 0);
+
+        contenedor.removeAll();
+        contenedor.add(c);
+        contenedor.revalidate();
+        contenedor.repaint();
+    }//GEN-LAST:event_btnVolverActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private RSMaterialComponent.RSButtonShape btnVolver;
     private RSMaterialComponent.RSComboBoxMaterial cmbCategoria;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane3;

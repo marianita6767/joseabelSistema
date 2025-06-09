@@ -45,8 +45,11 @@ import vista.proveedor.proveedores;
  */
 public class Escritorio1 extends javax.swing.JPanel {
 
+    private Ctrl_Pedido controlador;
+
     public Escritorio1() {
         initComponents();
+        this.controlador = new Ctrl_Pedido();
 
         actualizarIdMaximoProveedor();
         actualizarIdMaximocliente();
@@ -54,15 +57,14 @@ public class Escritorio1 extends javax.swing.JPanel {
         actualizarIdMaximoproduccion();
         actualizarIdMaximopedido();
 
-        
         Tabla1.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
         // Configura el modelo de tabla correctamente
         DefaultTableModel model = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Codigo", "Nombre", "Fecha inicio", "Fecha Final", "Estado", "Detalle", "Editar", "Cantidad", "Dimensiones"}
+                new String[]{"Nombre", "Fecha inicio", "Fecha Final", "Estado"}
         ) {
-            
+
             @Override
             public Class<?> getColumnClass(int columnIndex) {
                 return String.class;
@@ -77,20 +79,36 @@ public class Escritorio1 extends javax.swing.JPanel {
         Tabla1.setModel(model);
 
         // Oculta las columnas adicionales después de establecer el modelo
-        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta Dimensiones
-        Tabla1.removeColumn(Tabla1.getColumnModel().getColumn(7)); // Oculta Cantidad
+        // Oculta Cantidad
+        Tabla1.getColumnModel().getColumn(3).setCellRenderer(new EstadoTableCellRenderer());
 
-        // Configura el renderizador especial para la columna de estado (sobrescribe el general)
-        Tabla1.getColumnModel().getColumn(4).setCellRenderer(new Escritorio1.EstadoTableCellRenderer());
+        // Cargar datos desde la base de datos
+        cargarDatosIniciales();
 
-        // Carga los datos
-        obtenerMateriales();
     }
-    
 
-    
-    
-     private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
+    // Método para agregar una nueva fila a la tabla
+    public void agregarFilaATabla(Object[] fila) {
+        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+        model.addRow(fila);
+    }
+
+    // Cargar datos desde la base de datos
+    public void cargarDatosIniciales() {
+        DefaultTableModel model = (DefaultTableModel) Tabla1.getModel();
+        model.setRowCount(0);
+
+        List<Ctrl_Pedido.MaterialConDetalles> pedidos = controlador.obtenerMateriales();
+        for (Ctrl_Pedido.MaterialConDetalles pedido : pedidos) {
+            model.addRow(new Object[]{
+                pedido.getPedido().getNombre(),
+                new java.text.SimpleDateFormat("dd-MM-yyyy").format(pedido.getPedido().getFecha_inicio()),
+                new java.text.SimpleDateFormat("dd-MM-yyyy").format(pedido.getPedido().getFecha_fin()),
+                pedido.getPedido().getEstado(),});
+        }
+    }
+
+    private class EstadoTableCellRenderer extends DefaultTableCellRenderer {
 
         private final Color textColor = new Color(46, 49, 82);
         private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
@@ -140,12 +158,10 @@ public class Escritorio1 extends javax.swing.JPanel {
             }
 
             // Borde igual al resto de la tabla
-            label.setBorder(BorderFactory.createLineBorder(new Color(153, 153, 153), 1));
-            Tabla1.setRowHeight(23); // Altura más delgada para las filas
             return label;
         }
     }
-    
+
     private void actualizarIdMaximoProveedor() {
         if (jLabel1 == null) {
             return;
@@ -259,6 +275,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         btnprodu1 = new RSMaterialComponent.RSButtonShape();
         jScrollPane1 = new javax.swing.JScrollPane();
         Tabla1 = new rojerusan.RSTableMetro1();
+        jLabel9 = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setMinimumSize(new java.awt.Dimension(1290, 730));
@@ -299,7 +316,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         });
         jPanel4.add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(150, 90, 60, 60));
 
-        btnproveedores1.setBackground(new java.awt.Color(204, 204, 204));
+        btnproveedores1.setBackground(new java.awt.Color(242, 242, 242));
         btnproveedores1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnproveedores1.setBackgroundHover(new java.awt.Color(204, 204, 204));
         btnproveedores1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
@@ -331,7 +348,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         });
         jPanel4.add(btnCliente, new org.netbeans.lib.awtextra.AbsoluteConstraints(320, 40, 210, 40));
 
-        btnCliente1.setBackground(new java.awt.Color(204, 204, 204));
+        btnCliente1.setBackground(new java.awt.Color(242, 242, 242));
         btnCliente1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnCliente1.setBackgroundHover(new java.awt.Color(204, 204, 204));
         btnCliente1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
@@ -363,7 +380,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         jLabel3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jPanel4.add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(600, 90, 60, 60));
 
-        btnUsuario1.setBackground(new java.awt.Color(204, 204, 204));
+        btnUsuario1.setBackground(new java.awt.Color(242, 242, 242));
         btnUsuario1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnUsuario1.setBackgroundHover(new java.awt.Color(204, 204, 204));
         btnUsuario1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
@@ -414,7 +431,7 @@ public class Escritorio1 extends javax.swing.JPanel {
 
         jPanel4.add(rSPanelImage2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1140, 90, -1, 60));
 
-        btnproduccion1.setBackground(new java.awt.Color(204, 204, 204));
+        btnproduccion1.setBackground(new java.awt.Color(242, 242, 242));
         btnproduccion1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnproduccion1.setBackgroundHover(new java.awt.Color(204, 204, 204));
         btnproduccion1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
@@ -439,7 +456,7 @@ public class Escritorio1 extends javax.swing.JPanel {
         });
         jPanel4.add(btnprodu, new org.netbeans.lib.awtextra.AbsoluteConstraints(1010, 40, -1, 40));
 
-        btnprodu1.setBackground(new java.awt.Color(204, 204, 204));
+        btnprodu1.setBackground(new java.awt.Color(242, 242, 242));
         btnprodu1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
         btnprodu1.setBackgroundHover(new java.awt.Color(204, 204, 204));
         btnprodu1.setFont(new java.awt.Font("Roboto Bold", 1, 18)); // NOI18N
@@ -453,18 +470,42 @@ public class Escritorio1 extends javax.swing.JPanel {
 
         Tabla1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
             },
             new String [] {
-                "Codigo", "Nombre", "Fecha Inicio", "Fecha Final", "Estado", "Detalle"
+                "Nombre", "Fecha Inicio", "Fecha Final", "Estado"
             }
         ));
+        Tabla1.setBackgoundHead(new java.awt.Color(255, 255, 255));
+        Tabla1.setBackgoundHover(new java.awt.Color(109, 160, 221));
+        Tabla1.setBorderHead(null);
+        Tabla1.setBorderRows(null);
+        Tabla1.setColorBorderHead(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorBorderRows(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorPrimary(new java.awt.Color(243, 246, 253));
+        Tabla1.setColorPrimaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setColorSecondary(new java.awt.Color(255, 255, 255));
+        Tabla1.setColorSecundaryText(new java.awt.Color(0, 0, 0));
+        Tabla1.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        Tabla1.setFontHead(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowHover(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setFontRowSelect(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        Tabla1.setForegroundHead(new java.awt.Color(0, 0, 0));
+        Tabla1.setGridColor(new java.awt.Color(255, 255, 255));
+        Tabla1.setHighHead(50);
+        Tabla1.setPreferredSize(new java.awt.Dimension(300, 364));
+        Tabla1.setRowHeight(35);
+        Tabla1.setSelectionBackground(new java.awt.Color(109, 160, 221));
         jScrollPane1.setViewportView(Tabla1);
 
-        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(550, 200, 660, -1));
+        jPanel4.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 260, 620, 420));
+
+        jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel9.setText("Pedidos Proximos");
+        jPanel4.add(jLabel9, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 230, -1, -1));
 
         add(jPanel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1491, 840));
     }// </editor-fold>//GEN-END:initComponents
@@ -475,13 +516,12 @@ public class Escritorio1 extends javax.swing.JPanel {
 
     private void btnproveedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnproveedoresActionPerformed
 
-        if (!this.btnproveedores.isSelected()) { 
+        if (!this.btnproveedores.isSelected()) {
             this.btnproveedores.setSelected(true);
 
             proveedores pr = new proveedores(new javax.swing.JFrame(), true);
             pr.setSize(1290, 730);
             pr.setLocation(0, 0);
-
 
             jPanel4.removeAll();
             jPanel4.add(pr);
@@ -627,6 +667,7 @@ public class Escritorio1 extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private RSMaterialComponent.RSComboBoxMaterial rSComboBoxMaterial1;
@@ -634,35 +675,4 @@ public class Escritorio1 extends javax.swing.JPanel {
     private rojerusan.RSPanelImage rSPanelImage2;
     // End of variables declaration//GEN-END:variables
 
- public List<Ctrl_Pedido.MaterialConDetalles> obtenerMateriales() {
-        List<Ctrl_Pedido.MaterialConDetalles> lista = new ArrayList<>();
-        String sql = "SELECT p.*, CONCAT(c.nombre, ' ', c.apellido) AS nombre_cliente_completo "
-                + "FROM pedido p "
-                + "LEFT JOIN cliente c ON p.cliente_codigo = c.codigo";
-
-        try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                Pedido pedido = new Pedido(
-                        rs.getInt("id_pedido"),
-                        rs.getString("nombre"),
-                        rs.getString("estado"),
-                        rs.getDate("fecha_inicio"),
-                        rs.getDate("fecha_fin"),
-                        rs.getInt("cliente_codigo")
-                );
-
-                String nombreClienteCompleto = rs.getString("nombre_cliente_completo");
-                if (rs.wasNull()) {
-                    nombreClienteCompleto = "Sin cliente";
-                }
-
-                lista.add(new Ctrl_Pedido.MaterialConDetalles(pedido, nombreClienteCompleto));
-            }
-        } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al obtener materiales: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-        return lista;
-    }
 }
