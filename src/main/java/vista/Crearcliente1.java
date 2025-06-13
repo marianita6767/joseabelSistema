@@ -111,6 +111,11 @@ public class Crearcliente1 extends javax.swing.JDialog {
         nombretxt.setPhColor(new java.awt.Color(29, 30, 51));
         nombretxt.setPlaceholder("Ingrese el nombre");
         nombretxt.setSelectionColor(new java.awt.Color(29, 30, 51));
+        nombretxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nombretxtActionPerformed(evt);
+            }
+        });
         jPanel1.add(nombretxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 220, 280, 30));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 15)); // NOI18N
@@ -252,6 +257,10 @@ public class Crearcliente1 extends javax.swing.JDialog {
         guardado = false;
         setVisible(false); // Cerrar el diálogo
     }//GEN-LAST:event_rSButton1ActionPerformed
+
+    private void nombretxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nombretxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_nombretxtActionPerformed
 
     /**
      * @param args the command line arguments

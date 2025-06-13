@@ -15,7 +15,6 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import modelo.Conexion;
 import modelo.Cotizacion;
-import modelo.CotizacionDAO;
 import modelo.Pedido;
 import modelo.PedidoDetalle;
 
@@ -24,16 +23,7 @@ import modelo.PedidoDetalle;
  * @author ZenBook
  */
 public class Ctrl_Pedido {
-
-    private CotizacionDAO cotizacionDAO;
-
-    public Ctrl_Pedido() {
-        this.cotizacionDAO = new CotizacionDAO();
-    }
-
-
-
-    // Clase para combinar pedido y nombre del cliente
+// Clase para combinar pedido y nombre del cliente
     public static class MaterialConDetalles {
 
         private Pedido pedido;
@@ -194,8 +184,7 @@ public class Ctrl_Pedido {
 
     public List<PedidoDetalle> obtenerDetallesPorPedido(int idPedido) {
         List<PedidoDetalle> detalles = new ArrayList<>();
-        String sql = "SELECT id_cotizacion AS iddetalle_pedido, detalle AS descripcion, cantidad, unidad AS dimension, valor_unitario AS precio_unitario, sub_total AS subtotal, total, id_cotizacion AS pedido_id_pedido "
-                + "FROM cotizacion WHERE id_cotizacion = ?";
+        String sql = "SELECT * FROM detalle_pedido WHERE pedido_id_pedido = ?";
 
         try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, idPedido);
@@ -215,7 +204,7 @@ public class Ctrl_Pedido {
                 detalles.add(detalle);
             }
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(null, "Error al obtener detalles de la cotización: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Error al obtener detalles del pedido: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return detalles;
@@ -226,13 +215,16 @@ public class Ctrl_Pedido {
         String sql = "UPDATE pedido SET nombre = ?, estado = ?, fecha_inicio = ?, fecha_fin = ?, cliente_codigo = ? WHERE id_pedido = ?";
 
         try (Connection con = Conexion.getConnection(); PreparedStatement stmt = con.prepareStatement(sql)) {
+
             stmt.setString(1, pedido.getNombre());
             stmt.setString(2, pedido.getEstado());
             stmt.setDate(3, new java.sql.Date(pedido.getFecha_inicio().getTime()));
             stmt.setDate(4, new java.sql.Date(pedido.getFecha_fin().getTime()));
             stmt.setInt(5, pedido.getIdCliente());
             stmt.setInt(6, pedido.getId_pedido());
+
             return stmt.executeUpdate() > 0;
+
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error al actualizar pedido: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -263,11 +255,6 @@ public class Ctrl_Pedido {
                     throw new SQLException("No se encontró el pedido con ID: " + idPedido);
                 }
             }
-            String sqlDeleteCotizaciones = "DELETE FROM cotizacion WHERE id_cotizacion = ?";
-            try (PreparedStatement stmtCotizaciones = con.prepareStatement(sqlDeleteCotizaciones)) {
-                stmtCotizaciones.setInt(1, idPedido);
-                stmtCotizaciones.executeUpdate();
-            }
 
             con.commit(); // Confirmar transacción
             return true;
@@ -293,5 +280,4 @@ public class Ctrl_Pedido {
             }
         }
     }
-
 }

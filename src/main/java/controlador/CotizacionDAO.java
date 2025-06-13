@@ -1,4 +1,4 @@
-package modelo;
+package controlador;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,8 +7,70 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import modelo.Conexion;
+import modelo.Cotizacion;
 
 public class CotizacionDAO {
+
+    public static int guardarCotizacion(Cotizacion cotizacion, DefaultTableModel modelo) {
+        Connection conn = Conexion.getConnection();
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
+        int idCotizacion = -1;
+
+        try {
+            // Insertar la cotización
+            String sql = "INSERT INTO cotizacion (detalle, total, usuario_id_usuario, cliente_codigo) VALUES (?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1, cotizacion.getDetalle());
+            pstmt.setDouble(2, cotizacion.getTotal());
+           
+ 
+            pstmt.executeUpdate();
+
+            // Obtener el ID generado
+            rs = pstmt.getGeneratedKeys();
+            if (rs.next()) {
+                idCotizacion = rs.getInt(1);
+            }
+
+            // Insertar los productos en detalle_cotizacion
+            sql = "INSERT INTO detalle_cotizacion (cotizacion_id, producto, unidad, cantidad, valor_unitario, subtotal) VALUES (?, ?, ?, ?, ?, ?)";
+            pstmt = conn.prepareStatement(sql);
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                pstmt.setInt(1, idCotizacion);
+                pstmt.setString(2, modelo.getValueAt(i, 0).toString()); // producto
+                pstmt.setString(3, modelo.getValueAt(i, 1).toString()); // unidad
+                pstmt.setInt(4, Integer.parseInt(modelo.getValueAt(i, 2).toString())); // cantidad
+                pstmt.setDouble(5, Double.parseDouble(modelo.getValueAt(i, 3).toString().replace("$", "").replace(",", ""))); // valor_unitario
+                pstmt.setDouble(6, Double.parseDouble(modelo.getValueAt(i, 4).toString().replace("$", "").replace(",", ""))); // subtotal
+                pstmt.addBatch();
+            }
+            pstmt.executeBatch();
+
+        } catch (SQLException e) {
+            System.out.println("Error al guardar cotización: " + e.getMessage());
+            return -1;
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar ResultSet: " + e.getMessage());
+            }
+            try {
+                if (pstmt != null) pstmt.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar Connection: " + e.getMessage());
+            }
+        }
+        return idCotizacion;
+    }
 
     public void guardarCotizaciones(List<Cotizacion> cotizaciones) {
         Connection conn = Conexion.getConnection();
@@ -26,12 +88,7 @@ public class CotizacionDAO {
                 pstmt.setDouble(4, cot.getValorUnitario());
                 pstmt.setDouble(5, cot.getSubTotal());
                 pstmt.setDouble(6, cot.getTotal());
-                pstmt.setInt(7, cot.getUsuarioIdUsuario());
-                if (cot.getClienteCodigo() != null) {
-                    pstmt.setInt(8, cot.getClienteCodigo());
-                } else {
-                    pstmt.setNull(8, Types.INTEGER);
-                }
+                
                 pstmt.addBatch();
             }
             pstmt.executeBatch();
@@ -43,6 +100,11 @@ public class CotizacionDAO {
                 if (pstmt != null) pstmt.close();
             } catch (SQLException e) {
                 System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar Connection: " + e.getMessage());
             }
         }
     }
@@ -75,6 +137,11 @@ public class CotizacionDAO {
             } catch (SQLException e) {
                 System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
             }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar Connection: " + e.getMessage());
+            }
         }
         return null;
     }
@@ -101,8 +168,6 @@ public class CotizacionDAO {
                 cot.setValorUnitario((int) rs.getDouble("valor_unitario"));
                 cot.setSubTotal(rs.getDouble("sub_total"));
                 cot.setTotal(rs.getDouble("total"));
-                cot.setUsuarioIdUsuario(rs.getInt("usuario_id_usuario"));
-                cot.setClienteCodigo(rs.getInt("cliente_codigo") != 0 ? rs.getInt("cliente_codigo") : null);
                 cotizaciones.add(cot);
             }
 
@@ -118,6 +183,11 @@ public class CotizacionDAO {
                 if (pstmt != null) pstmt.close();
             } catch (SQLException e) {
                 System.out.println("Error al cerrar PreparedStatement: " + e.getMessage());
+            }
+            try {
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                System.out.println("Error al cerrar Connection: " + e.getMessage());
             }
         }
         return cotizaciones;
