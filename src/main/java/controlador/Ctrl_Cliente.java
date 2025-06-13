@@ -14,6 +14,9 @@ import modelo.Conexion;
 
 public class Ctrl_Cliente {
 
+    public Ctrl_Cliente() {
+    }
+
     public boolean guardar(Cliente objeto) {
         boolean respuesta = false;
         Connection con = Conexion.getConnection();

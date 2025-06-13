@@ -4,16 +4,10 @@
  */
 package vista.Cotizacion;
 
-import vista.Ventas.*;
-import RSMaterialComponent.RSButtonShape;
 import controlador.Ctrl_Pedido;
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -27,23 +21,16 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import modelo.Conexion;
 import modelo.Cotizacion;
-import modelo.CotizacionDAO;
-import rojeru_san.RSButtonRiple;
-import vista.Ventas.DetallesPedido; // Si decides mover DetallesPedido a vista.Ventas
+import controlador.CotizacionDAO;
 
 public class HistorialCot extends javax.swing.JPanel {
 
@@ -69,7 +56,7 @@ public class HistorialCot extends javax.swing.JPanel {
     private void configurarTabla() {
         DefaultTableModel modelo = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Código", "Nombre Pedido","Cliente", "Fecha Inicio", "Fecha Fin", "Detalles"}
+                new String[]{"Código", "Nombre Pedido", "Cliente", "Fecha Inicio", "Detalles", ""}
         ) {
             Class[] types = new Class[]{
                 java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
@@ -92,7 +79,6 @@ public class HistorialCot extends javax.swing.JPanel {
         TableColumn detallesColumn = tablaM.getColumnModel().getColumn(6);
         detallesColumn.setCellRenderer(new ButtonRenderer());
 
-       
         // Ajustar anchos de columnas
         tablaM.getColumnModel().getColumn(0).setPreferredWidth(80);
         tablaM.getColumnModel().getColumn(1).setPreferredWidth(150);
@@ -126,24 +112,21 @@ public class HistorialCot extends javax.swing.JPanel {
 
     // Cargar datos desde la base de datos
     public void cargarDatosIniciales() {
- DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
+        DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
         model.setRowCount(0);
 
-            List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
-            for (Cotizacion cot : cotizaciones) {
-                String clienteNombre = cot.getClienteCodigo() != null ? obtenerNombreCliente(cot.getClienteCodigo()) : "Sin cliente";
-                model.addRow(new Object[]{
-                    cot.getIdCotizacion(),
-                    clienteNombre,
-                    String.format("$%.2f", cot.getTotal()),
-                    "Ver"
-                });
-            }
+        List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
+        for (Cotizacion cot : cotizaciones) {
+            model.addRow(new Object[]{
+                cot.getIdCotizacion(),
+                String.format("$%.2f", cot.getTotal()),
+                "Ver"
+            });
+        }
     }
-    
-     private String obtenerNombreCliente(Integer clienteCodigo) {
-        try (Connection con = Conexion.getConnection();
-             PreparedStatement pstmt = con.prepareStatement("SELECT CONCAT(nombre, ' ', apellido) AS nombre_completo FROM cliente WHERE codigo = ?")) {
+
+    private String obtenerNombreCliente(Integer clienteCodigo) {
+        try (Connection con = Conexion.getConnection(); PreparedStatement pstmt = con.prepareStatement("SELECT CONCAT(nombre, ' ', apellido) AS nombre_completo FROM cliente WHERE codigo = ?")) {
             pstmt.setInt(1, clienteCodigo);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -154,7 +137,7 @@ public class HistorialCot extends javax.swing.JPanel {
         }
         return "Sin cliente";
     }
-    
+
     private void mostrarDetallesCotizacion(String id) {
         JOptionPane.showMessageDialog(this, "Mostrar detalles de la cotización con ID: " + id, "Detalles", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -164,6 +147,7 @@ public class HistorialCot extends javax.swing.JPanel {
     }
 
     private class ButtonRenderer extends DefaultTableCellRenderer {
+
         private final Color textColor = new Color(46, 49, 82);
         private final Font fontNormal = new Font("Tahoma", Font.PLAIN, 14);
         private final Font fontBold = new Font("Tahoma", Font.BOLD, 14);
@@ -182,10 +166,6 @@ public class HistorialCot extends javax.swing.JPanel {
             return c;
         }
     }
-     
-     
-
-
 
     private class ButtonEditor extends DefaultCellEditor {
 
@@ -230,7 +210,6 @@ public class HistorialCot extends javax.swing.JPanel {
             super.fireEditingStopped();
         }
     }
-
 
     private void mostrarDetallesPedido(String id) {
         DetallesCot detalles = new DetallesCot(id, contenedor);
@@ -362,7 +341,7 @@ public class HistorialCot extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaMMouseClicked
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // Crear una nueva instancia de pedido pasando el contenedor
+        /*// Crear una nueva instancia de pedido pasando el contenedor
         cotizacion c = new cotizacion(contenedor);
         c.setSize(1290, 730);
         c.setLocation(0, 0);
@@ -370,7 +349,7 @@ public class HistorialCot extends javax.swing.JPanel {
         contenedor.removeAll();
         contenedor.add(c);
         contenedor.revalidate();
-        contenedor.repaint();
+        contenedor.repaint();*/
     }//GEN-LAST:event_btnVolverActionPerformed
 
 

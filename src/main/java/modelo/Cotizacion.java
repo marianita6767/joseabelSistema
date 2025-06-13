@@ -9,24 +9,21 @@ public class Cotizacion {
     private int valorUnitario;
     private double subTotal;
     private double total;
-    private int usuarioIdUsuario;
-    private Integer clienteCodigo;
+
 
     public Cotizacion() {
     }
 
-    public Cotizacion(String detalle, String unidad, int cantidad, int valorUnitario, double subTotal, double total, int usuarioIdUsuario, Integer clienteCodigo) {
+    public Cotizacion(int idCotizacion, String detalle, String unidad, int cantidad, int valorUnitario, double subTotal, double total) {
+        this.idCotizacion = idCotizacion;
         this.detalle = detalle;
         this.unidad = unidad;
         this.cantidad = cantidad;
         this.valorUnitario = valorUnitario;
         this.subTotal = subTotal;
         this.total = total;
-        this.usuarioIdUsuario = usuarioIdUsuario;
-        this.clienteCodigo = clienteCodigo;
     }
 
-    // Getters y Setters
     public int getIdCotizacion() {
         return idCotizacion;
     }
@@ -59,7 +56,7 @@ public class Cotizacion {
         this.cantidad = cantidad;
     }
 
-    public double getValorUnitario() {
+    public int getValorUnitario() {
         return valorUnitario;
     }
 
@@ -83,19 +80,4 @@ public class Cotizacion {
         this.total = total;
     }
 
-    public int getUsuarioIdUsuario() {
-        return usuarioIdUsuario;
-    }
-
-    public void setUsuarioIdUsuario(int usuarioIdUsuario) {
-        this.usuarioIdUsuario = usuarioIdUsuario;
-    }
-
-    public Integer getClienteCodigo() {
-        return clienteCodigo;
-    }
-
-    public void setClienteCodigo(Integer clienteCodigo) {
-        this.clienteCodigo = clienteCodigo;
-    }
 }
