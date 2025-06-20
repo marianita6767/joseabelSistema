@@ -4,38 +4,56 @@
  */
 package vista.Cotizacion;
 
-import java.awt.Frame;
-import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import modelo.Cotizacion;
-import controlador.CotizacionDAO;
-import java.awt.Container;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author tilin del sena
  */
-
 public class InsertarCoti extends javax.swing.JDialog {
-    private cotizacion cotizacionPadre;
-    private Integer clienteCodigo;
+    private DefaultTableModel cotizacion;
+    private boolean confirmado = false;
 
-    // Constructor principal
-  public InsertarCoti(Frame parent, boolean par) {
+    // Constructor original para nuevo producto
+    public InsertarCoti(java.awt.Frame parent, boolean modal) {
+        super(parent, modal);
+        initComponents();
+        CargarUnidadMed();
+    }
 
-    this.cotizacionPadre = cotizacionPadre;
-    this.clienteCodigo = clienteCodigo;
-    initComponents();
-    CargarUnidadMed();
-    setLocationRelativeTo(null);
-}
+    // Constructor para edición
+    public InsertarCoti(java.awt.Frame parent, boolean modal, String producto, String unidad, String cantidad, String valorUnitario) {
+        super(parent, modal);
+        initComponents();
+        CargarUnidadMed();
+        // Precargar los campos con los datos
+        txtProducto.setText(producto);
+        for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
+            if (combox_Unidad.getItemAt(i).equals(unidad)) {
+                combox_Unidad.setSelectedIndex(i);
+                break;
+            }
+        }
+        txtCantidad.setText(cantidad);
+        txtValorUni.setText(valorUnitario);
+    }
 
- 
+    public boolean isConfirmado() {
+        return confirmado;
+    }
 
-    
-    
-private void CargarUnidadMed() {
+    public Object[] getDatosCoti() {
+        return new Object[]{
+            txtProducto.getText().trim(),
+            txtCantidad.getText().trim(),
+            txtValorUni.getText().trim(),
+            combox_Unidad.getSelectedItem().toString() // Añadir unidad
+        };
+
+    }
+
+    private void CargarUnidadMed() {
         combox_Unidad.removeAllItems();
         combox_Unidad.addItem("Seleccione unidad");
         String[] unidades = {"Metro", "Centímetro", "Unidad"};
@@ -43,42 +61,40 @@ private void CargarUnidadMed() {
             combox_Unidad.addItem(unidad);
         }
     }
-    
-    
-    
+
     private void añadirProducto() {
-        String producto = txtNombre6.getText().trim();
+
+        String producto = txtProducto.getText().trim();
         String unidad = combox_Unidad.getSelectedItem().toString();
-        String cantidadTexto = txtNombre4.getText().trim();
-        String valorUnitarioTexto = txtNombre5.getText().trim();
+        String cantidadTexto = txtCantidad.getText().trim();
+        String valorUnitarioTexto = txtValorUni.getText().trim();
 
         if (producto.isEmpty() || unidad.equals("Seleccione unidad") || cantidadTexto.isEmpty() || valorUnitarioTexto.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor complete todos los campos del producto", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
         try {
             int cantidad = Integer.parseInt(cantidadTexto);
             double valorUnitario = Double.parseDouble(valorUnitarioTexto);
             double subtotal = cantidad * valorUnitario;
 
-           
+            // Los datos se pasarán al padre (cotizacion) a través de getDatosCoti()
             limpiarCampos();
-            JOptionPane.showMessageDialog(this, "Producto añadido exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese valores numéricos válidos para la cantidad y el valor unitario", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Cantidad y valor unitario deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
         }
+
     }
 
     private void limpiarCampos() {
-        txtNombre6.setText("");
+        txtProducto.setText("");
         combox_Unidad.setSelectedIndex(0);
-        txtNombre4.setText("");
-        txtNombre5.setText("");
-        txtNombre6.requestFocus();
+        txtCantidad.setText("");
+        txtValorUni.setText("");
+        txtProducto.requestFocus();
     }
-/*
+
+    /*
     private void guardarCotizacion() {
         if (cotizacionPadre.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
@@ -105,7 +121,6 @@ private void CargarUnidadMed() {
         cotizacionPadre.reiniciarCotizacion();
         this.dispose();
     }*/
-
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -115,14 +130,14 @@ private void CargarUnidadMed() {
         jLabel14 = new javax.swing.JLabel();
         btnGuardar = new rojeru_san.RSButtonRiple();
         btnCancelar = new rojeru_san.RSButtonRiple();
-        txtNombre6 = new RSMaterialComponent.RSTextFieldMaterial();
+        txtProducto = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel3 = new javax.swing.JLabel();
         combox_Unidad = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel5 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
-        txtNombre4 = new RSMaterialComponent.RSTextFieldMaterial();
+        txtCantidad = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel6 = new javax.swing.JLabel();
-        txtNombre5 = new RSMaterialComponent.RSTextFieldMaterial();
+        txtValorUni = new RSMaterialComponent.RSTextFieldMaterial();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -164,18 +179,18 @@ private void CargarUnidadMed() {
         });
         jPanel1.add(btnCancelar, new org.netbeans.lib.awtextra.AbsoluteConstraints(70, 260, 140, -1));
 
-        txtNombre6.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre6.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre6.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre6.setPlaceholder("Ingrese nombre pedido...");
-        txtNombre6.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre6.addActionListener(new java.awt.event.ActionListener() {
+        txtProducto.setForeground(new java.awt.Color(0, 0, 0));
+        txtProducto.setColorMaterial(new java.awt.Color(0, 0, 0));
+        txtProducto.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtProducto.setPhColor(new java.awt.Color(0, 0, 0));
+        txtProducto.setPlaceholder("Ingrese nombre pedido...");
+        txtProducto.setSelectionColor(new java.awt.Color(0, 0, 0));
+        txtProducto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre6ActionPerformed(evt);
+                txtProductoActionPerformed(evt);
             }
         });
-        jPanel1.add(txtNombre6, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 180, 30));
+        jPanel1.add(txtProducto, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 100, 180, 30));
 
         jLabel3.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel3.setText("Pedido :");
@@ -198,35 +213,35 @@ private void CargarUnidadMed() {
         jLabel4.setText("Cantidad:");
         jPanel1.add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 150, 90, 30));
 
-        txtNombre4.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre4.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre4.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre4.setPlaceholder("Ingrese cantidad..");
-        txtNombre4.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre4.addActionListener(new java.awt.event.ActionListener() {
+        txtCantidad.setForeground(new java.awt.Color(0, 0, 0));
+        txtCantidad.setColorMaterial(new java.awt.Color(0, 0, 0));
+        txtCantidad.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtCantidad.setPhColor(new java.awt.Color(0, 0, 0));
+        txtCantidad.setPlaceholder("Ingrese cantidad..");
+        txtCantidad.setSelectionColor(new java.awt.Color(0, 0, 0));
+        txtCantidad.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre4ActionPerformed(evt);
+                txtCantidadActionPerformed(evt);
             }
         });
-        jPanel1.add(txtNombre4, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 180, 30));
+        jPanel1.add(txtCantidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(30, 190, 180, 30));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 15)); // NOI18N
         jLabel6.setText("Valor Unitario:");
         jPanel1.add(jLabel6, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 150, 120, 30));
 
-        txtNombre5.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre5.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre5.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre5.setPlaceholder("Ingrese Valor Unitario..");
-        txtNombre5.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre5.addActionListener(new java.awt.event.ActionListener() {
+        txtValorUni.setForeground(new java.awt.Color(0, 0, 0));
+        txtValorUni.setColorMaterial(new java.awt.Color(0, 0, 0));
+        txtValorUni.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
+        txtValorUni.setPhColor(new java.awt.Color(0, 0, 0));
+        txtValorUni.setPlaceholder("Ingrese Valor Unitario..");
+        txtValorUni.setSelectionColor(new java.awt.Color(0, 0, 0));
+        txtValorUni.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre5ActionPerformed(evt);
+                txtValorUniActionPerformed(evt);
             }
         });
-        jPanel1.add(txtNombre5, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, 180, 30));
+        jPanel1.add(txtValorUni, new org.netbeans.lib.awtextra.AbsoluteConstraints(270, 190, 180, 30));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -243,69 +258,86 @@ private void CargarUnidadMed() {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarActionPerformed
-        añadirProducto();
+        String producto = txtProducto.getText().trim();
+        String unidad = combox_Unidad.getSelectedItem().toString();
+        String cantidadTexto = txtCantidad.getText().trim();
+        String valorUnitarioTexto = txtValorUni.getText().trim();
+
+        if (producto.isEmpty() || unidad.equals("Seleccione unidad") || cantidadTexto.isEmpty() || valorUnitarioTexto.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos del producto", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            int cantidad = Integer.parseInt(cantidadTexto);
+            double valorUnitario = Double.parseDouble(valorUnitarioTexto);
+            confirmado = true; // Solo se confirma si los datos son válidos
+            this.dispose(); // Cierra el diálogo solo después de validar
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Cantidad y valor unitario deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+
     }//GEN-LAST:event_btnGuardarActionPerformed
+
 
     private void btnCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelarActionPerformed
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
 
-    private void txtNombre6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre6ActionPerformed
+    private void txtProductoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtProductoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombre6ActionPerformed
+    }//GEN-LAST:event_txtProductoActionPerformed
 
     private void combox_UnidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combox_UnidadActionPerformed
 
     }//GEN-LAST:event_combox_UnidadActionPerformed
 
-    private void txtNombre4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre4ActionPerformed
+    private void txtCantidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtCantidadActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombre4ActionPerformed
+    }//GEN-LAST:event_txtCantidadActionPerformed
 
-    private void txtNombre5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre5ActionPerformed
+    private void txtValorUniActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtValorUniActionPerformed
 
-    }//GEN-LAST:event_txtNombre5ActionPerformed
+    }//GEN-LAST:event_txtValorUniActionPerformed
 
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
+       /* Set the Nimbus look and feel */
+    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+    try {
+        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+            if ("Nimbus".equals(info.getName())) {
+                javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                break;
             }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
+    } catch (ClassNotFoundException ex) {
+        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (InstantiationException ex) {
+        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (IllegalAccessException ex) {
+        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+    }
+    //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
+    /* Create and display the dialog */
+    java.awt.EventQueue.invokeLater(new Runnable() {
+        public void run() {
+            InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true); // Usar constructor original
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
+        }
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -319,10 +351,9 @@ private void CargarUnidadMed() {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre4;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre5;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre6;
+    private RSMaterialComponent.RSTextFieldMaterial txtCantidad;
+    private RSMaterialComponent.RSTextFieldMaterial txtProducto;
+    private RSMaterialComponent.RSTextFieldMaterial txtValorUni;
     // End of variables declaration//GEN-END:variables
 
-    
 }
