@@ -19,7 +19,7 @@ import controlador.Ctrl_ClienteCot;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
-
+/*fff*/
 /**
  *
  * @author ADSO
