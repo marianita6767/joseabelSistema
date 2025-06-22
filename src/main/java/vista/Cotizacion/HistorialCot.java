@@ -31,6 +31,8 @@ import javax.swing.table.TableColumn;
 import modelo.Conexion;
 import modelo.Cotizacion;
 import controlador.CotizacionDAO;
+import java.awt.Container;
+import java.text.SimpleDateFormat;
 
 public class HistorialCot extends javax.swing.JPanel {
 
@@ -43,9 +45,9 @@ public class HistorialCot extends javax.swing.JPanel {
     /**
      * Creates new form pedido
      */
-    public HistorialCot(JPanel contenedor) {
-        this.contenedor = contenedor;
-        this.contenedor = contenedor;
+    public HistorialCot(Container contenedor, boolean par) {
+        this.contenedor = (JPanel) contenedor;
+        this.contenedor = (JPanel) contenedor;
         this.controlador = new Ctrl_Pedido();
         initComponents();
         configurarTabla();
@@ -76,7 +78,7 @@ public class HistorialCot extends javax.swing.JPanel {
         tablaM.setModel(modelo);
 
         // Configurar renderizador para la columna "Detalles"
-        TableColumn detallesColumn = tablaM.getColumnModel().getColumn(6);
+        TableColumn detallesColumn = tablaM.getColumnModel().getColumn(5);
         detallesColumn.setCellRenderer(new ButtonRenderer());
 
         // Ajustar anchos de columnas
@@ -86,7 +88,6 @@ public class HistorialCot extends javax.swing.JPanel {
         tablaM.getColumnModel().getColumn(3).setPreferredWidth(150);
         tablaM.getColumnModel().getColumn(4).setPreferredWidth(100);
         tablaM.getColumnModel().getColumn(5).setPreferredWidth(100);
-        tablaM.getColumnModel().getColumn(6).setPreferredWidth(80);
 
         // Agregar MouseListener para manejar clics en la columna "Detalles"
         tablaM.addMouseListener(new MouseAdapter() {
@@ -95,7 +96,7 @@ public class HistorialCot extends javax.swing.JPanel {
                 int column = tablaM.getColumnModel().getColumnIndexAtX(evt.getX());
                 int row = evt.getY() / tablaM.getRowHeight();
                 if (row < tablaM.getRowCount() && row >= 0 && column < tablaM.getColumnCount() && column >= 0) {
-                    if (column == 6) { // Columna "Detalles"
+                    if (column == 5) { // Columna "Detalles"
                         String id = tablaM.getValueAt(row, 0).toString();
                         mostrarDetallesPedido(id);
                     }
@@ -112,17 +113,21 @@ public class HistorialCot extends javax.swing.JPanel {
 
     // Cargar datos desde la base de datos
     public void cargarDatosIniciales() {
-        DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
-        model.setRowCount(0);
+        /*    DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
+    model.setRowCount(0);
 
-        List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
-        for (Cotizacion cot : cotizaciones) {
-            model.addRow(new Object[]{
-                cot.getIdCotizacion(),
-                String.format("$%.2f", cot.getTotal()),
-                "Ver"
-            });
-        }
+    List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
+    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+    for (Cotizacion cot : cotizaciones) {
+        model.addRow(new Object[]{
+            cot.getIdCotizacion(),
+            cot.getDetalle(), // Nombre del pedido
+            obtenerNombreCliente(cot.getClienteId()), // Nombre del cliente
+            dateFormat.format(cot.getFechaInicio()), // Fecha Inicio
+            "Detalles", // Columna de detalles (botón)
+            "" // Columna vacía (puede ajustarse)
+        });
+    */
     }
 
     private String obtenerNombreCliente(Integer clienteCodigo) {
@@ -143,6 +148,10 @@ public class HistorialCot extends javax.swing.JPanel {
     }
 
     int setHeight(int i) {
+        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    }
+
+    void setLocationRelativeTo(cotizacion aThis) {
         throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
     }
 
@@ -341,15 +350,13 @@ public class HistorialCot extends javax.swing.JPanel {
     }//GEN-LAST:event_tablaMMouseClicked
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        /*// Crear una nueva instancia de pedido pasando el contenedor
         cotizacion c = new cotizacion(contenedor);
         c.setSize(1290, 730);
         c.setLocation(0, 0);
-
         contenedor.removeAll();
         contenedor.add(c);
         contenedor.revalidate();
-        contenedor.repaint();*/
+        contenedor.repaint();
     }//GEN-LAST:event_btnVolverActionPerformed
 
 

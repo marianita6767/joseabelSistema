@@ -4,14 +4,7 @@
  */
 package vista.Cotizacion;
 
-import controlador.GeneradorCotizacionPDF;
-import javax.swing.table.DefaultTableModel;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import RSMaterialComponent.RSTextFieldMaterial;
 import controlador.Ctrl_Pedido;
-import javax.swing.JOptionPane;
-import javax.swing.table.DefaultTableModel;
 import controlador.GeneradorCotizacionPDF;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,19 +12,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.io.File;
 import java.awt.Desktop;
-import java.sql.SQLException;
-import java.util.List;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import modelo.Conexion;
 import modelo.Cotizacion;
 import controlador.CotizacionDAO;
-import vista.Caja.Caja;
-import vista.Caja.formuEgresos1;
-import vista.Crearcliente1;
-import vista.Usuario;
-
+import controlador.Ctrl_ClienteCot;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+import modelo.Cliente;
+/*fff*/
 /**
  *
  * @author ADSO
@@ -44,12 +32,16 @@ public class cotizacion extends javax.swing.JPanel {
     private String clienteActual = "";
     private boolean clienteIngresado = false;
     private Ctrl_Pedido controlador;
+    private Ctrl_ClienteCot ctrlCliente;
     private Integer clienteCodigo; // To store the selected client's code
 
+    private static ArrayList<Cliente> clientesTemporales = new ArrayList<>();
+
     public cotizacion(JPanel contenedor) {
-        
+
         this.contenedor = contenedor;
         this.controlador = new Ctrl_Pedido();
+        this.ctrlCliente = new Ctrl_ClienteCot();
         initComponents();
         configurarTabla();
         CargarUnidadMed();
@@ -58,7 +50,9 @@ public class cotizacion extends javax.swing.JPanel {
         txt_total.setText("$0.00");
     }
 
-  
+    public RSMaterialComponent.RSTableMetroCustom getTabla1() {
+        return Tabla1;
+    }
 
     private void configurarTabla() {
         DefaultTableModel modelo = new DefaultTableModel(
@@ -109,6 +103,60 @@ public class cotizacion extends javax.swing.JPanel {
         reiniciarCotizacion();
     }
 
+    private void btnInsertarClienteActionPerformed(java.awt.event.ActionEvent evt) {
+        String nombre = txt_NombreCliente.getText().trim();
+        String apellido = txt_ApellidoCliente.getText().trim();
+        String tipoIdentificacion = identificaciontxt.getSelectedItem().toString();
+        String numeroIdentificacion = numerotxt.getText().trim();
+        String telefono = telefonotxt.getText().trim();
+        String direccion = direcciontxt.getText().trim();
+
+        // Validaciones
+        if (nombre.isEmpty() || apellido.isEmpty() || tipoIdentificacion.equals("Tipo de identificación:")
+                || numeroIdentificacion.isEmpty() || telefono.isEmpty() || direccion.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos del cliente", "Error", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        try {
+            Long.parseLong(numeroIdentificacion);
+            Long.parseLong(telefono);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "El número de identificación y el teléfono deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Crear objeto Cliente
+        Cliente cliente = new Cliente();
+        cliente.setNombre(nombre);
+        cliente.setApellido(apellido);
+        cliente.setIdentificacion(tipoIdentificacion);
+        //cliente.setNumero(numeroIdentificacion);
+        cliente.setTelefono(telefono);
+        cliente.setDireccion(direccion);
+
+        // Asignar un código simulado (puedes usar un contador o UUID en un entorno real)
+        cliente.setid_cliente(clientesTemporales.size() + 1);
+
+        // Añadir a la lista temporal
+        clientesTemporales.add(cliente);
+
+        // Actualizar estado
+        clienteIngresado = true;
+        clienteCodigo = cliente.getid_cliente();
+        clienteActual = nombre + " " + apellido;
+
+        // Deshabilitar campos para evitar modificaciones
+        txt_NombreCliente.setEnabled(false);
+        txt_ApellidoCliente.setEnabled(false);
+        identificaciontxt.setEnabled(false);
+        numerotxt.setEnabled(false);
+        telefonotxt.setEnabled(false);
+        direcciontxt.setEnabled(false);
+
+        JOptionPane.showMessageDialog(this, "Cliente creado exitosamente: " + clienteActual, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -126,10 +174,9 @@ public class cotizacion extends javax.swing.JPanel {
         txtNombre5 = new RSMaterialComponent.RSTextFieldMaterial();
         jButton_anadir_producto = new RSMaterialComponent.RSButtonShape();
         txt_total = new RSMaterialComponent.RSTextFieldMaterial();
-        btnAñadir = new RSMaterialComponent.RSButtonShape();
+        btnCrearpdf = new RSMaterialComponent.RSButtonShape();
         txt_NombreCliente = new RSMaterialComponent.RSTextFieldMaterial();
         jLabel7 = new javax.swing.JLabel();
-        jLabel8 = new javax.swing.JLabel();
         HistorialCoti = new RSMaterialComponent.RSButtonShape();
         jLabel9 = new javax.swing.JLabel();
         txt_ApellidoCliente = new RSMaterialComponent.RSTextFieldMaterial();
@@ -141,7 +188,7 @@ public class cotizacion extends javax.swing.JPanel {
         jLabel12 = new javax.swing.JLabel();
         jLabel13 = new javax.swing.JLabel();
         direcciontxt = new RSMaterialComponent.RSTextFieldMaterial();
-        identificaciontxt1 = new RSMaterialComponent.RSComboBoxMaterial();
+        jButton_anadir_producto1 = new RSMaterialComponent.RSButtonShape();
 
         jToggleButton1.setText("jToggleButton1");
 
@@ -231,7 +278,7 @@ public class cotizacion extends javax.swing.JPanel {
                 combox_UnidadActionPerformed(evt);
             }
         });
-        jPanel1.add(combox_Unidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 10, 0, 30));
+        jPanel1.add(combox_Unidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 0, 40));
 
         txtNombre4.setForeground(new java.awt.Color(0, 0, 0));
         txtNombre4.setColorMaterial(new java.awt.Color(0, 0, 0));
@@ -292,20 +339,20 @@ public class cotizacion extends javax.swing.JPanel {
         });
         jPanel2.add(txt_total, new org.netbeans.lib.awtextra.AbsoluteConstraints(140, 580, 200, 30));
 
-        btnAñadir.setBackground(new java.awt.Color(46, 49, 82));
-        btnAñadir.setBorder(javax.swing.BorderFactory.createCompoundBorder());
-        btnAñadir.setIcon(new javax.swing.ImageIcon(getClass().getResource("/file-pdf-solid-60 (2).png"))); // NOI18N
-        btnAñadir.setText("Crear PDF");
-        btnAñadir.setBackgroundHover(new java.awt.Color(153, 153, 153));
-        btnAñadir.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        btnAñadir.setForegroundHover(new java.awt.Color(0, 0, 0));
-        btnAñadir.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
-        btnAñadir.addActionListener(new java.awt.event.ActionListener() {
+        btnCrearpdf.setBackground(new java.awt.Color(46, 49, 82));
+        btnCrearpdf.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        btnCrearpdf.setIcon(new javax.swing.ImageIcon(getClass().getResource("/file-pdf-solid-60 (2).png"))); // NOI18N
+        btnCrearpdf.setText("Crear PDF");
+        btnCrearpdf.setBackgroundHover(new java.awt.Color(153, 153, 153));
+        btnCrearpdf.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        btnCrearpdf.setForegroundHover(new java.awt.Color(0, 0, 0));
+        btnCrearpdf.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        btnCrearpdf.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnAñadirActionPerformed(evt);
+                btnCrearpdfActionPerformed(evt);
             }
         });
-        jPanel2.add(btnAñadir, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 550, 170, 70));
+        jPanel2.add(btnCrearpdf, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 550, 170, 70));
 
         txt_NombreCliente.setForeground(new java.awt.Color(0, 0, 0));
         txt_NombreCliente.setColorMaterial(new java.awt.Color(0, 0, 0));
@@ -323,10 +370,6 @@ public class cotizacion extends javax.swing.JPanel {
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel7.setText("Total:");
         jPanel2.add(jLabel7, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 580, 70, 30));
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jLabel8.setText("Materia Prima:");
-        jPanel2.add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(820, 50, -1, -1));
 
         HistorialCoti.setBackground(new java.awt.Color(46, 49, 82));
         HistorialCoti.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -360,6 +403,11 @@ public class cotizacion extends javax.swing.JPanel {
         identificaciontxt.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Tipo de identificacion:", "CC", "CE", "TI", "RC", "NIT", "PA", "PEP", "PPT", "DNI" }));
         identificaciontxt.setColorMaterial(new java.awt.Color(29, 30, 51));
         identificaciontxt.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
+        identificaciontxt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                identificaciontxtActionPerformed(evt);
+            }
+        });
         jPanel2.add(identificaciontxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 50, 200, 30));
 
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -405,10 +453,21 @@ public class cotizacion extends javax.swing.JPanel {
         });
         jPanel2.add(direcciontxt, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 130, 200, 30));
 
-        identificaciontxt1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Tipo de identificacion:", "CC", "CE", "TI", "RC", "NIT", "PA", "PEP", "PPT", "DNI" }));
-        identificaciontxt1.setColorMaterial(new java.awt.Color(29, 30, 51));
-        identificaciontxt1.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        jPanel2.add(identificaciontxt1, new org.netbeans.lib.awtextra.AbsoluteConstraints(930, 40, 200, 30));
+        jButton_anadir_producto1.setBackground(new java.awt.Color(46, 49, 82));
+        jButton_anadir_producto1.setBorder(javax.swing.BorderFactory.createCompoundBorder());
+        jButton_anadir_producto1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/usuario (2).png"))); // NOI18N
+        jButton_anadir_producto1.setText("Crear Cliente");
+        jButton_anadir_producto1.setBackgroundHover(new java.awt.Color(0, 153, 0));
+        jButton_anadir_producto1.setFont(new java.awt.Font("Roboto Bold", 1, 16)); // NOI18N
+        jButton_anadir_producto1.setForma(RSMaterialComponent.RSButtonShape.FORMA.ROUND);
+        jButton_anadir_producto1.setHideActionText(true);
+        jButton_anadir_producto1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jButton_anadir_producto1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton_anadir_producto1ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton_anadir_producto1, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 70, 150, 70));
 
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1300, 680));
     }// </editor-fold>//GEN-END:initComponents
@@ -429,63 +488,32 @@ public class cotizacion extends javax.swing.JPanel {
 
     }//GEN-LAST:event_txtNombre5ActionPerformed
 
-    private void btnAñadirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAñadirActionPerformed
-        System.out.println("Botón Generar PDF presionado");
-
+    private void btnCrearpdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearpdfActionPerformed
         if (Tabla1.getRowCount() == 0) {
-            System.out.println("Tabla vacía, mostrando advertencia");
-            JOptionPane.showMessageDialog(this,
-                    "No hay productos en la cotización",
-                    "Advertencia", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String cliente = txt_NombreCliente.getText().trim();
-        if (cliente.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese un nombre de cliente", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-//nombre del PDF
-        System.out.println("Creando instancia de GeneradorCotizacionPDF");
         GeneradorCotizacionPDF generador = new GeneradorCotizacionPDF();
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
         String total = txt_total.getText().trim();
+        String cliente = txt_NombreCliente.getText().trim() + " " + txt_ApellidoCliente.getText().trim();
         String archivoSalida = "cotizacion_" + cliente.replaceAll("[^a-zA-Z0-9_-]", "_") + "_" + new SimpleDateFormat("ddMMyyyy_HHmmss").format(new Date()) + ".pdf";
-
-        System.out.println("Cliente: " + cliente);
-        System.out.println("Total: " + total);
-        System.out.println("Archivo de salida: " + archivoSalida);
-        System.out.println("Llamando a generarPDF...");
 
         try {
             generador.generarPDF(cliente, modelo, total, archivoSalida);
-            System.out.println("PDF generado correctamente, intentando abrir en el navegador");
-
-            // Abrir el archivo en el navegador predeterminado
             File pdfFile = new File(archivoSalida);
-            if (pdfFile.exists()) {
-                if (Desktop.isDesktopSupported()) {
-                    Desktop.getDesktop().open(pdfFile);
-                    System.out.println("Archivo PDF abierto en el navegador predeterminado");
-                } else {
-                    System.out.println("Desktop no soportado en este sistema");
-                    JOptionPane.showMessageDialog(this, "No se puede abrir el PDF automáticamente. El archivo se encuentra en: " + archivoSalida, "Información", JOptionPane.INFORMATION_MESSAGE);
-                }
+            if (pdfFile.exists() && Desktop.isDesktopSupported()) {
+                Desktop.getDesktop().open(pdfFile);
             } else {
-                System.out.println("El archivo PDF no se encontró en: " + archivoSalida);
-                JOptionPane.showMessageDialog(this, "El archivo PDF no se encontró en: " + archivoSalida, "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this, "No se puede abrir el PDF automáticamente. El archivo se encuentra en: " + archivoSalida, "Información", JOptionPane.INFORMATION_MESSAGE);
             }
-
-            System.out.println("Reiniciando cotización");
-            reiniciarCotizacion();
+            guardarCotizacion();
         } catch (Exception e) {
-            System.out.println("Error al generar o abrir PDF: " + e.getMessage());
-            e.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error al generar o abrir PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
         }
-
-
-    }//GEN-LAST:event_btnAñadirActionPerformed
+    }//GEN-LAST:event_btnCrearpdfActionPerformed
 
     private void txtNombre6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre6ActionPerformed
         // TODO add your handling code here:
@@ -510,27 +538,16 @@ public class cotizacion extends javax.swing.JPanel {
         }
     }
 
-     private void HistorialCotActionPerformed(java.awt.event.ActionEvent evt) {
-            try {
-                HistorialCot h = new HistorialCot(contenedor);
-                h.setSize(1290, h.setHeight(730));
-                h.setLocation(0, 0);
-                contenedor.removeAll();
-                contenedor.add(h);
-                contenedor.revalidate();
-                contenedor.repaint();
-            } catch (Exception e) {
-                JOptionPane.showMessageDialog(this, "Error al mostrar el historial de cotizaciones: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
-        }
-    
-     private void jButton_anadirProductoActionPerformed(java.awt.event.ActionEvent evt) {
+    private void jButton_anadirProductoActionPerformed(java.awt.event.ActionEvent evt) {
+
         Integer filaEditando = (Integer) Tabla1.getClientProperty("filaEditando");
         if (filaEditando != null) {
             guardarEdicionamiento(filaEditando);
         } else {
-            añadirProducto();
+            java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+            InsertarCoti dialog = new InsertarCoti(parent, true);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
         }
     }
 
@@ -564,7 +581,7 @@ public class cotizacion extends javax.swing.JPanel {
             double subtotal = cantidad * valorUnitario;
 
             DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-            modelo.addRow(new Object[] {
+            modelo.addRow(new Object[]{
                 producto,
                 unidad,
                 cantidad,
@@ -623,7 +640,6 @@ public class cotizacion extends javax.swing.JPanel {
         txtNombre6.requestFocus();
     }
 
-    
     private void eliminarFila(int fila) {
         // Obtener datos del producto a eliminar para mostrar en el mensaje
         String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
@@ -657,30 +673,27 @@ public class cotizacion extends javax.swing.JPanel {
 
     private void editarFila(int fila) {
         // Obtener los valores de la fila seleccionada con los nuevos índices
-        String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
-        String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
-        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
-        String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
+    String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
+    String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
+    String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
+    String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
 
-        // Resto del método permanece igual...
-        txtNombre6.setText(producto);
+    // Abrir InsertarCoti con los datos para edición
+    java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+    InsertarCoti dialog = new InsertarCoti(parent, true, producto, unidad, cantidad, valorUnitario);
+    dialog.setLocationRelativeTo(this);
+    dialog.setVisible(true);
 
-        for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
-            if (combox_Unidad.getItemAt(i).equals(unidad)) {
-                combox_Unidad.setSelectedIndex(i);
-                break;
-            }
-        }
-
-        txtNombre4.setText(cantidad);
-        txtNombre5.setText(valorUnitario);
-
-        Tabla1.putClientProperty("filaEditando", fila);
-        jButton_anadir_producto.setText("  Guardar");
+    // Almacenar la fila que se está editando
+    Tabla1.putClientProperty("filaEditando", fila);
+    jButton_anadir_producto.setText("  Guardar"); // Cambiar texto del botón mientras se edita
     }//GEN-LAST:event_Tabla1MouseClicked
 
+    
+    
+    
     private void HistorialCotiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HistorialCotiActionPerformed
-        HistorialCot h = new HistorialCot(contenedor);
+        HistorialCot h = new HistorialCot(contenedor, true); // Añadir el segundo parámetro
         h.setSize(1290, 730);
         h.setLocation(0, 0);
         contenedor.removeAll();
@@ -690,12 +703,50 @@ public class cotizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_HistorialCotiActionPerformed
 
     private void jButton_anadir_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_productoActionPerformed
-         InsertarCoti h = new InsertarCoti(new javax.swing.JFrame(), true);
-        h.setLocationRelativeTo(null);
-        h.setVisible(true);
-        
-    }
+       Integer filaEditando = (Integer) Tabla1.getClientProperty("filaEditando");
+    if (filaEditando != null) {
+        guardarEdicionamiento(filaEditando);
+    } else {
+        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        InsertarCoti dialog = new InsertarCoti(parent, true);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
+        // Verificar si el diálogo fue confirmado y añadir los datos
+        if (dialog.isConfirmado()) {
+            Object[] datos = dialog.getDatosCoti();
+            String producto = (String) datos[0];
+            String cantidadTexto = (String) datos[1];
+            String valorUnitarioTexto = (String) datos[2];
+            String unidad = (String) datos[3]; // Nueva unidad del diálogo
+
+            try {
+                int cantidad = Integer.parseInt(cantidadTexto);
+                double valorUnitario = Double.parseDouble(valorUnitarioTexto);
+                if (cantidad <= 0 || valorUnitario < 0) {
+                    JOptionPane.showMessageDialog(this, "Cantidad debe ser positiva y valor unitario no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                double subtotal = cantidad * valorUnitario;
+
+                DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+                modelo.addRow(new Object[]{
+                    producto,
+                    unidad,
+                    cantidad,
+                    String.format("$%.2f", valorUnitario),
+                    String.format("$%.2f", subtotal),
+                    "Editar",
+                    "Eliminar"
+                });
+                calcularTotal();
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(this, "Error al procesar los datos del producto: asegúrese de que sean numéricos", "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+        }
+    }
+    }
 
     private void añadirNuevoProducto() {
         // Validación del cliente permanece igual...
@@ -820,16 +871,24 @@ public class cotizacion extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_direcciontxtActionPerformed
 
+    private void identificaciontxtActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_identificaciontxtActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_identificaciontxtActionPerformed
+
+    private void jButton_anadir_producto1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_producto1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jButton_anadir_producto1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSButtonShape HistorialCoti;
     private RSMaterialComponent.RSTableMetroCustom Tabla1;
-    private RSMaterialComponent.RSButtonShape btnAñadir;
+    private RSMaterialComponent.RSButtonShape btnCrearpdf;
     private RSMaterialComponent.RSComboBoxMaterial combox_Unidad;
     private RSMaterialComponent.RSTextFieldMaterial direcciontxt;
     private RSMaterialComponent.RSComboBoxMaterial identificaciontxt;
-    private RSMaterialComponent.RSComboBoxMaterial identificaciontxt1;
     private RSMaterialComponent.RSButtonShape jButton_anadir_producto;
+    private RSMaterialComponent.RSButtonShape jButton_anadir_producto1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -837,7 +896,6 @@ public class cotizacion extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel13;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel7;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -892,29 +950,27 @@ public class cotizacion extends javax.swing.JPanel {
 
     /*joa nambre*/
     public void calcularTotal() {
-    DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-    double total = 0;
+        DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+        double total = 0;
 
-    for (int i = 0; i < modelo.getRowCount(); i++) {
-        try {
-            String subtotalStr = modelo.getValueAt(i, 4).toString();
-            subtotalStr = subtotalStr.replace("$", "").replace(",", "");
-            double subtotal = Double.parseDouble(subtotalStr);
-            total += subtotal;
-        } catch (Exception e) {
-            JOptionPane.showMessageDialog(this,
-                    "Error al calcular el subtotal en la fila " + (i + 1) + "\n"
-                    + "Valor problemático: " + modelo.getValueAt(i, 4),
-                    "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            try {
+                String subtotalStr = modelo.getValueAt(i, 4).toString();
+                subtotalStr = subtotalStr.replace("$", "").replace(",", "");
+                double subtotal = Double.parseDouble(subtotalStr);
+                total += subtotal;
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(this,
+                        "Error al calcular el subtotal en la fila " + (i + 1) + "\n"
+                        + "Valor problemático: " + modelo.getValueAt(i, 4),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
         }
+
+        txt_total.setText(String.format("$%,.2f", total));
     }
 
-    txt_total.setText(String.format("$%,.2f", total));
-}
-
-    
-    
     public void reiniciarCotizacion() {
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
         modelo.setRowCount(0);
