@@ -12,7 +12,7 @@ public class ClienteCoti {
     
     private int codigo;
     private String identificacion;
-    private int numero;
+    private String numero;
     private String nombre;
     private String apellido;
     private String telefono;
@@ -22,7 +22,7 @@ public class ClienteCoti {
     public ClienteCoti() {
     }
 
-    public ClienteCoti(int codigo, String identificacion, int numero, String nombre, String apellido, String telefono, String direccion, String estado) {
+    public ClienteCoti(int codigo, String identificacion, String numero, String nombre, String apellido, String telefono, String direccion, String estado) {
         this.codigo = codigo;
         this.identificacion = identificacion;
         this.numero = numero;
@@ -49,11 +49,11 @@ public class ClienteCoti {
         this.identificacion = identificacion;
     }
 
-    public int getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(int numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 
