@@ -16,9 +16,15 @@ import javax.swing.JPanel;
 import modelo.Cotizacion;
 import controlador.CotizacionDAO;
 import controlador.Ctrl_ClienteCot;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
+
 /*fff*/
 /**
  *
@@ -32,7 +38,7 @@ public class cotizacion extends javax.swing.JPanel {
     private String clienteActual = "";
     private boolean clienteIngresado = false;
     private Ctrl_Pedido controlador;
-    private Ctrl_ClienteCot ctrlCliente;
+    private Ctrl_ClienteCot ctrl_ClienteCot;
     private Integer clienteCodigo; // To store the selected client's code
 
     private static ArrayList<Cliente> clientesTemporales = new ArrayList<>();
@@ -41,13 +47,13 @@ public class cotizacion extends javax.swing.JPanel {
 
         this.contenedor = contenedor;
         this.controlador = new Ctrl_Pedido();
-        this.ctrlCliente = new Ctrl_ClienteCot();
+        this.ctrl_ClienteCot = new Ctrl_ClienteCot();
         initComponents();
         configurarTabla();
         CargarUnidadMed();
         txt_total.setEditable(false);
         txt_total.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
-        txt_total.setText("$0.00");
+        txt_total.setText("$0");
     }
 
     public RSMaterialComponent.RSTableMetroCustom getTabla1() {
@@ -94,7 +100,9 @@ public class cotizacion extends javax.swing.JPanel {
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
         Cotizacion cotizacion = new Cotizacion();
         cotizacion.setDetalle(nombrePedido);
-        cotizacion.setTotal(Double.parseDouble(txt_total.getText().replace("$", "").replace(",", "")));
+        // Remove "$" and "." for proper parsing
+        String totalText = txt_total.getText().replace("$", "").replace(".", "");
+        cotizacion.setTotal(Double.parseDouble(totalText));
         /*  cotizacion.setFechaInicio(new Date());
         cotizacion.setFechaFin(new Date());
          */
@@ -107,33 +115,33 @@ public class cotizacion extends javax.swing.JPanel {
         String nombre = txt_NombreCliente.getText().trim();
         String apellido = txt_ApellidoCliente.getText().trim();
         String tipoIdentificacion = identificaciontxt.getSelectedItem().toString();
-        String numeroIdentificacion = numerotxt.getText().trim();
+        String numeroid = numerotxt.getText().trim();
         String telefono = telefonotxt.getText().trim();
         String direccion = direcciontxt.getText().trim();
 
         // Validaciones
         if (nombre.isEmpty() || apellido.isEmpty() || tipoIdentificacion.equals("Tipo de identificación:")
-                || numeroIdentificacion.isEmpty() || telefono.isEmpty() || direccion.isEmpty()) {
+                || numeroid.isEmpty() || telefono.isEmpty() || direccion.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor complete todos los campos del cliente", "Error", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
         try {
-            Long.parseLong(numeroIdentificacion);
+            Long.parseLong(numeroid);
             Long.parseLong(telefono);
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "El número de identificación y el teléfono deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        // Crear objeto Cliente
-        Cliente cliente = new Cliente();
+       Cliente cliente = new Cliente();
         cliente.setNombre(nombre);
         cliente.setApellido(apellido);
         cliente.setIdentificacion(tipoIdentificacion);
-        //cliente.setNumero(numeroIdentificacion);
+       // cliente.setNumero(numeroid);
         cliente.setTelefono(telefono);
         cliente.setDireccion(direccion);
+      //  cliente.setEstado("temporal"); // Establecer estado como TEMPORAL
 
         // Asignar un código simulado (puedes usar un contador o UUID en un entorno real)
         cliente.setid_cliente(clientesTemporales.size() + 1);
@@ -585,8 +593,8 @@ public class cotizacion extends javax.swing.JPanel {
                 producto,
                 unidad,
                 cantidad,
-                String.format("$%.2f", valorUnitario),
-                String.format("$%.2f", subtotal),
+                String.format("$%,d", (long) valorUnitario), // Formato sin decimales
+                String.format("$%,d", (long) subtotal), // Formato sin decimales
                 "Editar",
                 "Eliminar"
             });
@@ -618,8 +626,8 @@ public class cotizacion extends javax.swing.JPanel {
             modelo.setValueAt(producto, fila, 0);
             modelo.setValueAt(unidad, fila, 1);
             modelo.setValueAt(cantidad, fila, 2);
-            modelo.setValueAt(String.format("$%.2f", valorUnitario), fila, 3);
-            modelo.setValueAt(String.format("$%.2f", subtotal), fila, 4);
+            modelo.setValueAt(String.format("$%,d", (int) valorUnitario), fila, 3);
+            modelo.setValueAt(String.format("$%,d", (int) subtotal), fila, 4);
 
             limpiarCampos();
             Tabla1.putClientProperty("filaEditando", null);
@@ -673,25 +681,23 @@ public class cotizacion extends javax.swing.JPanel {
 
     private void editarFila(int fila) {
         // Obtener los valores de la fila seleccionada con los nuevos índices
-    String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
-    String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
-    String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
-    String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", ""); // Índice 3 para Valor Unitario
+        String producto = Tabla1.getValueAt(fila, 0).toString(); // Índice 0 para Producto
+        String unidad = Tabla1.getValueAt(fila, 1).toString();   // Índice 1 para Unidad
+        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Índice 2 para Cantidad
+        String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", "");
 
-    // Abrir InsertarCoti con los datos para edición
-    java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-    InsertarCoti dialog = new InsertarCoti(parent, true, producto, unidad, cantidad, valorUnitario);
-    dialog.setLocationRelativeTo(this);
-    dialog.setVisible(true);
+        // Abrir InsertarCoti con los datos para edición
+        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+        InsertarCoti dialog = new InsertarCoti(parent, true, producto, unidad, cantidad, valorUnitario);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-    // Almacenar la fila que se está editando
-    Tabla1.putClientProperty("filaEditando", fila);
-    jButton_anadir_producto.setText("  Guardar"); // Cambiar texto del botón mientras se edita
+        // Almacenar la fila que se está editando
+        Tabla1.putClientProperty("filaEditando", fila);
+        jButton_anadir_producto.setText("  Guardar"); // Cambiar texto del botón mientras se edita
     }//GEN-LAST:event_Tabla1MouseClicked
 
-    
-    
-    
+
     private void HistorialCotiActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_HistorialCotiActionPerformed
         HistorialCot h = new HistorialCot(contenedor, true); // Añadir el segundo parámetro
         h.setSize(1290, 730);
@@ -703,49 +709,49 @@ public class cotizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_HistorialCotiActionPerformed
 
     private void jButton_anadir_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_productoActionPerformed
-       Integer filaEditando = (Integer) Tabla1.getClientProperty("filaEditando");
-    if (filaEditando != null) {
-        guardarEdicionamiento(filaEditando);
-    } else {
-        java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        InsertarCoti dialog = new InsertarCoti(parent, true);
-        dialog.setLocationRelativeTo(this);
-        dialog.setVisible(true);
+        Integer filaEditando = (Integer) Tabla1.getClientProperty("filaEditando");
+        if (filaEditando != null) {
+            guardarEdicionamiento(filaEditando);
+        } else {
+            java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
+            InsertarCoti dialog = new InsertarCoti(parent, true);
+            dialog.setLocationRelativeTo(this);
+            dialog.setVisible(true);
 
-        // Verificar si el diálogo fue confirmado y añadir los datos
-        if (dialog.isConfirmado()) {
-            Object[] datos = dialog.getDatosCoti();
-            String producto = (String) datos[0];
-            String cantidadTexto = (String) datos[1];
-            String valorUnitarioTexto = (String) datos[2];
-            String unidad = (String) datos[3]; // Nueva unidad del diálogo
+            // Verificar si el diálogo fue confirmado y añadir los datos
+            if (dialog.isConfirmado()) {
+                Object[] datos = dialog.getDatosCoti();
+                String producto = (String) datos[0];
+                String cantidadTexto = (String) datos[1];
+                String valorUnitarioTexto = (String) datos[2];
+                String unidad = (String) datos[3]; // Nueva unidad del diálogo
 
-            try {
-                int cantidad = Integer.parseInt(cantidadTexto);
-                double valorUnitario = Double.parseDouble(valorUnitarioTexto);
-                if (cantidad <= 0 || valorUnitario < 0) {
-                    JOptionPane.showMessageDialog(this, "Cantidad debe ser positiva y valor unitario no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
-                    return;
+                try {
+                    int cantidad = Integer.parseInt(cantidadTexto);
+                    double valorUnitario = Double.parseDouble(valorUnitarioTexto);
+                    if (cantidad <= 0 || valorUnitario < 0) {
+                        JOptionPane.showMessageDialog(this, "Cantidad debe ser positiva y valor unitario no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    double subtotal = cantidad * valorUnitario;
+
+                    DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+                    modelo.addRow(new Object[]{
+                        producto,
+                        unidad,
+                        cantidad,
+                        String.format("$%,d", (int) valorUnitario), // Formato sin decimales
+                        String.format("$%,d", (int) subtotal),
+                        "Editar",
+                        "Eliminar"
+                    });
+                    calcularTotal();
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Error al procesar los datos del producto: asegúrese de que sean numéricos", "Error", JOptionPane.ERROR_MESSAGE);
+                    e.printStackTrace();
                 }
-                double subtotal = cantidad * valorUnitario;
-
-                DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-                modelo.addRow(new Object[]{
-                    producto,
-                    unidad,
-                    cantidad,
-                    String.format("$%.2f", valorUnitario),
-                    String.format("$%.2f", subtotal),
-                    "Editar",
-                    "Eliminar"
-                });
-                calcularTotal();
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error al procesar los datos del producto: asegúrese de que sean numéricos", "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
             }
         }
-    }
     }
 
     private void añadirNuevoProducto() {
@@ -788,8 +794,8 @@ public class cotizacion extends javax.swing.JPanel {
                 producto, // Índice 0
                 unidad, // Índice 1
                 cantidad, // Índice 2
-                String.format("$%d", valorUnitario), // Índice 3
-                String.format("$%d", subtotal), // Índice 4
+                String.format("$%,d", valorUnitario), // Índice 3
+                String.format("$%,d", subtotal), // Índice 4
                 "Editar", // Índice 5
                 "Eliminar" // Índice 6
             });
@@ -833,8 +839,8 @@ public class cotizacion extends javax.swing.JPanel {
             modelo.setValueAt(producto, fila, 0);  // Producto
             modelo.setValueAt(unidad, fila, 1);    // Unidad
             modelo.setValueAt(cantidad, fila, 2);  // Cantidad
-            modelo.setValueAt(String.format("$%d", valorUnitario), fila, 3); // Valor Unitario
-            modelo.setValueAt(String.format("$%d", subtotal), fila, 4);      // Subtotal
+            modelo.setValueAt(String.format("$%,d", valorUnitario), fila, 3); // Valor Unitario
+            modelo.setValueAt(String.format("$%,d", subtotal), fila, 4);      // Subtotal// Subtotal
 
             // Resto del método permanece igual...
             limpiarCamposProducto();
@@ -876,7 +882,10 @@ public class cotizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_identificaciontxtActionPerformed
 
     private void jButton_anadir_producto1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_producto1ActionPerformed
-        // TODO add your handling code here:
+
+
+
+
     }//GEN-LAST:event_jButton_anadir_producto1ActionPerformed
 
 
@@ -951,24 +960,33 @@ public class cotizacion extends javax.swing.JPanel {
     /*joa nambre*/
     public void calcularTotal() {
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-        double total = 0;
+        long total = 0;
 
         for (int i = 0; i < modelo.getRowCount(); i++) {
             try {
                 String subtotalStr = modelo.getValueAt(i, 4).toString();
-                subtotalStr = subtotalStr.replace("$", "").replace(",", "");
-                double subtotal = Double.parseDouble(subtotalStr);
+                // Remove only the dollar sign, keep thousand separators and parse as number
+                subtotalStr = subtotalStr.replace("$", "");
+                NumberFormat format = NumberFormat.getNumberInstance(Locale.getDefault());
+                Number number = format.parse(subtotalStr);
+                long subtotal = number.longValue();
                 total += subtotal;
-            } catch (Exception e) {
+            } catch (ParseException | NumberFormatException e) {
                 JOptionPane.showMessageDialog(this,
                         "Error al calcular el subtotal en la fila " + (i + 1) + "\n"
-                        + "Valor problemático: " + modelo.getValueAt(i, 4),
+                        + "Valor problemático: " + modelo.getValueAt(i, 4) + "\n"
+                        + "Detalles: " + e.getMessage(),
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
 
-        txt_total.setText(String.format("$%,.2f", total));
+        // Format total with thousand separators, no decimals
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
+        symbols.setDecimalSeparator('.');
+        symbols.setGroupingSeparator('.');
+        DecimalFormat df = new DecimalFormat("#,###", symbols);
+        txt_total.setText("$" + df.format(total));
     }
 
     public void reiniciarCotizacion() {

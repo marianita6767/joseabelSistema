@@ -37,7 +37,7 @@ public class Cliente extends javax.swing.JPanel {
 
         DefaultTableModel modelo = new DefaultTableModel(
                 new Object[][]{},
-                new String[]{"Codigo", "Identificacion", "Numero", "Nombre", "Apellido", "Telefono", "Direccion"} // Usa tus nombres de columnas reales
+                new String[]{"Codigo", "Identificacion", "Numero", "Nombre", "Apellido", "Telefono", "Direccion", "Estado"} // Usa tus nombres de columnas reales
         ) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -274,6 +274,7 @@ public class Cliente extends javax.swing.JPanel {
         model.addColumn("Apellido");
         model.addColumn("Teléfono");
         model.addColumn("Dirección");
+        model.addColumn("Estado");
 
         List<modelo.Cliente> clientes = controlador.obtenerClientes();
         for (modelo.Cliente cliente : clientes) {
@@ -285,6 +286,7 @@ public class Cliente extends javax.swing.JPanel {
             fila[4] = cliente.getApellido() != null ? cliente.getApellido() : "Sin apellido";
             fila[5] = cliente.getTelefono() != null ? cliente.getTelefono() : "Sin teléfono";
             fila[6] = cliente.getDireccion() != null ? cliente.getDireccion() : "Sin dirección";
+            fila[7] = cliente.getDireccion() != null ? cliente.getDireccion() : "Sin Estado";
             model.addRow(fila);
         }
 
