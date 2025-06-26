@@ -12,8 +12,13 @@ import javax.swing.table.DefaultTableModel;
  * @author tilin del sena
  */
 public class InsertarCoti extends javax.swing.JDialog {
+
     private DefaultTableModel cotizacion;
     private boolean confirmado = false;
+    private String producto;
+    private String unidad;
+    private String cantidad;
+    private String valorUnitario;
 
     // Constructor original para nuevo producto
     public InsertarCoti(java.awt.Frame parent, boolean modal) {
@@ -28,6 +33,10 @@ public class InsertarCoti extends javax.swing.JDialog {
         initComponents();
         CargarUnidadMed();
         // Precargar los campos con los datos
+        this.producto = producto;
+        this.unidad = unidad;
+        this.cantidad = cantidad;
+        this.valorUnitario = valorUnitario;
         txtProducto.setText(producto);
         for (int i = 0; i < combox_Unidad.getItemCount(); i++) {
             if (combox_Unidad.getItemAt(i).equals(unidad)) {
@@ -63,7 +72,6 @@ public class InsertarCoti extends javax.swing.JDialog {
     }
 
     private void añadirProducto() {
-
         String producto = txtProducto.getText().trim();
         String unidad = combox_Unidad.getSelectedItem().toString();
         String cantidadTexto = txtCantidad.getText().trim();
@@ -77,13 +85,11 @@ public class InsertarCoti extends javax.swing.JDialog {
             int cantidad = Integer.parseInt(cantidadTexto);
             double valorUnitario = Double.parseDouble(valorUnitarioTexto);
             double subtotal = cantidad * valorUnitario;
-
-            // Los datos se pasarán al padre (cotizacion) a través de getDatosCoti()
+            // Los datos se pasarán al padre a través de getDatosCoti()
             limpiarCampos();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Cantidad y valor unitario deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
     }
 
     private void limpiarCampos() {
@@ -271,13 +277,15 @@ public class InsertarCoti extends javax.swing.JDialog {
         try {
             int cantidad = Integer.parseInt(cantidadTexto);
             double valorUnitario = Double.parseDouble(valorUnitarioTexto);
-            confirmado = true; // Solo se confirma si los datos son válidos
-            this.dispose(); // Cierra el diálogo solo después de validar
+            if (cantidad <= 0 || valorUnitario < 0) {
+                JOptionPane.showMessageDialog(this, "Cantidad debe ser positiva y valor unitario no puede ser negativo", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            confirmado = true; // Confirmar solo si es válido
+            this.dispose(); // Cerrar después de validar
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Cantidad y valor unitario deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-
     }//GEN-LAST:event_btnGuardarActionPerformed
 
 
@@ -305,39 +313,39 @@ public class InsertarCoti extends javax.swing.JDialog {
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-       /* Set the Nimbus look and feel */
-    //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-    try {
-        for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-            if ("Nimbus".equals(info.getName())) {
-                javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                break;
-            }
-        }
-    } catch (ClassNotFoundException ex) {
-        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (InstantiationException ex) {
-        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (IllegalAccessException ex) {
-        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-        java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-    }
-    //</editor-fold>
-
-    /* Create and display the dialog */
-    java.awt.EventQueue.invokeLater(new Runnable() {
-        public void run() {
-            InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true); // Usar constructor original
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
+        /* Set the Nimbus look and feel */
+        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        try {
+            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+                if ("Nimbus".equals(info.getName())) {
+                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+                    break;
                 }
-            });
-            dialog.setVisible(true);
+            }
+        } catch (ClassNotFoundException ex) {
+            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+            java.util.logging.Logger.getLogger(InsertarCoti.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-    });
+        //</editor-fold>
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true); // Usar constructor original
+                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosing(java.awt.event.WindowEvent e) {
+                        System.exit(0);
+                    }
+                });
+                dialog.setVisible(true);
+            }
+        });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

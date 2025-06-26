@@ -4,14 +4,11 @@
  */
 package vista.Cotizacion;
 
-import controlador.Ctrl_Pedido;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -27,32 +24,22 @@ import javax.swing.JTable;
 import static javax.swing.SwingConstants.CENTER;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import modelo.Conexion;
-import modelo.Cotizacion;
-import controlador.CotizacionDAO;
+import controlador.Ctrl_Cotizacion;
 import java.awt.Container;
 import java.text.SimpleDateFormat;
 
 public class HistorialCot extends javax.swing.JPanel {
 
     private JPanel contenedor;
-    private Ctrl_Pedido controlador;
-    private int idPedido;
-    private boolean editando = false;
-    public boolean clienteGuardado = false;
+    private Ctrl_Cotizacion controlador;
 
-    /**
-     * Creates new form pedido
-     */
     public HistorialCot(Container contenedor, boolean par) {
         this.contenedor = (JPanel) contenedor;
-        this.contenedor = (JPanel) contenedor;
-        this.controlador = new Ctrl_Pedido();
+        this.controlador = new Ctrl_Cotizacion(null); // Ajustar según necesites pasar la vista
         initComponents();
         configurarTabla();
         cargarDatosIniciales();
-
     }
 
     private void configurarTabla() {
@@ -61,10 +48,10 @@ public class HistorialCot extends javax.swing.JPanel {
                 new String[]{"Código", "Nombre Pedido", "Cliente", "Fecha Inicio", "Detalles", ""}
         ) {
             Class[] types = new Class[]{
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean[]{
-                false, false, false, false, false, false, false
+                false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -78,10 +65,7 @@ public class HistorialCot extends javax.swing.JPanel {
         tablaM.setModel(modelo);
 
         // Configurar renderizador para la columna "Detalles"
-        TableColumn detallesColumn = tablaM.getColumnModel().getColumn(5);
-        detallesColumn.setCellRenderer(new ButtonRenderer());
-
-        // Ajustar anchos de columnas
+        tablaM.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
         tablaM.getColumnModel().getColumn(0).setPreferredWidth(80);
         tablaM.getColumnModel().getColumn(1).setPreferredWidth(150);
         tablaM.getColumnModel().getColumn(2).setPreferredWidth(100);
@@ -89,17 +73,14 @@ public class HistorialCot extends javax.swing.JPanel {
         tablaM.getColumnModel().getColumn(4).setPreferredWidth(100);
         tablaM.getColumnModel().getColumn(5).setPreferredWidth(100);
 
-        // Agregar MouseListener para manejar clics en la columna "Detalles"
-        tablaM.addMouseListener(new MouseAdapter() {
+        tablaM.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
-            public void mouseClicked(MouseEvent evt) {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
                 int column = tablaM.getColumnModel().getColumnIndexAtX(evt.getX());
                 int row = evt.getY() / tablaM.getRowHeight();
-                if (row < tablaM.getRowCount() && row >= 0 && column < tablaM.getColumnCount() && column >= 0) {
-                    if (column == 5) { // Columna "Detalles"
-                        String id = tablaM.getValueAt(row, 0).toString();
-                        mostrarDetallesPedido(id);
-                    }
+                if (row < tablaM.getRowCount() && row >= 0 && column == 5) {
+                    String id = tablaM.getValueAt(row, 0).toString();
+                    mostrarDetallesCotizacion(id);
                 }
             }
         });
@@ -111,23 +92,28 @@ public class HistorialCot extends javax.swing.JPanel {
         model.addRow(fila);
     }
 
-    // Cargar datos desde la base de datos
-    public void cargarDatosIniciales() {
-        /*    DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
-    model.setRowCount(0);
-
-    List<Cotizacion> cotizaciones = CotizacionDAO.obtenerCotizaciones();
-    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-    for (Cotizacion cot : cotizaciones) {
+    // Nuevo método para agregar una cotización
+    public void agregarCotizacion(int codigo, String cliente, String fecha) {
+        DefaultTableModel model = (DefaultTableModel) tablaM.getModel();
         model.addRow(new Object[]{
-            cot.getIdCotizacion(),
-            cot.getDetalle(), // Nombre del pedido
-            obtenerNombreCliente(cot.getClienteId()), // Nombre del cliente
-            dateFormat.format(cot.getFechaInicio()), // Fecha Inicio
-            "Detalles", // Columna de detalles (botón)
-            "" // Columna vacía (puede ajustarse)
+            codigo,
+            "Cotización " + codigo,
+            cliente,
+            fecha,
+            "Detalles",
+            ""
         });
-    */
+    }
+
+    public void cargarDatosIniciales() {
+        DefaultTableModel modelo = (DefaultTableModel) tablaM.getModel();
+        modelo.setRowCount(0);
+        System.out.println("Cargando datos iniciales...");
+        List<Object[]> cotizaciones = controlador.obtenerCotizaciones();
+        System.out.println("Número de cotizaciones obtenidas: " + cotizaciones.size());
+        for (Object[] cotizacion : cotizaciones) {
+            modelo.addRow(cotizacion);
+        }
     }
 
     private String obtenerNombreCliente(Integer clienteCodigo) {
@@ -144,7 +130,15 @@ public class HistorialCot extends javax.swing.JPanel {
     }
 
     private void mostrarDetallesCotizacion(String id) {
-        JOptionPane.showMessageDialog(this, "Mostrar detalles de la cotización con ID: " + id, "Detalles", JOptionPane.INFORMATION_MESSAGE);
+
+        DetallesCot detalles = new DetallesCot(id, contenedor);
+        detalles.setSize(1290, 730);
+        detalles.setLocation(0, 0);
+        contenedor.removeAll();
+        contenedor.add(detalles);
+        contenedor.revalidate();
+        contenedor.repaint();
+
     }
 
     int setHeight(int i) {
@@ -274,19 +268,19 @@ public class HistorialCot extends javax.swing.JPanel {
 
         tablaM.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
             },
             new String [] {
-                "Codigo", "Fecha", "Cliente", "Aceptar", "Detalles"
+                "Codigo", "Fecha", "Cliente", "Aceptar", "Detalles", "null"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class, java.lang.Object.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, true, true, true
+                false, true, true, true, true, true
             };
 
             public Class getColumnClass(int columnIndex) {

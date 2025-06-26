@@ -10,37 +10,46 @@ import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GeneradorCotizacionPDF {
     public void generarPDF(String cliente, DefaultTableModel tablaModel, String total, String archivoSalida) {
-        System.out.println("Iniciando generación de PDF...");
+      //  System.out.println("Iniciando generación de PDF...");
         try (PDDocument document = new PDDocument()) {
-            System.out.println("Documento PDF creado");
+           // System.out.println("Documento PDF creado");
             PDPage page = new PDPage(PDRectangle.A4);
             document.addPage(page);
-            System.out.println("Página creada");
+           // System.out.println("Página creada");
 
             try (PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true)) {
                 System.out.println("ContentStream creado");
 
                 // Agregar imagen fija en la parte superior derecha
+                PDImageXObject pdImage = null;
                 try {
-                    // Ruta de la imagen (reemplaza con la ruta de tu imagen)
-                    String imagePath = "C:\\Users\\Brashan\\Documents\\NetBeansProjects\\joseabelSistema\\src\\main\\resources\\logo azul.png"; // Cambia esto por la ruta real
-                    PDImageXObject pdImage = PDImageXObject.createFromFile(imagePath, document);
-                    // Escalar la imagen a 100x100 puntos (ajusta según necesites)
-                    float imageWidth = 100;
-                    float imageHeight = 100;
-                    // Posición en la esquina superior derecha (A4: 595 puntos de ancho, 842 de alto)
-                    float xPosition = 595 - imageWidth - 30; // 30 puntos de margen desde el borde derecho
-                    float yPositionImage = 842 - imageHeight - 30; // 30 puntos de margen desde el borde superior
-                    contentStream.drawImage(pdImage, xPosition, yPositionImage, imageWidth, imageHeight);
-                    System.out.println("Imagen añadida en la posición: (" + xPosition + ", " + yPositionImage + ")");
+                    InputStream imageStream = getClass().getResourceAsStream("/logo azul.png");
+                    if (imageStream != null) {
+                        byte[] imageBytes = imageStream.readAllBytes();
+                        if (imageBytes.length > 0) {
+                            pdImage = PDImageXObject.createFromByteArray(document, imageBytes, "logo azul.png");
+                            float imageWidth = 100;
+                            float imageHeight = 100;
+                            float xPosition = 595 - imageWidth - 30; // Margen derecho
+                            float yPositionImage = 842 - imageHeight - 30; // Margen superior
+                            contentStream.drawImage(pdImage, xPosition, yPositionImage, imageWidth, imageHeight);
+                            System.out.println("Imagen añadida en la posición: (" + xPosition + ", " + yPositionImage + ") con dimensiones " + imageWidth + "x" + imageHeight);
+                        } else {
+                            System.out.println("Advertencia: El archivo 'logo_azul.png' está vacío.");
+                        }
+                    } else {
+                        System.out.println("Advertencia: Imagen 'logo_azul.png' no encontrada en 'src/main/resources'.");
+                        JOptionPane.showMessageDialog(null, "Advertencia: No se encontró la imagen 'logo_azul.png'. El PDF se generará sin ella.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                    }
                 } catch (IOException e) {
                     System.out.println("Error al cargar la imagen: " + e.getMessage());
-                    e.printStackTrace();
+                    JOptionPane.showMessageDialog(null, "Error al cargar la imagen: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
 
                 // Título "Cotización"
@@ -79,7 +88,14 @@ public class GeneradorCotizacionPDF {
                 contentStream.showText("Subtotal");
                 contentStream.endText();
 
-                yPosition -= 20;
+                // Dibujar línea horizontal debajo del encabezado
+                yPosition -= 5;
+                contentStream.setLineWidth(0.5f);
+                contentStream.moveTo(50, yPosition);
+                contentStream.lineTo(550, yPosition);
+                contentStream.stroke();
+
+                yPosition -= 15;
                 contentStream.setFont(PDType1Font.HELVETICA, 12);
 
                 System.out.println("Procesando tabla con " + tablaModel.getRowCount() + " filas");
@@ -105,7 +121,15 @@ public class GeneradorCotizacionPDF {
                             newContentStream.newLineAtOffset(120, 0);
                             newContentStream.showText("Subtotal");
                             newContentStream.endText();
-                            yPosition = 750 - 20;
+
+                            // Dibujar línea horizontal debajo del encabezado en nueva página
+                            yPosition = 745;
+                            newContentStream.setLineWidth(0.5f);
+                            newContentStream.moveTo(50, yPosition);
+                            newContentStream.lineTo(550, yPosition);
+                            newContentStream.stroke();
+
+                            yPosition -= 15;
                             newContentStream.setFont(PDType1Font.HELVETICA, 12);
                             newContentStream.beginText();
                             newContentStream.newLineAtOffset(50, yPosition);
@@ -119,6 +143,12 @@ public class GeneradorCotizacionPDF {
                             newContentStream.newLineAtOffset(120, 0);
                             newContentStream.showText(tablaModel.getValueAt(i, 4).toString()); // Subtotal
                             newContentStream.endText();
+
+                            // Dibujar línea horizontal debajo de la fila
+                            yPosition -= 5;
+                            newContentStream.moveTo(50, yPosition);
+                            newContentStream.lineTo(550, yPosition);
+                            newContentStream.stroke();
                         }
                     } else {
                         contentStream.beginText();
@@ -133,6 +163,13 @@ public class GeneradorCotizacionPDF {
                         contentStream.newLineAtOffset(120, 0);
                         contentStream.showText(tablaModel.getValueAt(i, 4).toString()); // Subtotal
                         contentStream.endText();
+
+                        // Dibujar línea horizontal debajo de la fila
+                        yPosition -= 5;
+                        contentStream.moveTo(50, yPosition);
+                        contentStream.lineTo(550, yPosition);
+                        contentStream.stroke();
+                        yPosition -= 15;
                     }
                 }
 
@@ -142,6 +179,12 @@ public class GeneradorCotizacionPDF {
                 contentStream.newLineAtOffset(50, yPosition);
                 contentStream.showText("Total: " + total);
                 contentStream.endText();
+
+                // Dibujar línea horizontal debajo de Total
+                yPosition -= 5;
+                contentStream.moveTo(50, yPosition);
+                contentStream.lineTo(180, yPosition);
+                contentStream.stroke();
 
                 // Mensaje
                 yPosition -= 40;

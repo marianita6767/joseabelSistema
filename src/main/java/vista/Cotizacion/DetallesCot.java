@@ -9,6 +9,7 @@ import controlador.Ctrl_Cliente;
 import controlador.Ctrl_Pedido;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -19,6 +20,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import modelo.Cliente;
 import modelo.Conexion;
+import vista.Cotizacion.HistorialCot;
 import modelo.Pedido;
 import modelo.PedidoDetalle;
 
@@ -28,7 +30,6 @@ import modelo.PedidoDetalle;
  */
 public class DetallesCot extends javax.swing.JPanel {
 
-    private JPanel contenedor;
     private Ctrl_Pedido controlador;
     private int idPedido;
     private boolean editando = false;
@@ -37,16 +38,16 @@ public class DetallesCot extends javax.swing.JPanel {
     private List<Cliente> clientes;
 
     public DetallesCot(String codigo, JPanel contenedor) {
-        this.contenedor = contenedor;
-        this.controlador = new Ctrl_Pedido();
+        this.controlador = new Ctrl_Pedido(); // Considera crear un Ctrl_Cotizacion si no existe
         try {
-            this.idPedido = Integer.parseInt(codigo); // Convertir el código a int (id_pedido)
+            this.idPedido = Integer.parseInt(codigo); // Cambiar a idCotizacion si es necesario
         } catch (NumberFormatException e) {
-            this.idPedido = -1; // En caso de error, marcamos un ID inválido
+            this.idPedido = -1;
         }
         initComponents();
         cargarClientes();
-        cargarDatosPedido();
+        cargarDatosCotizacion(); // Cambiar este método para cargar datos de cotización
+        deshabilitarEdicion();
 
         tablaDetalles.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
 
@@ -69,133 +70,54 @@ public class DetallesCot extends javax.swing.JPanel {
         TableColumn deleteColumn = tablaDetalles.getColumnModel().getColumn(5);
         deleteColumn.setPreferredWidth(18); // Ajustar el ancho de la columna
 
-        cargarDatosPedido(); // Cargar los datos al inicializar
+        cargarDatosCotizacion(); // Cargar los datos al inicializar
 
         deshabilitarEdicion();
 
     }
-    
-    private void cargarDatosPedido() {
+
+    private void cargarDatosCotizacion() {
+
         if (idPedido == -1) {
-            javax.swing.JOptionPane.showMessageDialog(this, "Código de pedido inválido.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Código de cotización inválido.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Ctrl_Pedido.MaterialConDetalles material = controlador.obtenerPedidoPorId(idPedido);
-        if (material == null) {
-            javax.swing.JOptionPane.showMessageDialog(this, "No se encontró el pedido con ID: " + idPedido, "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        try (Connection con = Conexion.getConnection(); PreparedStatement pstmt = con.prepareStatement(
+                "SELECT c.*, cl.nombre, cl.apellido "
+                + "FROM cotizacion c "
+                + "LEFT JOIN cliente cl ON c.cliente_codigo = cl.codigo "
+                + "WHERE c.id_cotizacion = ?")) {
+
+            pstmt.setInt(1, idPedido);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                // Mostrar información básica
+                lblNumeroPedido.setText(String.valueOf(rs.getInt("id_cotizacion")));
+                txtNombrePedido.setText("Cotización " + rs.getInt("id_cotizacion"));
+
+                // Mostrar cliente
+                String nombreCliente = rs.getString("nombre") + " " + rs.getString("apellido");
+                cmbCliente.setSelectedItem(nombreCliente);
+
+                // Mostrar fechas
+                dateFechaInicio.setDate(rs.getDate("fecha"));
+
+                // Cargar detalles de la cotización
+                cargarDetallesCotizacion();
+
+                // Mostrar total
+                lblTotal.setText(String.format("%.2f", rs.getDouble("total")));
+            } else {
+                JOptionPane.showMessageDialog(this, "No se encontró la cotización.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar cotización: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        Pedido pedido = material.getPedido();
-        String nombreCliente = material.getNombreCliente();
-
-        // Depuración: Verificar valores
-        System.out.println("Nombre del cliente: " + nombreCliente);
-        System.out.println("Estado del pedido: " + pedido.getEstado());
-
-        // Llenar las etiquetas con los datos del pedido
-// Llenar los campos con los datos del pedido
-        lblNumeroPedido.setText(String.valueOf(pedido.getId_pedido()));
-        txtNombrePedido.setText(pedido.getNombre());
-
-        String estado = pedido.getEstado();
-        if (estado != null && !estado.isEmpty()) {
-            // Normalizar el estado para que coincida con los ítems de cmbEstado
-            estado = estado.trim();
-            String estadoNormalizado = estado.substring(0, 1).toUpperCase() + estado.substring(1).toLowerCase();
-            System.out.println("Estado normalizado: " + estadoNormalizado);
-            boolean estadoEncontrado = false;
-            for (int i = 0; i < cmbEstado.getItemCount(); i++) {
-                String item = (String) cmbEstado.getItemAt(i);
-                if (item.equalsIgnoreCase(estadoNormalizado)) {
-                    cmbEstado.setSelectedIndex(i);
-                    estadoEncontrado = true;
-                    break;
-                }
-            }
-            if (!estadoEncontrado) {
-                System.out.println("Estado '" + estadoNormalizado + "' no encontrado en el JComboBox.");
-                cmbEstado.setSelectedIndex(0); // Seleccionar el primer ítem por defecto
-            }
-        } else {
-            System.out.println("Estado es nulo o vacío.");
-            cmbEstado.setSelectedIndex(0); // Seleccionar el primer ítem por defecto
-        }
-
-        // Seleccionar el cliente
-        if (nombreCliente != null && !nombreCliente.isEmpty()) {
-            // Buscar el cliente en la lista para asegurar coincidencia exacta
-            boolean clienteEncontrado = false;
-            for (int i = 0; i < cmbCliente.getItemCount(); i++) {
-                String item = (String) cmbCliente.getItemAt(i);
-                if (item.equals(nombreCliente)) {
-                    cmbCliente.setSelectedIndex(i);
-                    clienteEncontrado = true;
-                    break;
-                }
-            }
-            if (!clienteEncontrado) {
-                System.out.println("Cliente '" + nombreCliente + "' no encontrado en el JComboBox.");
-                cmbCliente.setSelectedIndex(0); // Seleccionar "Seleccione cliente:"
-            }
-        } else {
-            cmbCliente.setSelectedIndex(0); // Seleccionar "Seleccione cliente:"
-        }
-
-        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
-        dateFechaInicio.setDate(pedido.getFecha_inicio());
-        dateFechaFin.setDate(pedido.getFecha_fin());
-
-        // Cargar los detalles en la tabla
-        DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
-        model.setRowCount(0); // Limpiar la tabla
-
-        List<PedidoDetalle> detalles = controlador.obtenerDetallesPorPedido(idPedido);
-        double total = 0.0;
-
-        for (PedidoDetalle detalle : detalles) {
-            model.addRow(new Object[]{
-                detalle.getDescripcion(),
-                detalle.getCantidad(),
-                detalle.getDimensiones(),
-                detalle.getPrecioUnitario(),
-                detalle.getSubtotal(),
-                "Eliminar" // Mantener la columna de acción, aunque no la usaremos aquí
-            });
-            total += detalle.getSubtotal();
-        }
-
-        // Mostrar el total
-        lblTotal.setText(String.format("%.2f", total));
-
-        // Agregar listener para actualizar subtotal
-        tablaDetalles.getModel().addTableModelListener(e -> {
-            if (e.getColumn() == 1 || e.getColumn() == 3) { // Si se edita "Cantidad" o "Precio unitario"
-                int row = e.getFirstRow();
-                DefaultTableModel tableModel = (DefaultTableModel) tablaDetalles.getModel();
-
-                try {
-                    Object cantidadObj = tableModel.getValueAt(row, 1);
-                    Object precioUnitarioObj = tableModel.getValueAt(row, 3);
-
-                    int cantidad = (cantidadObj != null) ? Integer.parseInt(cantidadObj.toString().trim().isEmpty() ? "0" : cantidadObj.toString()) : 0;
-                    double precioUnitario = (precioUnitarioObj != null) ? Double.parseDouble(precioUnitarioObj.toString().trim().isEmpty() ? "0.0" : precioUnitarioObj.toString()) : 0.0;
-
-                    double subtotal = cantidad * precioUnitario;
-                    tableModel.setValueAt(subtotal, row, 4);
-
-                    // Actualizar total
-                    actualizarTotal();
-                } catch (NumberFormatException ex) {
-                    tableModel.setValueAt(0.0, row, 4);
-                    actualizarTotal();
-                }
-            }
-        });
     }
-    
-        private void actualizarTotal() {
+
+    private void actualizarTotal() {
         DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
         double total = 0.0;
 
@@ -209,13 +131,12 @@ public class DetallesCot extends javax.swing.JPanel {
         }
         lblTotal.setText(String.format("%.2f", total));
     }
-        
-        private void deshabilitarEdicion() {
+
+    private void deshabilitarEdicion() {
         txtNombrePedido.setEnabled(false);
-        cmbEstado.setEnabled(false);
+        //cmbEstado.setEnabled(false);
         cmbCliente.setEnabled(false);
         dateFechaInicio.setEnabled(false);
-        dateFechaFin.setEnabled(false);
         tablaDetalles.setEnabled(false);
         btnAñadir.setVisible(false);
         btnGuardar.setVisible(false);
@@ -223,10 +144,8 @@ public class DetallesCot extends javax.swing.JPanel {
 
     private void habilitarEdicion() {
         txtNombrePedido.setEnabled(true);
-        cmbEstado.setEnabled(true);
         cmbCliente.setEnabled(true); // Cliente no editable por ahora
         dateFechaInicio.setEnabled(true);
-        dateFechaFin.setEnabled(true);
         tablaDetalles.setEnabled(true);
         btnAñadir.setVisible(true);
         btnGuardar.setVisible(true);
@@ -237,27 +156,15 @@ public class DetallesCot extends javax.swing.JPanel {
         pedido.setId_pedido(idPedido);
         pedido.setNombre(txtNombrePedido.getText().trim());
 
-        // Obtener y validar el estado
-        String estado = (String) cmbEstado.getSelectedItem();
-        if (estado == null || estado.isEmpty() || estado.equals("Seleccione estado:")) {
-            JOptionPane.showMessageDialog(this, "Por favor, seleccione un estado válido.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-        pedido.setEstado(estado);
-
         // Obtener y validar las fechas
         java.util.Date fechaInicio = dateFechaInicio.getDate();
-        java.util.Date fechaFin = dateFechaFin.getDate();
+
         if (fechaInicio == null) {
             JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha de inicio válida.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        if (fechaFin == null) {
-            JOptionPane.showMessageDialog(this, "Por favor, seleccione una fecha de fin válida.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+
         pedido.setFecha_inicio(fechaInicio);
-        pedido.setFecha_fin(fechaFin);
 
         // Obtener cliente_codigo basado en el cliente seleccionado
         String clienteSeleccionado = (String) cmbCliente.getSelectedItem();
@@ -395,7 +302,7 @@ public class DetallesCot extends javax.swing.JPanel {
 
             con.commit(); // Confirmar transacción
             JOptionPane.showMessageDialog(this, "Pedido actualizado exitosamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            cargarDatosPedido(); // Recargar datos
+            cargarDatosCotizacion(); // Recargar datos
             deshabilitarEdicion();
         } catch (SQLException e) {
             if (con != null) {
@@ -439,7 +346,6 @@ public class DetallesCot extends javax.swing.JPanel {
         }
     }
 
-
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -459,10 +365,6 @@ public class DetallesCot extends javax.swing.JPanel {
         cmbCliente = new RSMaterialComponent.RSComboBoxMaterial();
         jLabel9 = new javax.swing.JLabel();
         dateFechaInicio = new com.toedter.calendar.JDateChooser();
-        jLabel5 = new javax.swing.JLabel();
-        dateFechaFin = new com.toedter.calendar.JDateChooser();
-        jLabel8 = new javax.swing.JLabel();
-        cmbEstado = new RSMaterialComponent.RSComboBoxMaterial();
         jSeparator3 = new javax.swing.JSeparator();
         jLabel17 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
@@ -510,7 +412,6 @@ public class DetallesCot extends javax.swing.JPanel {
         add(jLabel11, new org.netbeans.lib.awtextra.AbsoluteConstraints(60, 120, 80, 20));
 
         txtNombrePedido.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombrePedido.setText("fyy");
         txtNombrePedido.setColorMaterial(new java.awt.Color(204, 204, 204));
         txtNombrePedido.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
         txtNombrePedido.setPhColor(new java.awt.Color(0, 0, 0));
@@ -538,23 +439,6 @@ public class DetallesCot extends javax.swing.JPanel {
         dateFechaInicio.setBackground(new java.awt.Color(255, 255, 255));
         dateFechaInicio.setToolTipText("");
         add(dateFechaInicio, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 120, 160, 25));
-
-        jLabel5.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel5.setText("Fecha fin:");
-        add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 160, 90, 20));
-
-        dateFechaFin.setBackground(new java.awt.Color(255, 255, 255));
-        dateFechaFin.setToolTipText("");
-        add(dateFechaFin, new org.netbeans.lib.awtextra.AbsoluteConstraints(460, 160, 160, 25));
-
-        jLabel8.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        jLabel8.setText("Estado:");
-        add(jLabel8, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 120, 70, 20));
-
-        cmbEstado.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Seleccione el estado:", "Pendiente", "Proceso", "Finalizado" }));
-        cmbEstado.setColorMaterial(new java.awt.Color(0, 0, 0));
-        cmbEstado.setFont(new java.awt.Font("Roboto Bold", 0, 16)); // NOI18N
-        add(cmbEstado, new org.netbeans.lib.awtextra.AbsoluteConstraints(770, 118, 180, 26));
         add(jSeparator3, new org.netbeans.lib.awtextra.AbsoluteConstraints(50, 200, 910, 10));
 
         jLabel17.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
@@ -662,15 +546,13 @@ public class DetallesCot extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnVolverActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVolverActionPerformed
-        // Crear una nueva instancia de pedido pasando el contenedor
-        pedido h = new pedido(contenedor);
+         HistorialCot h = new HistorialCot(jPanel1, true); // Añadir el segundo parámetro
         h.setSize(1290, 730);
         h.setLocation(0, 0);
-
-        contenedor.removeAll();
-        contenedor.add(h);
-        contenedor.revalidate();
-        contenedor.repaint();
+        jPanel1.removeAll();
+        jPanel1.add(h);
+        jPanel1.revalidate();
+        jPanel1.repaint();
     }//GEN-LAST:event_btnVolverActionPerformed
 
     private void txtNombrePedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombrePedidoActionPerformed
@@ -718,16 +600,12 @@ public class DetallesCot extends javax.swing.JPanel {
     private RSMaterialComponent.RSButtonShape btnGuardar;
     private RSMaterialComponent.RSButtonShape btnVolver;
     private RSMaterialComponent.RSComboBoxMaterial cmbCliente;
-    private RSMaterialComponent.RSComboBoxMaterial cmbEstado;
-    private com.toedter.calendar.JDateChooser dateFechaFin;
     private com.toedter.calendar.JDateChooser dateFechaInicio;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -738,4 +616,31 @@ public class DetallesCot extends javax.swing.JPanel {
     private RSMaterialComponent.RSTableMetroCustom tablaDetalles;
     private RSMaterialComponent.RSTextFieldMaterial txtNombrePedido;
     // End of variables declaration//GEN-END:variables
+
+    private void cargarDetallesCotizacion() {
+        DefaultTableModel model = (DefaultTableModel) tablaDetalles.getModel();
+        model.setRowCount(0);
+
+        try (Connection con = Conexion.getConnection(); PreparedStatement pstmt = con.prepareStatement(
+                "SELECT detalle, unidad, cantidad, valor_unitario, sub_total "
+                + "FROM cotizacion WHERE id_cotizacion = ?")) {
+
+            pstmt.setInt(1, idPedido);
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                model.addRow(new Object[]{
+                    rs.getString("detalle"),
+                    rs.getInt("cantidad"),
+                    rs.getString("unidad"),
+                    rs.getDouble("valor_unitario"),
+                    rs.getDouble("sub_total"),
+                    "Eliminar"
+                });
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar detalles: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
 }
