@@ -1,69 +1,67 @@
 package controlador;
 
-import modelo.Cliente;
 import modelo.Cotizacion;
-import controlador.Ctrl_Cliente;
-import vista.Cotizacion.cotizacion;
+import modelo.Conexion;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.sql.Date;
+import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-import java.util.ArrayList;
-import java.util.List;
+import vista.Cotizacion.cotizacion;
 
 public class Ctrl_Cotizacion {
+
     private cotizacion vista;
     private CotizacionDAO cotizacionDAO;
-    private Ctrl_Cliente clienteDAO;
-    private static final int USUARIO_ID = 1; // ID de usuario por defecto
+    private static final int USUARIO_ID = 1; // ID del usuario logueado (ajustar según autenticación)
 
     public Ctrl_Cotizacion(cotizacion vista) {
         this.vista = vista;
         this.cotizacionDAO = new CotizacionDAO();
-        this.clienteDAO = new Ctrl_Cliente();
     }
 
-    public void guardarCotizacion(Integer clienteCodigo, DefaultTableModel modeloTabla, double totalGeneral) {
-        if (modeloTabla.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(vista, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+   public int guardarCotizacion(Integer clienteCodigo, DefaultTableModel modeloTabla, double totalGeneral) {
+    System.out.println("Intentando guardar cotización - Cliente: " + clienteCodigo + ", Total: " + totalGeneral + ", Filas: " + modeloTabla.getRowCount());
 
-        if (clienteCodigo == null) {
-            JOptionPane.showMessageDialog(vista, "Por favor, seleccione o cree un cliente", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+    if (modeloTabla.getRowCount() == 0 || clienteCodigo == null) {
+        return -1;
+    }
 
-        List<Cotizacion> cotizaciones = new ArrayList<>();
-        for (int i = 0; i < modeloTabla.getRowCount(); i++) {
-            Cotizacion cot = new Cotizacion();
-            cot.setDetalle(modeloTabla.getValueAt(i, 0).toString());
-            cot.setUnidad(modeloTabla.getValueAt(i, 1).toString());
-            cot.setCantidad(Integer.parseInt(modeloTabla.getValueAt(i, 2).toString()));
-            String valorUnitarioStr = modeloTabla.getValueAt(i, 3).toString().replace("$", "").replace(",", "");
-            cot.setValorUnitario(Integer.parseInt(valorUnitarioStr)); // Ajustado a int según Cotizacion.java
-            String subtotalStr = modeloTabla.getValueAt(i, 4).toString().replace("$", "").replace(",", "");
-            cot.setSubTotal(Double.parseDouble(subtotalStr));
-            cot.setTotal(totalGeneral);
-
-            cotizaciones.add(cot);
-        }
-
+    List<Cotizacion> cotizaciones = new ArrayList<>();
+    for (int i = 0; i < modeloTabla.getRowCount(); i++) {
+        Cotizacion cot = new Cotizacion();
         try {
-            cotizacionDAO.guardarCotizaciones(cotizaciones);
-            JOptionPane.showMessageDialog(vista, "Cotización guardada exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            vista.reiniciarCotizacion();
+            // Configurar los datos de la cotización...
+            cotizaciones.add(cot);
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(vista, "Error al guardar cotización: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
+            return -1;
         }
     }
 
-    public Integer buscarClientePorIdentificacion(String identificacion, int numero) {
-        List<Cliente> clientes = clienteDAO.obtenerClientes();
-        for (Cliente cliente : clientes) {
-            if (cliente.getIdentificacion().equals(identificacion) && cliente.getNumero() == numero) {
-                return cliente.getid_cliente();
-            }
+    try {
+        int idCotizacion = cotizacionDAO.guardarCotizaciones(cotizaciones);
+        return idCotizacion;
+    } catch (Exception e) {
+        return -1;
+    }
+}
+
+   
+    private boolean verificarClienteExistente(int clienteCodigo) {
+        try (Connection con = Conexion.getConnection(); PreparedStatement pstmt = con.prepareStatement("SELECT 1 FROM cliente WHERE codigo = ?")) {
+            pstmt.setInt(1, clienteCodigo);
+            return pstmt.executeQuery().next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-        return null;
+    }
+
+    public List<Object[]> obtenerCotizaciones() {
+        return cotizacionDAO.obtenerCotizaciones();
     }
 }
