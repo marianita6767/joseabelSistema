@@ -4,6 +4,7 @@
  */
 package vista.Cotizacion;
 
+import controlador.CotizacionDAO;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
@@ -28,6 +29,9 @@ import modelo.Conexion;
 import controlador.Ctrl_Cotizacion;
 import java.awt.Container;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 
 public class HistorialCot extends javax.swing.JPanel {
 
@@ -101,8 +105,15 @@ public class HistorialCot extends javax.swing.JPanel {
             cliente,
             fecha,
             "Detalles",
-            ""
+            "Ver"
         });
+
+        // Opcional: Ordenar por código descendente para que la nueva aparezca primero
+        javax.swing.RowSorter<DefaultTableModel> sorter = new javax.swing.table.TableRowSorter<>(model);
+        tablaM.setRowSorter(sorter);
+        java.util.List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+        sortKeys.add(new RowSorter.SortKey(0, SortOrder.DESCENDING));
+        sorter.setSortKeys(sortKeys);
     }
 
     public void cargarDatosIniciales() {
@@ -353,6 +364,7 @@ public class HistorialCot extends javax.swing.JPanel {
         contenedor.repaint();
     }//GEN-LAST:event_btnVolverActionPerformed
 
+   
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSButtonShape btnVolver;

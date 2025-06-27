@@ -1,6 +1,5 @@
 package vista.Cotizacion;
 
-import controlador.Ctrl_Pedido;
 import controlador.GeneradorCotizacionPDF;
 import javax.swing.JOptionPane;
 import java.text.SimpleDateFormat;
@@ -21,13 +20,9 @@ import java.util.List;
 import java.util.Locale;
 import javax.swing.table.DefaultTableModel;
 import modelo.Cliente;
+import vista.Cotizacion.HistorialCot;
+import vista.Cotizacion.InsertarCoti;
 
-/*fff*/
-/**
- *
- * @author ADSO
- */
-//guarda?
 public class cotizacion extends javax.swing.JPanel {
 
     private Integer clienteCodigo;
@@ -38,17 +33,25 @@ public class cotizacion extends javax.swing.JPanel {
     public cotizacion(JPanel contenedor) {
         initComponents();
         configurarTabla();
-        CargarUnidadMed();
         txt_total.setEditable(false);
         txt_total.setHorizontalAlignment(javax.swing.JTextField.RIGHT);
         txt_total.setText("$0");
+
+        CrearCotizacion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                CrearCotizacionActionPerformed(evt);
+            }
+        });
+    }
+
+    public java.sql.Date getFecha() {
+        return new java.sql.Date(System.currentTimeMillis());
     }
 
     public String[] getDatos() {
         return datos;
     }
 
-    // Método para verificar si se presionó "Guardar"
     public boolean isGuardado() {
         return guardado;
     }
@@ -74,7 +77,6 @@ public class cotizacion extends javax.swing.JPanel {
     }
 
     private void guardarCotizacion() {
-        // Validaciones iniciales
         if (Tabla1.getRowCount() == 0) {
             JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
@@ -88,11 +90,10 @@ public class cotizacion extends javax.swing.JPanel {
         DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
         List<Cotizacion> cotizaciones = new ArrayList<>();
 
-        // Extraer datos de la tabla y crear objetos Cotizacion
         for (int i = 0; i < modelo.getRowCount(); i++) {
             Cotizacion cotizacion = new Cotizacion();
             try {
-                cotizacion.setDetalle(modelo.getValueAt(i, 0).toString()); // Ajusta las columnas según tu tabla
+                cotizacion.setDetalle(modelo.getValueAt(i, 0).toString());
                 cotizacion.setUnidad(modelo.getValueAt(i, 1).toString());
                 cotizacion.setCantidad(Integer.parseInt(modelo.getValueAt(i, 2).toString()));
                 String valorUnitarioStr = modelo.getValueAt(i, 3).toString().replace("$", "").replace(".", "");
@@ -110,12 +111,11 @@ public class cotizacion extends javax.swing.JPanel {
             }
         }
 
-        // Usar una instancia de CotizacionDAO
         CotizacionDAO cotizacionDAO = new CotizacionDAO();
         int idCotizacion;
 
         try {
-            idCotizacion = cotizacionDAO.guardarCotizaciones(cotizaciones); // Usar el método existente
+            idCotizacion = cotizacionDAO.guardarCotizaciones(cotizaciones);
             if (idCotizacion != -1) {
                 JOptionPane.showMessageDialog(this, "Cotización guardada exitosamente con ID: " + idCotizacion, "Éxito", JOptionPane.INFORMATION_MESSAGE);
                 reiniciarCotizacion();
@@ -140,10 +140,6 @@ public class cotizacion extends javax.swing.JPanel {
         jPanel1 = new javax.swing.JPanel();
         jScrollPane3 = new javax.swing.JScrollPane();
         Tabla1 = new RSMaterialComponent.RSTableMetroCustom();
-        txtNombre6 = new RSMaterialComponent.RSTextFieldMaterial();
-        combox_Unidad = new RSMaterialComponent.RSComboBoxMaterial();
-        txtNombre4 = new RSMaterialComponent.RSTextFieldMaterial();
-        txtNombre5 = new RSMaterialComponent.RSTextFieldMaterial();
         jButton_anadir_producto = new RSMaterialComponent.RSButtonShape();
         HistorialCoti = new RSMaterialComponent.RSButtonShape();
         txt_total = new RSMaterialComponent.RSTextFieldMaterial();
@@ -229,54 +225,6 @@ public class cotizacion extends javax.swing.JPanel {
         Tabla1.getColumnModel().getColumn(0).setPreferredWidth(10);
 
         jPanel1.add(jScrollPane3, new org.netbeans.lib.awtextra.AbsoluteConstraints(20, 60, 1150, 370));
-
-        txtNombre6.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre6.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre6.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre6.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre6.setPlaceholder("Ingrese nombre pedido...");
-        txtNombre6.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre6ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txtNombre6, new org.netbeans.lib.awtextra.AbsoluteConstraints(190, 10, 0, 30));
-
-        combox_Unidad.setColorMaterial(new java.awt.Color(0, 0, 0));
-        combox_Unidad.setFont(new java.awt.Font("Roboto Bold", 0, 14)); // NOI18N
-        combox_Unidad.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                combox_UnidadActionPerformed(evt);
-            }
-        });
-        jPanel1.add(combox_Unidad, new org.netbeans.lib.awtextra.AbsoluteConstraints(370, 0, 0, 40));
-
-        txtNombre4.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre4.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre4.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre4.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre4.setPlaceholder("Ingrese cantidad..");
-        txtNombre4.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre4.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre4ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txtNombre4, new org.netbeans.lib.awtextra.AbsoluteConstraints(590, 10, 0, 30));
-
-        txtNombre5.setForeground(new java.awt.Color(0, 0, 0));
-        txtNombre5.setColorMaterial(new java.awt.Color(0, 0, 0));
-        txtNombre5.setFont(new java.awt.Font("Tahoma", 0, 14)); // NOI18N
-        txtNombre5.setPhColor(new java.awt.Color(0, 0, 0));
-        txtNombre5.setPlaceholder("Ingrese Valor Unitario..");
-        txtNombre5.setSelectionColor(new java.awt.Color(0, 0, 0));
-        txtNombre5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                txtNombre5ActionPerformed(evt);
-            }
-        });
-        jPanel1.add(txtNombre5, new org.netbeans.lib.awtextra.AbsoluteConstraints(740, 10, 0, 30));
 
         jButton_anadir_producto.setBackground(new java.awt.Color(46, 49, 82));
         jButton_anadir_producto.setBorder(javax.swing.BorderFactory.createCompoundBorder());
@@ -443,21 +391,9 @@ public class cotizacion extends javax.swing.JPanel {
         add(jPanel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 1300, 680));
     }// </editor-fold>//GEN-END:initComponents
 
-    private void combox_UnidadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combox_UnidadActionPerformed
-
-    }//GEN-LAST:event_combox_UnidadActionPerformed
-
     private void txt_totalActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_totalActionPerformed
 
     }//GEN-LAST:event_txt_totalActionPerformed
-
-    private void txtNombre4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombre4ActionPerformed
-
-    private void txtNombre5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre5ActionPerformed
-
-    }//GEN-LAST:event_txtNombre5ActionPerformed
 
     private void btnCrearpdfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCrearpdfActionPerformed
         if (Tabla1.getRowCount() == 0) {
@@ -497,9 +433,9 @@ public class cotizacion extends javax.swing.JPanel {
             if (contro.guardar(cliente)) {
                 clienteIngresado = true;
                 clienteCodigo = cliente.getNumero();
-                datos = new String[]{
-                    "", cliente.getIdentificacion(), String.valueOf(cliente.getNumero()),
+                datos = new String[]{"", cliente.getIdentificacion(), String.valueOf(cliente.getNumero()),
                     cliente.getNombre(), cliente.getApellido(), cliente.getTelefono(), cliente.getDireccion()};
+                JOptionPane.showMessageDialog(null, "Cliente guardado Exitosamente");
 
                 txt_NombreCliente.setEnabled(false);
                 txt_ApellidoCliente.setEnabled(false);
@@ -508,7 +444,7 @@ public class cotizacion extends javax.swing.JPanel {
                 telefonotxt.setEnabled(false);
                 direcciontxt.setEnabled(false);
             } else {
-                JOptionPane.showMessageDialog(null, "Error al guardar el cliente");
+                JOptionPane.showMessageDialog(null, "Hubo problemas en guardar el cliente");
                 return;
             }
         }
@@ -527,30 +463,11 @@ public class cotizacion extends javax.swing.JPanel {
             } else {
                 JOptionPane.showMessageDialog(this, "No se puede abrir el PDF automáticamente. El archivo se encuentra en: " + archivoSalida, "Información", JOptionPane.INFORMATION_MESSAGE);
             }
-
-            // Guardar cotización y notificar a HistorialCot
-            Cotizacion cotizacion = new Cotizacion();
-            cotizacion.setTotal(Double.parseDouble(txt_total.getText().replace("$", "").replace(".", "")));
-            cotizacion.setClienteCodigo(clienteCodigo);
-            int idCotizacion = CotizacionDAO.guardarCotizacion(cotizacion, modelo);
-
-            if (idCotizacion != -1) {
-                JOptionPane.showMessageDialog(this, "Cotización guardada exitosamente con ID: " + idCotizacion, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                // Pasar datos a HistorialCot
-                HistorialCot historial = new HistorialCot(jPanel2, true);
-                historial.agregarCotizacion(idCotizacion, cliente, new SimpleDateFormat("dd/MM/yyyy").format(new Date()));
-                reiniciarCotizacion();
-            } else {
-                JOptionPane.showMessageDialog(this, "Error al guardar la cotización", "Error", JOptionPane.ERROR_MESSAGE);
-            }
         } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al generar o abrir PDF: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
     }//GEN-LAST:event_btnCrearpdfActionPerformed
-
-    private void txtNombre6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txtNombre6ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_txtNombre6ActionPerformed
 
     private void txt_NombreClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_txt_NombreClienteActionPerformed
         // TODO add your handling code here:
@@ -575,89 +492,10 @@ public class cotizacion extends javax.swing.JPanel {
         guardarCotizacion();
     }
 
-    private void añadirProducto() {
-
-        String producto = txtNombre6.getText().trim();
-        String unidad = combox_Unidad.getSelectedItem().toString();
-        String cantidadTexto = txtNombre4.getText().trim();
-        String valorUnitarioTexto = txtNombre5.getText().trim();
-
-        if (producto.isEmpty() || unidad.equals("Seleccione unidad") || cantidadTexto.isEmpty() || valorUnitarioTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor complete todos los campos del producto", "Error", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int cantidad = Integer.parseInt(cantidadTexto);
-            double valorUnitario = Double.parseDouble(valorUnitarioTexto);
-            double subtotal = cantidad * valorUnitario;
-
-            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-            modelo.addRow(new Object[]{
-                producto,
-                unidad,
-                cantidad,
-                String.format("$%,d", (long) valorUnitario),
-                String.format("$%,d", (long) subtotal),
-                "Editar",
-                "Eliminar"
-            });
-            limpiarCampos();
-            calcularTotal();
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese valores numéricos válidos para la cantidad y el valor unitario", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    private void guardarEdicionamiento(int fila) {
-        String producto = txtNombre6.getText().trim();
-        String unidad = combox_Unidad.getSelectedItem().toString();
-        String cantidadTexto = txtNombre4.getText().trim();
-        String valorUnitarioTexto = txtNombre5.getText().trim();
-
-        if (producto.isEmpty() || unidad.equals("Seleccione unidad") || cantidadTexto.isEmpty() || valorUnitarioTexto.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor completa todos los campos del producto", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int cantidad = Integer.parseInt(cantidadTexto);
-            double valorUnitario = Double.parseDouble(valorUnitarioTexto);
-            double subtotal = cantidad * valorUnitario;
-
-            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-            modelo.setValueAt(producto, fila, 0);
-            modelo.setValueAt(unidad, fila, 1);
-            modelo.setValueAt(cantidad, fila, 2);
-            modelo.setValueAt(String.format("$%,d", (long) valorUnitario), fila, 3);
-            modelo.setValueAt(String.format("$%,d", (long) subtotal), fila, 4);
-
-            limpiarCampos();
-            Tabla1.putClientProperty("filaEditando", null);
-            jButton_anadir_producto.setText("  Añadir");
-            calcularTotal();
-            JOptionPane.showMessageDialog(this, "Producto actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor ingrese valores numéricos válidos para la cantidad y el valor unitario", "Error", JOptionPane.ERROR_MESSAGE);
-            e.printStackTrace();
-        }
-    }
-
-    private void limpiarCampos() {
-        txtNombre6.setText("");
-        combox_Unidad.setSelectedIndex(0);
-        txtNombre4.setText("");
-        txtNombre5.setText("");
-        txtNombre6.requestFocus();
-    }
-
     private void eliminarFila(int fila) {
-        // Obtener datos del producto a eliminar para mostrar en el mensaje
-        String producto = Tabla1.getValueAt(fila, 0).toString(); // Producto ahora en índice 0
-        String cantidad = Tabla1.getValueAt(fila, 2).toString(); // Cantidad ahora en índice 2
+        String producto = Tabla1.getValueAt(fila, 0).toString();
+        String cantidad = Tabla1.getValueAt(fila, 2).toString();
 
-        // Resto del método permanece igual...
         int confirmacion = JOptionPane.showConfirmDialog(
                 this,
                 "<html>¿Está seguro que desea eliminar el producto:<br><br>"
@@ -690,8 +528,8 @@ public class cotizacion extends javax.swing.JPanel {
         String valorUnitario = Tabla1.getValueAt(fila, 3).toString().replace("$", "").replace(",", "");
 
         java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-        InsertarCoti dialog = new InsertarCoti(parent, true, producto, unidad, cantidad, valorUnitario);
-        dialog.setLocationRelativeTo(this);
+        InsertarCoti dialog = new InsertarCoti(parent, true, unidad, valorUnitario);
+
         dialog.setVisible(true);
 
         if (dialog.isConfirmado()) {
@@ -701,26 +539,21 @@ public class cotizacion extends javax.swing.JPanel {
             String nuevoValorUnitarioTexto = (String) datos[2];
             String nuevaUnidad = (String) datos[3];
 
-            try {
-                int nuevaCantidad = Integer.parseInt(nuevaCantidadTexto);
-                double nuevoValorUnitario = Double.parseDouble(nuevoValorUnitarioTexto);
-                double nuevoSubtotal = nuevaCantidad * nuevoValorUnitario;
+            int nuevaCantidad = Integer.parseInt(nuevaCantidadTexto);
+            double nuevoValorUnitario = Double.parseDouble(nuevoValorUnitarioTexto);
+            double nuevoSubtotal = nuevaCantidad * nuevoValorUnitario;
 
-                DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-                modelo.setValueAt(nuevoProducto, fila, 0);
-                modelo.setValueAt(nuevaUnidad, fila, 1);
-                modelo.setValueAt(nuevaCantidad, fila, 2);
-                modelo.setValueAt(String.format("$%,d", (long) nuevoValorUnitario), fila, 3);
-                modelo.setValueAt(String.format("$%,d", (long) nuevoSubtotal), fila, 4);
+            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+            modelo.setValueAt(nuevoProducto, fila, 0);
+            modelo.setValueAt(nuevaUnidad, fila, 1);
+            modelo.setValueAt(nuevaCantidad, fila, 2);
+            modelo.setValueAt(String.format("$%,d", (long) nuevoValorUnitario), fila, 3);
+            modelo.setValueAt(String.format("$%,d", (long) nuevoSubtotal), fila, 4);
 
-                Tabla1.putClientProperty("filaEditando", null);
-                jButton_anadir_producto.setText("  Añadir");
-                calcularTotal();
-                JOptionPane.showMessageDialog(this, "Producto actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(this, "Error al procesar los datos editados: asegúrese de que sean numéricos", "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-            }
+            Tabla1.putClientProperty("filaEditando", null);
+            jButton_anadir_producto.setText("  Añadir");
+            calcularTotal();
+            JOptionPane.showMessageDialog(this, "Producto actualizado exitosamente", "Éxito", JOptionPane.INFORMATION_MESSAGE);
         }
     }//GEN-LAST:event_Tabla1MouseClicked
 
@@ -736,12 +569,13 @@ public class cotizacion extends javax.swing.JPanel {
     }//GEN-LAST:event_HistorialCotiActionPerformed
 
     private void jButton_anadir_productoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton_anadir_productoActionPerformed
+
         Integer filaEditando = (Integer) Tabla1.getClientProperty("filaEditando");
         if (filaEditando != null) {
             guardarEdicionamiento(filaEditando);
         } else {
             java.awt.Frame parent = (java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this);
-            InsertarCoti dialog = new InsertarCoti(parent, true);
+            InsertarCoti dialog = new InsertarCoti(parent, true, "", ""); // Ajusta según tus necesidades
             dialog.setLocationRelativeTo(this);
             dialog.setVisible(true);
 
@@ -780,100 +614,7 @@ public class cotizacion extends javax.swing.JPanel {
         }
     }
 
-    private void añadirNuevoProducto() {
-
-        // Obtener datos queda igual
-        String producto = txtNombre6.getText().trim();
-        String unidad = combox_Unidad.getSelectedItem().toString();
-        String cantidadStr = txtNombre4.getText().trim();
-        String valorUnitarioStr = txtNombre5.getText().trim();
-
-        if (producto.isEmpty() || unidad.equals("Seleccione unidad")
-                || cantidadStr.isEmpty() || valorUnitarioStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor complete todos los campos del producto",
-                    "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int cantidad = Integer.parseInt(cantidadStr);
-            int valorUnitario = Integer.parseInt(valorUnitarioStr);
-            int subtotal = cantidad * valorUnitario;
-
-            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-
-            // Añadir fila con los nuevos índices (sin cliente)
-            modelo.addRow(new Object[]{
-                producto, // Índice 0
-                unidad, // Índice 1
-                cantidad, // Índice 2
-                String.format("$%,d", valorUnitario), // Índice 3
-                String.format("$%,d", subtotal), // Índice 4
-                "Editar", // Índice 5
-                "Eliminar" // Índice 6
-            });
-
-            limpiarCamposProducto();
-            calcularTotal();
-
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor ingrese valores numéricos válidos en cantidad y valor unitario",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-
-        }
-
-    }
-
-    private void guardarEdicion(int fila) {
-        String producto = txtNombre6.getText().trim();
-        String unidad = combox_Unidad.getSelectedItem().toString();
-        String cantidadStr = txtNombre4.getText().trim();
-        String valorUnitarioStr = txtNombre5.getText().trim();
-
-        if (producto.isEmpty() || unidad.equals("Seleccione unidad")
-                || cantidadStr.isEmpty() || valorUnitarioStr.isEmpty()) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor complete todos los campos del producto",
-                    "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        try {
-            int cantidad = Integer.parseInt(cantidadStr);
-            int valorUnitario = Integer.parseInt(valorUnitarioStr);
-            int subtotal = cantidad * valorUnitario;
-
-            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-            modelo.setValueAt(producto, fila, 0);
-            modelo.setValueAt(unidad, fila, 1);
-            modelo.setValueAt(cantidad, fila, 2);
-            modelo.setValueAt(String.format("$%,d", valorUnitario), fila, 3);
-            modelo.setValueAt(String.format("$%,d", subtotal), fila, 4);
-
-            limpiarCamposProducto();
-            Tabla1.putClientProperty("filaEditando", null);
-            jButton_anadir_producto.setText("  Añadir");
-            calcularTotal();
-
-            JOptionPane.showMessageDialog(this,
-                    "Producto actualizado correctamente",
-                    "Edición exitosa",
-                    JOptionPane.INFORMATION_MESSAGE);
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Por favor ingrese valores numéricos válidos en cantidad y valor unitario",
-                    "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-
     private void limpiarCamposProducto() {
-        txtNombre6.setText("");
-        combox_Unidad.setSelectedIndex(0);
-        txtNombre4.setText("");
-        txtNombre5.setText("");
-        txtNombre6.requestFocus();
 
     }//GEN-LAST:event_jButton_anadir_productoActionPerformed
 
@@ -891,70 +632,122 @@ public class cotizacion extends javax.swing.JPanel {
 
     private void CrearCotizacionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CrearCotizacionActionPerformed
 
-        // 1. Validar productos en la tabla
-        if (Tabla1.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
+        System.out.println("DEBUG: Botón CrearCotizacion presionado");
+
+        try {
+            System.out.println("DEBUG: Validando tabla...");
+            if (Tabla1.getRowCount() == 0) {
+                JOptionPane.showMessageDialog(this, "No hay productos", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error - No hay productos en la tabla");
+                return;
+            }
+            System.out.println("DEBUG: Tabla tiene " + Tabla1.getRowCount() + " filas");
+
+            System.out.println("DEBUG: Validando cliente...");
+            if (!validarYCrearCliente()) {
+                JOptionPane.showMessageDialog(this, "Error al validar o crear cliente", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error - Fallo en validarYCrearCliente");
+                return;
+            }
+
+            System.out.println("DEBUG: Validando clienteCodigo...");
+            if (clienteCodigo == null) {
+                JOptionPane.showMessageDialog(this, "Error: No se ha seleccionado un cliente válido", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error - clienteCodigo es null");
+                return;
+            }
+            System.out.println("DEBUG: clienteCodigo = " + clienteCodigo);
+
+            // Validar y obtener el total
+            System.out.println("DEBUG: Validando txt_total...");
+            String totalText = txt_total.getText().trim();
+            System.out.println("DEBUG: Valor de txt_total antes de procesar: '" + totalText + "'");
+            if (totalText.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "El campo total está vacío", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error - txt_total está vacío");
+                return;
+            }
+
+            // Eliminar símbolos y validar formato
+            String cleanTotal = totalText.replace("$", "").replace(",", "");
+            System.out.println("DEBUG: Valor de cleanTotal: '" + cleanTotal + "'");
+
+            // Verificar que no haya múltiples puntos
+            long pointCount = cleanTotal.chars().filter(ch -> ch == '.').count();
+            System.out.println("DEBUG: Cantidad de puntos decimales: " + pointCount);
+            if (pointCount > 1) {
+                JOptionPane.showMessageDialog(this, "El total contiene un formato inválido (múltiples puntos). Use un solo punto decimal, ej. 123.45", "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error - Múltiples puntos en txt_total");
+                return;
+            }
+
+            double total = Double.parseDouble(cleanTotal);
+
+            // Crear objeto Cotizacion para la cabecera
+            Cotizacion cotizacion = new Cotizacion();
+            cotizacion.setFecha(getFecha());
+            cotizacion.setClienteCodigo(clienteCodigo);
+            cotizacion.setUsuarioIdUsuario(1); // Ajusta según el ID del usuario logueado
+            cotizacion.setTotal(total);
+            System.out.println("DEBUG: Cotización creada con total: " + total);
+
+            // Usar el DefaultTableModel de la tabla
+            DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
+            System.out.println("DEBUG: Modelo tiene " + modelo.getRowCount() + " filas");
+
+            // Validar que no haya filas vacías en detalle
+            System.out.println("DEBUG: Validando detalles en la tabla...");
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                Object detalleObj = modelo.getValueAt(i, 0);
+                System.out.println("DEBUG: Fila " + i + ", detalle = " + detalleObj);
+                if (detalleObj == null || detalleObj.toString().trim().isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "La fila " + i + " no tiene un detalle válido", "Error", JOptionPane.ERROR_MESSAGE);
+                    System.out.println("DEBUG: Error - Fila " + i + " sin detalle válido");
+                    return;
+                }
+            }
+
+            CotizacionDAO dao = new CotizacionDAO();
+            System.out.println("DEBUG: Llamando a guardarCotizacion...");
+            int id = dao.guardarCotizacion(cotizacion, modelo);
+            System.out.println("DEBUG: Resultado de guardarCotizacion: " + id);
+
+            if (id > 0) {
+                JOptionPane.showMessageDialog(this, "Cotización guardada: " + id, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                reiniciarCotizacion();
+            } else {
+                JOptionPane.showMessageDialog(this, "Error al guardar: Código de error " + id, "Error", JOptionPane.ERROR_MESSAGE);
+                System.out.println("DEBUG: Error al guardar con código: " + id);
+            }
+        } catch (Exception e) {
+            System.out.println("DEBUG: Excepción al guardar: " + e.getMessage());
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // 2. Validar y crear cliente si es necesario
-        if (!validarYCrearCliente()) {
-            return;
-        }
-
-        // 3. Preparar datos para la cotización
-        DefaultTableModel modelo = (DefaultTableModel) Tabla1.getModel();
-        double totalGeneral = Double.parseDouble(txt_total.getText().replace("$", "").replace(".", ""));
-
-        // 4. Guardar cotización usando el controlador
-        Ctrl_Cotizacion ctrlCotizacion = new Ctrl_Cotizacion(this);
-        int idCotizacion = ctrlCotizacion.guardarCotizacion(clienteCodigo, modelo, totalGeneral);
-
-        if (idCotizacion == -1) {
-            JOptionPane.showMessageDialog(this, "Error al guardar la cotización", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // 5. Obtener datos del cliente para pasar al historial
-        String nombreCliente = txt_NombreCliente.getText().trim();
-        String apellidoCliente = txt_ApellidoCliente.getText().trim();
-        String clienteCompleto = nombreCliente + " " + apellidoCliente;
-        String fecha = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-
-        // 6. Abrir HistorialCot y pasar los datos
-        HistorialCot historial = new HistorialCot(jPanel2, true);
-        historial.agregarCotizacion(idCotizacion, clienteCompleto, fecha);
-
-        historial.setSize(1290, 730);
-        historial.setLocation(0, 0);
-        jPanel2.removeAll();
-        jPanel2.add(historial);
-        jPanel2.revalidate();
-        jPanel2.repaint();
-
-        // 7. Opcional: Mostrar mensaje de éxito
-        JOptionPane.showMessageDialog(this, "Cotización creada exitosamente con ID: " + idCotizacion,
-                "Éxito", JOptionPane.INFORMATION_MESSAGE);
 
     }//GEN-LAST:event_CrearCotizacionActionPerformed
+
+    private boolean camposClienteLlenos() {
+        return !txt_NombreCliente.getText().trim().isEmpty()
+                && !txt_ApellidoCliente.getText().trim().isEmpty()
+                && !numeroidtxt.getText().trim().isEmpty()
+                && identificaciontxt.getSelectedIndex() > 0;
+    }
 
     private boolean validarYCrearCliente() {
         if (clienteIngresado) {
             return true;
         }
 
-        // Validar campos del cliente
         if (identificaciontxt.getSelectedIndex() == 0
                 || numeroidtxt.getText().trim().isEmpty()
                 || txt_NombreCliente.getText().trim().isEmpty()
                 || txt_ApellidoCliente.getText().trim().isEmpty()) {
-
             JOptionPane.showMessageDialog(this, "Todos los campos del cliente son obligatorios", "Error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         try {
-            // Crear objeto cliente
             Cliente cliente = new Cliente();
             cliente.setIdentificacion(identificaciontxt.getSelectedItem().toString());
             cliente.setNumero(Integer.parseInt(numeroidtxt.getText().trim()));
@@ -963,7 +756,6 @@ public class cotizacion extends javax.swing.JPanel {
             cliente.setTelefono(telefonotxt.getText().trim());
             cliente.setDireccion(direcciontxt.getText().trim());
 
-            // Guardar cliente
             Ctrl_Cliente contro = new Ctrl_Cliente();
             if (contro.guardar(cliente)) {
                 clienteIngresado = true;
@@ -989,13 +781,14 @@ public class cotizacion extends javax.swing.JPanel {
         direcciontxt.setEnabled(false);
     }
 
-
+    private void guardarEdicionamiento(Integer filaEditando) {
+        throw new UnsupportedOperationException("Not supported yet."); // Debes implementarlo si planeas usarlo
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private RSMaterialComponent.RSButtonShape CrearCotizacion;
     private RSMaterialComponent.RSButtonShape HistorialCoti;
     private RSMaterialComponent.RSTableMetroCustom Tabla1;
     private RSMaterialComponent.RSButtonShape btnCrearpdf;
-    private RSMaterialComponent.RSComboBoxMaterial combox_Unidad;
     private RSMaterialComponent.RSTextFieldMaterial direcciontxt;
     private RSMaterialComponent.RSComboBoxMaterial identificaciontxt;
     private RSMaterialComponent.RSButtonShape jButton_anadir_producto;
@@ -1013,26 +806,10 @@ public class cotizacion extends javax.swing.JPanel {
     private javax.swing.JToggleButton jToggleButton1;
     private RSMaterialComponent.RSTextFieldMaterial numeroidtxt;
     private RSMaterialComponent.RSTextFieldMaterial telefonotxt;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre4;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre5;
-    private RSMaterialComponent.RSTextFieldMaterial txtNombre6;
     private RSMaterialComponent.RSTextFieldMaterial txt_ApellidoCliente;
     private RSMaterialComponent.RSTextFieldMaterial txt_NombreCliente;
     private RSMaterialComponent.RSTextFieldMaterial txt_total;
     // End of variables declaration//GEN-END:variables
-
-    private void CargarUnidadMed() {
-        combox_Unidad.removeAllItems();
-        combox_Unidad.addItem("Seleccione unidad");
-
-        // Valores del ENUM definidos en la base de datos
-        String[] unidades = {"Metro", "Centímetro", "Unidad"};
-
-        for (String unidad : unidades) {
-            combox_Unidad.addItem(unidad);
-        }
-
-    }
 
     /*joa nambre*/
     public void calcularTotal() {
@@ -1042,7 +819,6 @@ public class cotizacion extends javax.swing.JPanel {
         for (int i = 0; i < modelo.getRowCount(); i++) {
             try {
                 String subtotalStr = modelo.getValueAt(i, 4).toString();
-                // Remove only the dollar sign, keep thousand separators and parse as number
                 subtotalStr = subtotalStr.replace("$", "");
                 NumberFormat format = NumberFormat.getNumberInstance(Locale.getDefault());
                 Number number = format.parse(subtotalStr);
@@ -1058,7 +834,6 @@ public class cotizacion extends javax.swing.JPanel {
             }
         }
 
-        // Format total with thousand separators, no decimals
         DecimalFormatSymbols symbols = new DecimalFormatSymbols(Locale.getDefault());
         symbols.setDecimalSeparator('.');
         symbols.setGroupingSeparator('.');
@@ -1088,6 +863,30 @@ public class cotizacion extends javax.swing.JPanel {
         limpiarCamposProducto();
         txt_total.setText("$0");
         txt_NombreCliente.requestFocus();
+    }
+
+    private boolean guardarCliente() {
+        try {
+            Cliente cliente = new Cliente();
+            cliente.setIdentificacion(identificaciontxt.getSelectedItem().toString());
+            cliente.setNumero(Integer.parseInt(numeroidtxt.getText().trim()));
+            cliente.setNombre(txt_NombreCliente.getText().trim());
+            cliente.setApellido(txt_ApellidoCliente.getText().trim());
+            cliente.setTelefono(telefonotxt.getText().trim());
+            cliente.setDireccion(direcciontxt.getText().trim());
+
+            Ctrl_Cliente contro = new Ctrl_Cliente();
+            if (contro.guardar(cliente)) {
+                clienteIngresado = true;
+                clienteCodigo = cliente.getNumero();
+                bloquearCamposCliente();
+                return true;
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error al guardar cliente: " + e.getMessage(),
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        return false;
     }
 
 }

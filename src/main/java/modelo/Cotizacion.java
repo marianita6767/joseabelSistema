@@ -2,6 +2,7 @@ package modelo;
 
 import java.sql.Date;
 
+
 public class Cotizacion {
     private int idCotizacion;
     private String detalle;
@@ -65,7 +66,7 @@ public class Cotizacion {
     }
 
     public Date getFecha() {
-        return fecha;
+        return this.fecha;
     }
 
     public void setFecha(Date fecha) {

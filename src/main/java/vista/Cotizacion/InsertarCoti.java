@@ -4,6 +4,7 @@
  */
 package vista.Cotizacion;
 
+import java.awt.Frame;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -13,7 +14,6 @@ import javax.swing.table.DefaultTableModel;
  */
 public class InsertarCoti extends javax.swing.JDialog {
 
-    private DefaultTableModel cotizacion;
     private boolean confirmado = false;
     private String producto;
     private String unidad;
@@ -21,10 +21,14 @@ public class InsertarCoti extends javax.swing.JDialog {
     private String valorUnitario;
 
     // Constructor original para nuevo producto
-    public InsertarCoti(java.awt.Frame parent, boolean modal) {
+    public InsertarCoti(Frame parent, boolean modal, String unidad1, String valorUnitario1) {
         super(parent, modal);
         initComponents();
         CargarUnidadMed();
+        // Opcional: precargar valor unitario si se proporciona
+        if (!valorUnitario1.isEmpty()) {
+            txtValorUni.setText(valorUnitario1);
+        }
     }
 
     // Constructor para edición
@@ -86,7 +90,6 @@ public class InsertarCoti extends javax.swing.JDialog {
             double valorUnitario = Double.parseDouble(valorUnitarioTexto);
             double subtotal = cantidad * valorUnitario;
             // Los datos se pasarán al padre a través de getDatosCoti()
-            limpiarCampos();
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Cantidad y valor unitario deben ser numéricos", "Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -100,33 +103,6 @@ public class InsertarCoti extends javax.swing.JDialog {
         txtProducto.requestFocus();
     }
 
-    /*
-    private void guardarCotizacion() {
-        if (cotizacionPadre.getRowCount() == 0) {
-            JOptionPane.showMessageDialog(this, "No hay productos en la cotización", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-
-        String nombrePedido = txtNombre6.getText().trim();
-        if (nombrePedido.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, ingrese el nombre del pedido", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        if (clienteCodigo == null) {
-            JOptionPane.showMessageDialog(this, "Por favor, guarde un cliente primero en la ventana principal", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        Cotizacion cotizacion = new Cotizacion();
-      
-        cotizacion.setDetalle(nombrePedido);
-        cotizacion.setTotal(cotizacionPadre.getTotalCotizacion());
-        int idCotizacion = CotizacionDAO.guardarCotizacion(cotizacion, cotizacionPadre.getTableModel());
-        JOptionPane.showMessageDialog(this, "Cotización guardada exitosamente con ID: " + idCotizacion, "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        cotizacionPadre.reiniciarCotizacion();
-        this.dispose();
-    }*/
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -314,7 +290,7 @@ public class InsertarCoti extends javax.swing.JDialog {
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+        //<editor-fold desc=" Look and feel setting code (optional) ">
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
                 if ("Nimbus".equals(info.getName())) {
@@ -336,7 +312,7 @@ public class InsertarCoti extends javax.swing.JDialog {
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true); // Usar constructor original
+                InsertarCoti dialog = new InsertarCoti(new javax.swing.JFrame(), true, "", ""); // Valores predeterminados
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
